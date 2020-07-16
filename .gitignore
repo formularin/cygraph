@@ -1,0 +1,17 @@
+# Dev
+.vscode
+venv
+
+# Cython
+cygraph/*.c
+cygraph/*.cpython-38-darwin.so
+build/
+
+# Pip
+cygraph.egg-info/
+
+# Python
+cygraph/__pycache__/
+
+# MacOS
+.DS_Store
