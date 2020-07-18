@@ -5,6 +5,8 @@ venv
 # Cython
 cygraph/*.c
 cygraph/*.cpython-38-darwin.so
+cygraph/cytests/*.cpython-38-darwin.so
+cygraph/cytests/*.c
 build/
 
 # Pip
@@ -15,3 +17,9 @@ cygraph/__pycache__/
 
 # MacOS
 .DS_Store
+
+# Misc.
+test.pyx
+test.cpython-38-darwin.so
+test.c
+TODO.md
