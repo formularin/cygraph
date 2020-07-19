@@ -1,4 +1,4 @@
-"""Implementation of the Graph class
+"""Implementation of StaticGraph and DynamicGraph classes.
 """
 
 import numpy as np
@@ -7,17 +7,18 @@ import numpy as np
 DTYPE = np.float64
 
 
-cdef class Graph:
+cdef class StaticGraph:
     """
     A class representing a graph data structure.
 
     This is a directed graph class, although it will function as an
     undirected graph by creating directed edges both ways between two
-    nodes. This class contains only basic functionality; algorithms
+    vertices. This class contains only basic functionality; algorithms
     are implemented externally.
 
-    Adding nodes to a graph is relatively slow, so when possible list
-    all nodes the graph will ever have during instantiation.
+    Adding vertices to a graph is relatively slow, expecially for
+    already large graphs. If you are going to be adding lots of
+    vertices to your graph, consider using cygraph.DynamicGraph.
 
     Args:
         bint directed: Optional; Whether or not the graph contains directed edges.
@@ -37,14 +38,12 @@ cdef class Graph:
     cdef list __reverse_vertex_map  # Maps numbers to vertex names.
 
     cdef readonly bint directed
-    cdef readonly list vertices
 
     def __cinit__(self, bint directed=False, list vertices=[]):
 
         self.directed = directed
-        self.vertices = vertices[:]
 
-        # Map node names to numbers and vice versa.
+        # Map vertex names to numbers and vice versa.
         self.__vertex_map = {}
         self.__reverse_vertex_map = []
         cdef int i
@@ -109,7 +108,7 @@ cdef class Graph:
         # Map vertex name to number.
         cdef int vertex_number = len(<dict>self.__vertex_map)
         self.__vertex_map[v] = vertex_number
-        self.__reverse_vertex_map[vertex_number] = v
+        self.__reverse_vertex_map.append(v)
 
         # Add new row.
         new_row = np.empty(vertex_number)
@@ -179,3 +178,170 @@ cdef class Graph:
         The set of vertices in the graph.
         """
         return set(self.__vertex_map.keys())
+
+
+cdef class DynamicGraph:
+    """
+    A class representing a graph data structure.
+
+    This is a directed graph class, although it will function as an
+    undirected graph by creating directed edges both ways between two
+    vertices. This class contains only basic functionality; algorithms
+    are implemented externally.
+
+    Adding vertices to a graph is faster than with a StaticGraph, but
+    overall performance is comprimised.
+
+    Args:
+        bint directed: Optional; Whether or not the graph contains directed edges.
+    
+    Attributes:
+        directed: Whether or not the graph contains directed edges.
+        vertices: A list of the vertices in this graph.
+        edges: A list of tuples contianing the two vertices of each edge.
+    """
+
+    # __adjacency_matrix[u][v] -> weight of edge between u and v.
+    # None means there is no edge.
+    cdef list __adjacency_matrix
+    cdef dict __vertex_map
+    cdef list __reverse_vertex_map
+
+    cdef readonly bint directed
+    cdef readonly bint vertices
+
+    def __cinit__(self, bint directed=False, list vertices=[]):
+
+        self.directed = directed
+
+        # Map vertex names to numbers and vice versa.
+        self.__vertex_map = {}
+        self.__reverse_vertex_map = []
+        cdef int i
+        cdef object v
+        for i, v in enumerate(<list?>vertices)
+            self.__vertex_map[v] = i
+            self.reverse_vertex_map.append(v)
+
+        self.vertices = vertices[:]
+
+        # Create adjacency matrix.
+        cdef int size = len(vertices)
+        self.__adjacency_matrix = []
+        for i in range(size):
+            self.__adjacency_matrix.append([])
+            for _ in range(size):
+                self.__adjacency_matrix[i].append(None)
+    
+    def __get_vertex_int(self, vertex):
+        """
+        Returns the int correspoding to a vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+        
+        Returns:
+            The int corresponding to the inputted vertex.
+
+        Raises:
+            ValueError: vertex is not in graph.
+        """
+        try:
+            return <int>(self.vertex_map[vertex])
+        except KeyError:
+            raise ValueError(f"{vertex} is not in graph.")
+    
+    def add_edge(self, v1, v2, double weight=1.0):
+        """
+        Adds edge to the graph between two vertices with a weight.
+
+        Args:
+            v1: One of the edges's vertices.
+            v2: One of the edges's vertices.
+            double weight: Optional; The weight of the edge.
+        
+        Raises:
+            ValueError: At least one of the inputted vertices is not in the graph.
+        """
+        cdef int u = self.__get_vertex_int(v1)
+        cdef int v = self.__get_vertex_int(v2)
+
+        self.__adjacency_matrix[u][b] = weight
+        if not self.directed:
+            self.__adjacency_matrix[v][u] = weight
+    
+    def add_vertex(self, v):
+        """
+        Adds vertex to the graph.
+
+        Args:
+            v: A vertex of any hashable type.
+        
+        Raises:
+            TypeError: vertex type is not hashable.
+        """
+        # Map vertex name to number.
+        cdef int vertex_number = len(<dict>self.__vertex_map)
+        self.__vertex_map[v] = vertex_number
+        self.__reverse_vertex_map.append(v)
+
+        # Add new row.
+        cdef list new_row = [None for _ in range(vertex_number + 1)]
+        self.__adjacency_matrix.append(new_row)
+        
+        # Add new column.
+        cdef int i
+        for i in range(<int> (len(self.__adjacency_matrix) - 1)):
+            self.__adjacency_matrix[i].append(None)
+    
+    def get_children(self, vertex):
+        """
+        Returns the names of all the child vertices of a given vertex.
+        Equivalent to neighbors if all edges are undirected.
+
+        Args:
+            vertex: A vertex in the graph.
+
+        Returns:
+            A list of the child vertices of the inputted vertex.
+
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef list children = []
+        cdef int u, v
+
+        v = self.__get_vertex_int(vertex)
+
+        for u in range(<int>len(self.vertices)):
+            if self.__adjacency_matrix[v][u] is not None:
+                children.append(self.__reverse_vertex_map[u])
+
+        return children
+
+    @property
+    def edges(self):
+        """
+        A list of tuples contianing the two vertices of each edge.
+        """
+        cdef int u, v, n_vertices
+        cdef list edges = []
+        cdef set edge
+
+        n_vertices = len(self.vertices)
+
+        if self.directed:
+            for u in range(n_vertices):
+                for v in range(n_vertices):
+                    if self.__adjacency_matrix[u][v] is not None:
+                        edges.append((u, v))
+        else:
+            for u in range(n_vertices):
+                for v in range(n_vertices):
+                    if self.__adjacency_matrix[u][v] is not None:
+                        edge = {u, v}
+                        if edge not in edges:
+                            edges.append(edge)
+            edges = [tuple(edge) for edge in edges]
+
+        return edges
