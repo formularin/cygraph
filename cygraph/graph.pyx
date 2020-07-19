@@ -7,21 +7,21 @@ import numpy as np
 DTYPE = np.float64
 
 
-cdef class StaticGraph:
+cdef class Graph:
     """
-    A class representing a graph with a set number of vertices.
+    A class representing a graph data structure.
 
     This is a directed graph class, although it will function as an
     undirected graph by creating directed edges both ways between two
     nodes. This class contains only basic functionality; algorithms
     are implemented externally.
 
-    A StaticGraph cannot have nodes added to it after initialization; this boosts speed.
-    If you want to be able to add nodes to your graph, consider using a DynamicGraph.
+    Adding nodes to a graph is relatively slow, so when possible list
+    all nodes the graph will ever have during instantiation.
 
     Args:
-        list vertices: A list of vertices (can be any hashable type)
-        bint directed: Whether or not the graph contains directed edges.
+        bint directed: Optional; Whether or not the graph contains directed edges.
+        list vertices: Optional; A list of vertices (can be any hashable type)
     
     Attributes:
         directed: Whether or not the graph contains directed edges.
@@ -39,7 +39,7 @@ cdef class StaticGraph:
     cdef readonly bint directed
     cdef readonly list vertices
 
-    def __cinit__(self, list vertices, bint directed=False):
+    def __cinit__(self, bint directed=False, list vertices=[]):
 
         self.directed = directed
         self.vertices = vertices[:]
