@@ -96,6 +96,31 @@ cdef class Graph:
         if not self.directed:
             self.__adjacency_matrix_view[v][u] = weight
 
+    def add_vertex(self, v):
+        """
+        Adds vertex to the graph.
+
+        Args:
+            v: A vertex of any hashable type.
+        
+        Raises:
+            TypeError: vertex type is not hashable.
+        """
+        # Map vertex name to number.
+        cdef int vertex_number = len(<dict>self.__vertex_map)
+        self.__vertex_map[v] = vertex_number
+        self.__reverse_vertex_map[vertex_number] = v
+
+        # Add new row.
+        new_row = np.empty(vertex_number)
+        new_row.fill(None)
+        np.append(self.__adjacency_matrix, np.array([new_row]))
+
+        # Add new column.
+        new_column = np.empty(vertex_number + 1)
+        new_column.fill(None)
+        np.append(self.__adjacency_matrix, np.array([new_column]), axis=1)
+
     def get_children(self, vertex):
         """
         Returns the names of all the child vertices of a given vertex.
@@ -147,3 +172,10 @@ cdef class Graph:
             edges = [tuple(edge) for edge in edges]
 
         return edges
+
+    @property
+    def vertices(self):
+        """
+        The set of vertices in the graph.
+        """
+        return set(self.__vertex_map.keys())
