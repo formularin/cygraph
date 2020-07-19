@@ -149,6 +149,27 @@ cdef class StaticGraph:
 
         return children
 
+    cpdef set get_descendants(self, vertex):
+        """
+        Returns the names of all the descendant vertices of a given vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+        
+        Returns:
+            A set of the descendant vertices of the input vertex.
+        
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set descendants = set()
+        cdef object child
+
+        for child in self.get_children(vertex):
+            descendants = descendants.union(self.get_children(child))
+        return descendants
+        
+
     @property
     def edges(self):
         """
@@ -316,6 +337,27 @@ cdef class DynamicGraph:
                 children.add(self.__reverse_vertex_map[u])
 
         return children
+
+    cpdef set get_descendants(self, vertex):
+        """
+        Returns the names of all the descendant vertices of a given vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+        
+        Returns:
+            A set of the descendant vertices of the input vertex.
+        
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set descendants = set()
+        cdef object child
+
+        for child in self.get_children(vertex):
+            descendants.add(child)
+            descendants = descendants.union(self.get_descendants(child))
+        return descendants
 
     @property
     def edges(self):
