@@ -7,7 +7,79 @@ import numpy as np
 DTYPE = np.float64
 
 
-cdef class StaticGraph:
+cdef class Graph:
+    """
+    A base graph class with little independent functionality,
+    but contains methods that are the same for both classes.
+    """
+
+    cdef dict __dict__
+
+    cpdef int __get_vertex_int(self, vertex) except -1:
+        """
+        Returns the int corresponding to a vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+
+        Returns:
+            The int corresponding to the inputted vertex.
+
+        Raises:
+            ValueError: vertex is not in graph.
+        """
+        try:
+            return <int>(self.__vertex_map[vertex])
+        except KeyError:
+            raise ValueError(f"{vertex} is not in graph.")
+    
+    cpdef set get_children(self, vertex):
+        """
+        Returns the names of all the child vertices of a given vertex.
+        Equivalent to neighbors if all edges are undirected.
+
+        Args:
+            vertex: A vertex in the graph.
+
+        Returns:
+            A set of the child vertices of the inputted vertex.
+
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set children = set()
+        cdef int u, v
+
+        v = self.__get_vertex_int(vertex)
+
+        for u in range(<int>len(self.vertices)):
+            if self.__adjacency_matrix_view[v][u] is not None:
+                children.add(self.__reverse_vertex_map[u])
+
+        return children
+
+    cpdef set get_descendants(self, vertex):
+        """
+        Returns the names of all the descendant vertices of a given vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+        
+        Returns:
+            A set of the descendant vertices of the input vertex.
+        
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set descendants = set()
+        cdef object child
+
+        for child in self.get_children(vertex):
+            descendants = descendants.union(self.get_children(child))
+        return descendants
+
+
+cdef class StaticGraph(Graph):
     """
     A class representing a graph data structure.
 
@@ -61,24 +133,6 @@ cdef class StaticGraph:
         self.__adjacency_matrix.fill(None)
         self.__adjacency_matrix_view = self.__adjacency_matrix
 
-    cpdef int __get_vertex_int(self, vertex) except -1:
-        """
-        Returns the int corresponding to a vertex.
-
-        Args:
-            vertex: A vertex in the graph.
-
-        Returns:
-            The int corresponding to the inputted vertex.
-
-        Raises:
-            ValueError: vertex is not in graph.
-        """
-        try:
-            return <int>(self.__vertex_map[vertex])
-        except KeyError:
-            raise ValueError(f"{vertex} is not in graph.")
-
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
         Adds edge to graph between two vertices with a weight.
@@ -124,52 +178,6 @@ cdef class StaticGraph:
         new_column.fill(None)
         np.append(self.__adjacency_matrix, np.array([new_column]), axis=1)
 
-    cpdef set get_children(self, vertex):
-        """
-        Returns the names of all the child vertices of a given vertex.
-        Equivalent to neighbors if all edges are undirected.
-
-        Args:
-            vertex: A vertex in the graph.
-
-        Returns:
-            A set of the child vertices of the inputted vertex.
-
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set children = set()
-        cdef int u, v
-
-        v = self.__get_vertex_int(vertex)
-
-        for u in range(<int>len(self.vertices)):
-            if self.__adjacency_matrix_view[v][u] is not None:
-                children.add(self.__reverse_vertex_map[u])
-
-        return children
-
-    cpdef set get_descendants(self, vertex):
-        """
-        Returns the names of all the descendant vertices of a given vertex.
-
-        Args:
-            vertex: A vertex in the graph.
-        
-        Returns:
-            A set of the descendant vertices of the input vertex.
-        
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set descendants = set()
-        cdef object child
-
-        for child in self.get_children(vertex):
-            descendants = descendants.union(self.get_children(child))
-        return descendants
-        
-
     @property
     def edges(self):
         """
@@ -198,7 +206,7 @@ cdef class StaticGraph:
         return edges
 
 
-cdef class DynamicGraph:
+cdef class DynamicGraph(Graph):
     """
     A class representing a graph data structure.
 
@@ -252,24 +260,6 @@ cdef class DynamicGraph:
             for _ in range(size):
                 self.__adjacency_matrix[i].append(None)
     
-    cpdef int __get_vertex_int(self, vertex) except -1:
-        """
-        Returns the int correspoding to a vertex.
-
-        Args:
-            vertex: A vertex in the graph.
-        
-        Returns:
-            The int corresponding to the inputted vertex.
-
-        Raises:
-            ValueError: vertex is not in graph.
-        """
-        try:
-            return <int>(self.vertex_map[vertex])
-        except KeyError:
-            raise ValueError(f"{vertex} is not in graph.")
-    
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
         Adds edge to the graph between two vertices with a weight.
@@ -312,52 +302,6 @@ cdef class DynamicGraph:
         cdef int i
         for i in range(<int> (len(self.__adjacency_matrix) - 1)):
             self.__adjacency_matrix[i].append(None)
-    
-    cpdef set get_children(self, vertex):
-        """
-        Returns the names of all the child vertices of a given vertex.
-        Equivalent to neighbors if all edges are undirected.
-
-        Args:
-            vertex: A vertex in the graph.
-
-        Returns:
-            A set of the child vertices of the inputted vertex.
-
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set children = set()
-        cdef int u, v
-
-        v = self.__get_vertex_int(vertex)
-
-        for u in range(<int>len(self.vertices)):
-            if self.__adjacency_matrix[v][u] is not None:
-                children.add(self.__reverse_vertex_map[u])
-
-        return children
-
-    cpdef set get_descendants(self, vertex):
-        """
-        Returns the names of all the descendant vertices of a given vertex.
-
-        Args:
-            vertex: A vertex in the graph.
-        
-        Returns:
-            A set of the descendant vertices of the input vertex.
-        
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set descendants = set()
-        cdef object child
-
-        for child in self.get_children(vertex):
-            descendants.add(child)
-            descendants = descendants.union(self.get_descendants(child))
-        return descendants
 
     @property
     def edges(self):
