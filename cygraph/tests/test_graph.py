@@ -8,9 +8,6 @@ import pytest
 from .. import Graph
 
 
-NORMAL_GRAPH_VERTICES = [""]
-
-
 class TestGraph:
     """
     Unit tests for the cygraph.Graph class.
@@ -93,7 +90,20 @@ class TestGraph:
         with pytest.raises(ValueError):
             g2.get_descendants("d")
 
-    def test_add_node(self):
+    def test_add_vertex(self):
         """
-        Tests cygraph.Graph.add_node
+        Tests:
+         - cygraph.Graph.add_vertex
+         - cygraph.Graph.vertices
         """
+
+        g = Graph(directed=True)
+
+        # add_vertex method
+        g.add_vertex("s")
+        g.add_vertex(1)
+        with pytest.raises(TypeError):
+            g.add_vertex([])
+
+        # vertices property
+        assert g.vertices == ["s", 1]
