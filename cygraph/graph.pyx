@@ -11,10 +11,26 @@ cdef class StaticGraph:
     """
     A class representing a graph with a set number of vertices.
 
+    This is a directed graph class, although it will function as an
+    undirected graph by creating directed edges both ways between two
+    nodes. This class contains only basic functionality; algorithms
+    are implemented externally.
+
+    A StaticGraph cannot have nodes added to it after initialization; this boosts speed.
+    If you want to be able to add nodes to your graph, consider using a DynamicGraph.
+
     Args:
         list vertices: A list of vertices (can be any hashable type)
+        bint directed: Whether or not the graph contains directed edges.
+    
+    Attributes:
+        directed: Whether or not the graph contains directed edges.
+        vertices: A list of the vertices in this graph.
+        edges: A list of tuples contianing the two vertices of each edge.
     """
 
+    # __adjacency_matrix_view[u][v] -> weight of edge between u and v.
+    # None means there is no edge.
     cdef object __adjacency_matrix
     cdef double[:,:] __adjacency_matrix_view
     cdef dict __vertex_map  # Maps vertex names to numbers.
@@ -23,8 +39,8 @@ cdef class StaticGraph:
     cdef readonly bint directed
     cdef readonly list vertices
 
-    def __cinit__(self, list vertices, directed=False):
-        
+    def __cinit__(self, list vertices, bint directed=False):
+
         self.directed = directed
         self.vertices = vertices[:]
 
@@ -36,10 +52,11 @@ cdef class StaticGraph:
         for i, v in enumerate(<list?>vertices):
             self.__vertex_map[v] = i
             self.__reverse_vertex_map.append(v)
-        
+
         # Create adjacency matrix.
         cdef int size = len(vertices)
-        self.__adjacency_matrix = np.zeros((size, size), dtype=DTYPE)
+        self.__adjacency_matrix = np.empty((size, size), dtype=DTYPE)
+        self.__adjacency_matrix.fill(None)
         self.__adjacency_matrix_view = self.__adjacency_matrix
 
     def __get_vertex_int(self, vertex):
@@ -51,7 +68,7 @@ cdef class StaticGraph:
 
         Returns:
             The int corresponding to the inputted vertex.
-        
+
         Raises:
             ValueError: vertex is not in graph.
         """
@@ -68,7 +85,7 @@ cdef class StaticGraph:
             v1: One of the edge's vertices.
             v2: One of the edge's vertices.
             double weight: Optional; The weight of the edge.
-        
+
         Raises:
             ValueError: At least one of the inputted vertices is not in the graph.
         """
@@ -78,7 +95,7 @@ cdef class StaticGraph:
         self.__adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self.__adjacency_matrix_view[v][u] = weight
-    
+
     def get_children(self, vertex):
         """
         Returns the names of all the child vertices of a given vertex.
@@ -89,7 +106,7 @@ cdef class StaticGraph:
 
         Returns:
             A list of the child vertices of the inputted vertex.
-        
+
         Raises:
             ValueError: The inputted vertex is not in the graph.
         """
@@ -99,9 +116,9 @@ cdef class StaticGraph:
         v = self.__get_vertex_int(vertex)
 
         for u in range(<int>len(self.vertices)):
-            if self.__adjacency_matrix_view[v][u] != <double>0.0:
+            if self.__adjacency_matrix_view[v][u] is not None:
                 children.append(self.__reverse_vertex_map[u])
-        
+
         return children
 
     @property
@@ -118,15 +135,15 @@ cdef class StaticGraph:
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix_view[u][v] != 0.0:
+                    if self.__adjacency_matrix_view[u][v] is not None:
                         edges.append((u, v))
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix_view[u][v] != 0.0:
+                    if self.__adjacency_matrix_view[u][v] is not None:
                         edge = {u, v}
                         if edge not in edges:
                             edges.append(edge)
             edges = [tuple(edge) for edge in edges]
-        
+
         return edges
