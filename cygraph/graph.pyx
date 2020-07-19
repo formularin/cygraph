@@ -61,7 +61,7 @@ cdef class StaticGraph:
         self.__adjacency_matrix.fill(None)
         self.__adjacency_matrix_view = self.__adjacency_matrix
 
-    def __get_vertex_int(self, vertex):
+    cpdef int __get_vertex_int(self, vertex) except -1:
         """
         Returns the int corresponding to a vertex.
 
@@ -79,7 +79,7 @@ cdef class StaticGraph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
 
-    def add_edge(self, v1, v2, double weight=1.0):
+    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
         Adds edge to graph between two vertices with a weight.
 
@@ -98,7 +98,7 @@ cdef class StaticGraph:
         if not self.directed:
             self.__adjacency_matrix_view[v][u] = weight
 
-    def add_vertex(self, v):
+    cpdef void add_vertex(self, v) except *:
         """
         Adds vertex to the graph.
 
@@ -124,7 +124,7 @@ cdef class StaticGraph:
         new_column.fill(None)
         np.append(self.__adjacency_matrix, np.array([new_column]), axis=1)
 
-    def get_children(self, vertex):
+    cpdef set get_children(self, vertex):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
@@ -217,7 +217,7 @@ cdef class DynamicGraph:
         self.__reverse_vertex_map = []
         cdef int i
         cdef object v
-        for i, v in enumerate(<list?>vertices)
+        for i, v in enumerate(<list?>vertices):
             self.__vertex_map[v] = i
             self.reverse_vertex_map.append(v)
 
@@ -231,7 +231,7 @@ cdef class DynamicGraph:
             for _ in range(size):
                 self.__adjacency_matrix[i].append(None)
     
-    def __get_vertex_int(self, vertex):
+    cpdef int __get_vertex_int(self, vertex) except -1:
         """
         Returns the int correspoding to a vertex.
 
@@ -249,7 +249,7 @@ cdef class DynamicGraph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
     
-    def add_edge(self, v1, v2, double weight=1.0):
+    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
         Adds edge to the graph between two vertices with a weight.
 
@@ -264,11 +264,11 @@ cdef class DynamicGraph:
         cdef int u = self.__get_vertex_int(v1)
         cdef int v = self.__get_vertex_int(v2)
 
-        self.__adjacency_matrix[u][b] = weight
+        self.__adjacency_matrix[u][v] = weight
         if not self.directed:
             self.__adjacency_matrix[v][u] = weight
     
-    def add_vertex(self, v):
+    cpdef void add_vertex(self, v) except *:
         """
         Adds vertex to the graph.
 
@@ -292,7 +292,7 @@ cdef class DynamicGraph:
         for i in range(<int> (len(self.__adjacency_matrix) - 1)):
             self.__adjacency_matrix[i].append(None)
     
-    def get_children(self, vertex):
+    cpdef set get_children(self, vertex):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
