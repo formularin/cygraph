@@ -26,13 +26,12 @@ class TestGraph:
                     create_graph(static=static, directed=directed, vertices=lst)
 
         # Exception-raising tests.
-        for case in test_cases:
-            for directed in [True, False]:
-                for static in [True, False]:
-                    with pytest.raises(TypeError):
-                        # Non-hashable type vertices.
-                        create_graph(static=static, directed=directed,
-                            vertices=[["s"], ["e"]])
+        for directed in [True, False]:
+            for static in [True, False]:
+                with pytest.raises(TypeError):
+                    # Non-hashable type vertices.
+                    create_graph(static=static, directed=directed,
+                        vertices=[["s"], ["e"]])
     
     def test_edges(self):
         """
@@ -103,11 +102,15 @@ class TestGraph:
         for static in [True, False]:
             g = create_graph(static=static, directed=True)
 
-            # add_vertex method
+            # Adding to graph with no vertices.
             g.add_vertex("s")
+            # Adding to graph with vertices.
             g.add_vertex(1)
             with pytest.raises(TypeError):
                 g.add_vertex([])
+            print(g.vertices)
+            with pytest.raises(ValueError):
+                g.add_vertex("s")
 
             # vertices property
             assert g.vertices == ["s", 1]

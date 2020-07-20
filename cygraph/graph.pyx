@@ -54,7 +54,7 @@ cdef class Graph:
 
         for u in range(<int>len(self.vertices)):
             if self.__adjacency_matrix_view[v][u] is not None:
-                children.add(self.__reverse_vertex_map[u])
+                children.add(self.vertices[u])
 
         return children
 
@@ -107,7 +107,6 @@ cdef class StaticGraph(Graph):
     cdef object __adjacency_matrix
     cdef double[:,:] __adjacency_matrix_view
     cdef dict __vertex_map  # Maps vertex names to numbers.
-    cdef list __reverse_vertex_map  # Maps numbers to vertex names.
 
     cdef readonly bint directed
     cdef readonly list vertices
@@ -118,19 +117,16 @@ cdef class StaticGraph(Graph):
 
         # Map vertex names to numbers and vice versa.
         self.__vertex_map = {}
-        self.__reverse_vertex_map = []
         cdef int i
         cdef object v
         for i, v in enumerate(<list?>vertices):
             self.__vertex_map[v] = i
-            self.__reverse_vertex_map.append(v)
         
         self.vertices = vertices[:]
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
-        self.__adjacency_matrix = np.empty((size, size), dtype=DTYPE)
-        self.__adjacency_matrix.fill(None)
+        self.__adjacency_matrix = np.full((size, size), None, dtype=DTYPE)
         self.__adjacency_matrix_view = self.__adjacency_matrix
 
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
@@ -161,22 +157,30 @@ cdef class StaticGraph(Graph):
         
         Raises:
             TypeError: vertex type is not hashable.
+            ValueError: vertex is already in graph.
         """
-        # Map vertex name to number.
         cdef int vertex_number = len(<dict>self.__vertex_map)
-        self.__vertex_map[v] = vertex_number
-        self.__reverse_vertex_map.append(v)
-        self.vertices.append(v)
+        cdef object new_row, new_column
 
-        # Add new row.
-        new_row = np.empty(vertex_number)
-        new_row.fill(None)
-        np.append(self.__adjacency_matrix, np.array([new_row]))
+        if v in self.vertices:
+            raise ValueError(f"{v} is already in graph")
+        else:
+            # Map vertex name to number.
+            self.__vertex_map[v] = vertex_number
+            self.vertices.append(v)
 
-        # Add new column.
-        new_column = np.empty(vertex_number + 1)
-        new_column.fill(None)
-        np.append(self.__adjacency_matrix, np.array([new_column]), axis=1)
+            if vertex_number == 0:
+                self.__adjacency_matrix = np.full((1, 1), None, dtype=DTYPE)
+            else:
+                # Add new row.
+                new_row = np.full((1, vertex_number), None, dtype=DTYPE)
+                self.__adjacency_matrix = \
+                    np.append(self.__adjacency_matrix, new_row, axis=0)
+
+                # Add new column.
+                new_column = np.full((vertex_number + 1, 1), None, dtype=DTYPE)
+                self.__adjacency_matrix = \
+                    np.append(self.__adjacency_matrix, new_column, axis=1)
 
     @property
     def edges(self):
@@ -232,7 +236,6 @@ cdef class DynamicGraph(Graph):
     # None means there is no edge.
     cdef list __adjacency_matrix
     cdef dict __vertex_map
-    cdef list __reverse_vertex_map
 
     cdef readonly bint directed
     cdef readonly list vertices
@@ -243,12 +246,10 @@ cdef class DynamicGraph(Graph):
 
         # Map vertex names to numbers and vice versa.
         self.__vertex_map = {}
-        self.__reverse_vertex_map = []
         cdef int i
         cdef object v
         for i, v in enumerate(<list?>vertices):
             self.__vertex_map[v] = i
-            self.reverse_vertex_map.append(v)
 
         self.vertices = vertices[:]
 
@@ -289,19 +290,24 @@ cdef class DynamicGraph(Graph):
         Raises:
             TypeError: vertex type is not hashable.
         """
-        # Map vertex name to number.
-        cdef int vertex_number = len(<dict>self.__vertex_map)
-        self.__vertex_map[v] = vertex_number
-        self.__reverse_vertex_map.append(v)
+        cdef int vertex_number, i
+        cdef list new_row
 
-        # Add new row.
-        cdef list new_row = [None for _ in range(vertex_number + 1)]
-        self.__adjacency_matrix.append(new_row)
-        
-        # Add new column.
-        cdef int i
-        for i in range(<int> (len(self.__adjacency_matrix) - 1)):
-            self.__adjacency_matrix[i].append(None)
+        if v in self.vertices:
+            raise ValueError(f"{v} is already in graph")
+        else:
+            # Map vertex name to number.
+            vertex_number = len(<dict>self.__vertex_map)
+            self.__vertex_map[v] = vertex_number
+            self.vertices.append(v)
+
+            # Add new row.
+            new_row = [None for _ in range(vertex_number + 1)]
+            self.__adjacency_matrix.append(new_row)
+            
+            # Add new column.
+            for i in range(<int> (len(self.__adjacency_matrix) - 1)):
+                self.__adjacency_matrix[i].append(None)
 
     @property
     def edges(self):

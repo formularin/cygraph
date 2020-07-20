@@ -14,6 +14,7 @@ cygraph.egg-info/
 
 # Python
 cygraph/__pycache__/
+cygraph/tests/__pycache__/
 
 # MacOS
 .DS_Store
