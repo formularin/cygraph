@@ -32,51 +32,6 @@ cdef class Graph:
             return <int>(self.__vertex_map[vertex])
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
-    
-    cpdef set get_children(self, vertex):
-        """
-        Returns the names of all the child vertices of a given vertex.
-        Equivalent to neighbors if all edges are undirected.
-
-        Args:
-            vertex: A vertex in the graph.
-
-        Returns:
-            A set of the child vertices of the inputted vertex.
-
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set children = set()
-        cdef int u, v
-
-        v = self.__get_vertex_int(vertex)
-
-        for u in range(<int>len(self.vertices)):
-            if self.__adjacency_matrix_view[v][u] is not None:
-                children.add(self.vertices[u])
-
-        return children
-
-    cpdef set get_descendants(self, vertex):
-        """
-        Returns the names of all the descendant vertices of a given vertex.
-
-        Args:
-            vertex: A vertex in the graph.
-        
-        Returns:
-            A set of the descendant vertices of the input vertex.
-        
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
-        """
-        cdef set descendants = set()
-        cdef object child
-
-        for child in self.get_children(vertex):
-            descendants = descendants.union(self.get_children(child))
-        return descendants
 
 
 cdef class StaticGraph(Graph):
@@ -103,10 +58,10 @@ cdef class StaticGraph(Graph):
     """
 
     # __adjacency_matrix_view[u][v] -> weight of edge between u and v.
-    # None means there is no edge.
+    # np.nan means there is no edge.
     cdef object __adjacency_matrix
     cdef double[:,:] __adjacency_matrix_view
-    cdef dict __vertex_map  # Maps vertex names to numbers.
+    cdef readonly dict __vertex_map  # Maps vertex names to numbers.
 
     cdef readonly bint directed
     cdef readonly list vertices
@@ -126,7 +81,7 @@ cdef class StaticGraph(Graph):
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
-        self.__adjacency_matrix = np.full((size, size), None, dtype=DTYPE)
+        self.__adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
         self.__adjacency_matrix_view = self.__adjacency_matrix
 
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
@@ -170,17 +125,42 @@ cdef class StaticGraph(Graph):
             self.vertices.append(v)
 
             if vertex_number == 0:
-                self.__adjacency_matrix = np.full((1, 1), None, dtype=DTYPE)
+                self.__adjacency_matrix = np.full((1, 1), np.nan, dtype=DTYPE)
             else:
                 # Add new row.
-                new_row = np.full((1, vertex_number), None, dtype=DTYPE)
+                new_row = np.full((1, vertex_number), np.nan, dtype=DTYPE)
                 self.__adjacency_matrix = \
                     np.append(self.__adjacency_matrix, new_row, axis=0)
 
                 # Add new column.
-                new_column = np.full((vertex_number + 1, 1), None, dtype=DTYPE)
+                new_column = np.full((vertex_number + 1, 1), np.nan, dtype=DTYPE)
                 self.__adjacency_matrix = \
                     np.append(self.__adjacency_matrix, new_column, axis=1)
+    
+    cpdef set get_children(self, vertex):
+        """
+        Returns the names of all the child vertices of a given vertex.
+        Equivalent to neighbors if all edges are undirected.
+
+        Args:
+            vertex: A vertex in the graph.
+
+        Returns:
+            A set of the child vertices of the inputted vertex.
+
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set children = set()
+        cdef int u, v
+
+        v = self.__get_vertex_int(vertex)
+
+        for u in range(<int>len(self.vertices)):
+            if not np.isnan(self.__adjacency_matrix_view[v][u]):
+                children.add(self.vertices[u])
+
+        return children
 
     @property
     def edges(self):
@@ -190,22 +170,22 @@ cdef class StaticGraph(Graph):
         cdef int u, v, n_vertices
         cdef set edges = set()
         cdef set edge
+        cdef tuple e
 
         n_vertices = len(self.vertices)
 
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix_view[u][v] is not None:
-                        edges.add((u, v))
+                    if not np.isnan(self.__adjacency_matrix_view[u][v]):
+                        edges.add((self.vertices[u], self.vertices[v]))
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix_view[u][v] is not None:
-                        edge = {u, v}
-                        if edge not in edges:
-                            edges.add(edge)
-            edges = {tuple(edge) for edge in edges}
+                    if not np.isnan(self.__adjacency_matrix_view[u][v]):
+                        edge = {self.vertices[u], self.vertices[v]}
+                        if edge not in [set(e) for e in edges]:
+                            edges.add(tuple(edge))
 
         return edges
 
@@ -235,7 +215,7 @@ cdef class DynamicGraph(Graph):
     # __adjacency_matrix[u][v] -> weight of edge between u and v.
     # None means there is no edge.
     cdef list __adjacency_matrix
-    cdef dict __vertex_map
+    cdef readonly dict __vertex_map
 
     cdef readonly bint directed
     cdef readonly list vertices
@@ -308,6 +288,31 @@ cdef class DynamicGraph(Graph):
             # Add new column.
             for i in range(<int> (len(self.__adjacency_matrix) - 1)):
                 self.__adjacency_matrix[i].append(None)
+    
+    cpdef set get_children(self, vertex):
+        """
+        Returns the names of all the child vertices of a given vertex.
+        Equivalent to neighbors if all edges are undirected.
+
+        Args:
+            vertex: A vertex in the graph.
+
+        Returns:
+            A set of the child vertices of the inputted vertex.
+
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set children = set()
+        cdef int u, v
+
+        v = self.__get_vertex_int(vertex)
+
+        for u in range(<int>len(self.vertices)):
+            if self.__adjacency_matrix[v][u] is not None:
+                children.add(self.vertices[u])
+
+        return children
 
     @property
     def edges(self):
@@ -317,6 +322,7 @@ cdef class DynamicGraph(Graph):
         cdef int u, v, n_vertices
         cdef set edges = set()
         cdef set edge
+        cdef tuple e
 
         n_vertices = len(self.vertices)
 
@@ -324,14 +330,13 @@ cdef class DynamicGraph(Graph):
             for u in range(n_vertices):
                 for v in range(n_vertices):
                     if self.__adjacency_matrix[u][v] is not None:
-                        edges.add((u, v))
+                        edges.add((self.vertices[u], self.vertices[v]))
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
                     if self.__adjacency_matrix[u][v] is not None:
-                        edge = {u, v}
-                        if edge not in edges:
-                            edges.add(edge)
-            edges = {tuple(edge) for edge in edges}
+                        edge = {self.vertices[u], self.vertices[v]}
+                        if edge not in [set(e) for e in edges]:
+                            edges.add(tuple(edge))
 
         return edges

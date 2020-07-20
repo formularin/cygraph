@@ -39,7 +39,6 @@ class TestGraph:
          - add_edge
          - get_children
          - edges
-         - get_descendants
         for StaticGraph and DynamicGraph classes.
         """
 
@@ -60,14 +59,9 @@ class TestGraph:
             assert g_edges == {("s", "a"), ("a", "b"), ("b", "e")}
 
             # get_children
-            assert g.get_children("s") == ["e"]
+            assert g.get_children("s") == {"a"}
             with pytest.raises(ValueError):
-                g.get_children("a")
-            
-            # get_descendants
-            assert g.get_descendants("s") == {"a", "b", "e"}
-            with pytest.raises(ValueError):
-                g.get_descendants("d")
+                g.get_children("d")
 
             # Undirected graph.
             g2 = create_graph(static=static, directed=False, vertices=["s", "a", "b", "e"])
@@ -82,17 +76,13 @@ class TestGraph:
             # edges property
             g2_edges = g2.edges
             assert len(g2_edges) == 3
-            assert {set(e) for e in g2_edges} == {{"s", "a"}, {"a", "b"}, {"b", "e"}}
+            for edge in g2_edges:
+                assert set(edge) in [{"s", "a"}, {"a", "b"}, {"b", "e"}]
 
             # get_children
-            assert g2.get_children("s") == ["e"]
+            assert g2.get_children("s") == {"a"}
             with pytest.raises(ValueError):
-                g2.get_children("a")
-            
-            # get_descendants
-            assert g2.get_descendants("s") == {"a", "b", "e"}
-            with pytest.raises(ValueError):
-                g2.get_descendants("d")
+                g2.get_children("d")
 
     def test_add_vertex(self):
         """
