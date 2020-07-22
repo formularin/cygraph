@@ -175,23 +175,44 @@ cdef class StaticGraph(Graph):
         """
         cdef int u, v, n_vertices
         cdef set edges = set()
-        cdef set edge
-        cdef tuple e
+        cdef tuple new_edge, existing_edge
+        cdef bint edge_found
+        cdef object edge_weight
 
         n_vertices = len(self.vertices)
 
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if not np.isnan(self.__adjacency_matrix_view[u][v]):
-                        edges.add((self.vertices[u], self.vertices[v]))
+                    edge_weight = self.__adjacency_matrix_view[u][v]
+                    if not np.isnan(edge_weight):
+                        edges.add(
+                            (self.vertices[u],
+                             self.vertices[v],
+                             edge_weight
+                            )
+                        )
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if not np.isnan(self.__adjacency_matrix_view[u][v]):
-                        edge = {self.vertices[u], self.vertices[v]}
-                        if edge not in [set(e) for e in edges]:
-                            edges.add(tuple(edge))
+                    edge_weight = self.__adjacency_matrix_view[u][v]
+                    if not np.isnan(edge_weight):
+                        # Edge exists. Add it if it hasn't already been found.
+                        new_edge = (
+                            self.vertices[u],
+                            self.vertices[v],
+                            edge_weight
+                        )
+                        edge_found = False
+                        for existing_edge in edges:
+                            if (    existing_edge[0] == new_edge[1]
+                                    and existing_edge[1] == new_edge[0]):
+                                edge_found = True
+                                break
+                        if edge_found:
+                            continue
+                        else:
+                            edges.add(new_edge)
 
         return edges
 
@@ -326,22 +347,41 @@ cdef class DynamicGraph(Graph):
         """
         cdef int u, v, n_vertices
         cdef set edges = set()
-        cdef set edge
-        cdef tuple e
+        cdef tuple new_edge, existing_edge
+        cdef bint edge_found
+        cdef object edge_weight
 
         n_vertices = len(self.vertices)
 
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix[u][v] is not None:
-                        edges.add((self.vertices[u], self.vertices[v]))
+                    edge_weight = self.__adjacency_matrix[u][v]
+                    if edge_weight is not None:
+                        edges.add(
+                            (self.vertices[u],
+                             self.vertices[v],
+                             edge_weight)
+                        )
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    if self.__adjacency_matrix[u][v] is not None:
-                        edge = {self.vertices[u], self.vertices[v]}
-                        if edge not in [set(e) for e in edges]:
-                            edges.add(tuple(edge))
-
+                    edge_weight = self.__adjacency_matrix[u][v]
+                    if edge_weight is not None:
+                        # Edge exists. Add it if it hasn't already been found.
+                        new_edge = (
+                            self.vertices[u],
+                            self.vertices[v],
+                            edge_weight
+                        )
+                        edge_found = False
+                        for existing_edge in edges:
+                            if (    existing_edge[0] == new_edge[1]
+                                    and existing_edge[1] == new_edge[0]):
+                                edge_found = True
+                                break
+                        if edge_found:
+                            continue
+                        else:
+                            edges.add(new_edge)
         return edges

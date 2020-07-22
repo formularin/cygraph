@@ -56,7 +56,7 @@ class TestGraph:
             # edges property
             g_edges = g.edges
             assert len(g_edges) == 3
-            assert g_edges == {("s", "a"), ("a", "b"), ("b", "e")}
+            assert g_edges == {("s", "a", 0.0), ("a", "b", 1.0), ("b", "e", 1.0)}
 
             # get_children
             assert g.get_children("s") == {"a"}
@@ -77,7 +77,7 @@ class TestGraph:
             g2_edges = g2.edges
             assert len(g2_edges) == 3
             for edge in g2_edges:
-                assert set(edge) in [{"s", "a"}, {"a", "b"}, {"b", "e"}]
+                assert set(edge) in [{"s", "a", 0.0}, {"a", "b", 1.0}, {"b", "e", 1.0}]
 
             # get_children
             assert g2.get_children("s") == {"a"}
