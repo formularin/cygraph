@@ -32,6 +32,12 @@ cdef class Graph:
             return <int>(self.__vertex_map[vertex])
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
+    
+    def __repr__(self):
+        return f"<{self.__class__.__name__}; vertices: {self.vertices}; edges: {self.edges}>"
+
+    def __str__(self):
+        return str(np.array(self.__adjacency_matrix))
 
 
 cdef class StaticGraph(Graph):
@@ -59,10 +65,10 @@ cdef class StaticGraph(Graph):
 
     # __adjacency_matrix_view[u][v] -> weight of edge between u and v.
     # np.nan means there is no edge.
-    cdef object __adjacency_matrix
     cdef double[:,:] __adjacency_matrix_view
-    cdef readonly dict __vertex_map  # Maps vertex names to numbers.
 
+    cdef readonly object __adjacency_matrix
+    cdef readonly dict __vertex_map  # Maps vertex names to numbers.
     cdef readonly bint directed
     cdef readonly list vertices
 
@@ -214,9 +220,8 @@ cdef class DynamicGraph(Graph):
 
     # __adjacency_matrix[u][v] -> weight of edge between u and v.
     # None means there is no edge.
-    cdef list __adjacency_matrix
+    cdef readonly list __adjacency_matrix
     cdef readonly dict __vertex_map
-
     cdef readonly bint directed
     cdef readonly list vertices
 
