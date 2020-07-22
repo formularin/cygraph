@@ -1,4 +1,14 @@
 """A graph theory library for both python and cython.
+
+Example usage:
+    >>> import cygraph
+
+    >>> graph = cygraph.create_graph(static=True, vertices=["a", "b", "c"])
+    >>> graph.add_edge("a", "b", weight=1.0)
+    >>> graph.edges
+    {('b', 'a')}
+    >>> graph.get_children("a")
+    {'b'}
 """
 
 from .graph import StaticGraph, DynamicGraph
