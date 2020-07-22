@@ -13,8 +13,6 @@ cdef class Graph:
     but contains methods that are the same for both classes.
     """
 
-    cdef dict __dict__
-
     cpdef int __get_vertex_int(self, vertex) except -1:
         """
         Returns the int corresponding to a vertex.

@@ -8,10 +8,10 @@ Currently includes:
  - Number of components (depth-first search)
 """
 
-from .graph import Graph
+cimport graph
 
 
-cpdef list find_shortest_path(Graph graph, v1, v2):
+cpdef list find_shortest_path(graph.Graph graph, v1, v2):
     """
     Takes a graph and finds the shortest path between two vertices in it.
     
@@ -28,7 +28,7 @@ cpdef list find_shortest_path(Graph graph, v1, v2):
     """
 
 
-cpdef Graph get_min_spanning_tree(Graph graph):
+cpdef graph.Graph get_min_spanning_tree(graph.Graph graph):
     """
     Finds the minimum spanning tree of a graph.
 
@@ -40,7 +40,7 @@ cpdef Graph get_min_spanning_tree(Graph graph):
     """
 
 
-cpdef tuple partition_graph(Graph graph, bint static=False):
+cpdef tuple partition_graph(graph.Graph graph, bint static=False):
     """
     Partitions a graph into two graphs.
 
@@ -57,7 +57,7 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
     """
 
 
-cpdef list get_components(Graph graph, bint static=False):
+cpdef list get_components(graph.Graph graph, bint static=False):
     """
     Gets the components of the inputted graph, where a component is a
     subgraph in which any two vertices are connected to each other by paths.
