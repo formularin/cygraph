@@ -13,7 +13,7 @@ cdef class Graph:
     but contains methods that are the same for both classes.
     """
 
-    cpdef int __get_vertex_int(self, vertex) except -1:
+    cpdef int _get_vertex_int(self, vertex) except -1:
         """
         Returns the int corresponding to a vertex.
 
@@ -27,7 +27,7 @@ cdef class Graph:
             ValueError: vertex is not in graph.
         """
         try:
-            return <int>(self.__vertex_map[vertex])
+            return <int>(self._vertex_map[vertex])
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
     
@@ -35,7 +35,7 @@ cdef class Graph:
         return f"<{self.__class__.__name__}; vertices: {self.vertices}; edges: {self.edges}>"
 
     def __str__(self):
-        return str(np.array(self.__adjacency_matrix))
+        return str(np.array(self._adjacency_matrix))
 
 
 cdef class StaticGraph(Graph):
@@ -61,12 +61,12 @@ cdef class StaticGraph(Graph):
         edges: A list of tuples contianing the two vertices of each edge.
     """
 
-    # __adjacency_matrix_view[u][v] -> weight of edge between u and v.
+    # _adjacency_matrix_view[u][v] -> weight of edge between u and v.
     # np.nan means there is no edge.
-    cdef double[:,:] __adjacency_matrix_view
+    cdef double[:,:] _adjacency_matrix_view
 
-    cdef readonly object __adjacency_matrix
-    cdef readonly dict __vertex_map  # Maps vertex names to numbers.
+    cdef readonly object _adjacency_matrix
+    cdef readonly dict _vertex_map  # Maps vertex names to numbers.
     cdef readonly bint directed
     cdef readonly list vertices
 
@@ -75,18 +75,18 @@ cdef class StaticGraph(Graph):
         self.directed = directed
 
         # Map vertex names to numbers and vice versa.
-        self.__vertex_map = {}
+        self._vertex_map = {}
         cdef int i
         cdef object v
         for i, v in enumerate(<list?>vertices):
-            self.__vertex_map[v] = i
+            self._vertex_map[v] = i
         
         self.vertices = vertices[:]
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
-        self.__adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
-        self.__adjacency_matrix_view = self.__adjacency_matrix
+        self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+        self._adjacency_matrix_view = self._adjacency_matrix
 
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
@@ -100,12 +100,12 @@ cdef class StaticGraph(Graph):
         Raises:
             ValueError: At least one of the inputted vertices is not in the graph.
         """
-        cdef int u = self.__get_vertex_int(v1)
-        cdef int v = self.__get_vertex_int(v2)
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
 
-        self.__adjacency_matrix_view[u][v] = weight
+        self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
-            self.__adjacency_matrix_view[v][u] = weight
+            self._adjacency_matrix_view[v][u] = weight
 
     cpdef void add_vertex(self, v) except *:
         """
@@ -118,28 +118,28 @@ cdef class StaticGraph(Graph):
             TypeError: vertex type is not hashable.
             ValueError: vertex is already in graph.
         """
-        cdef int vertex_number = len(<dict>self.__vertex_map)
+        cdef int vertex_number = len(<dict>self._vertex_map)
         cdef object new_row, new_column
 
         if v in self.vertices:
             raise ValueError(f"{v} is already in graph")
         else:
             # Map vertex name to number.
-            self.__vertex_map[v] = vertex_number
+            self._vertex_map[v] = vertex_number
             self.vertices.append(v)
 
             if vertex_number == 0:
-                self.__adjacency_matrix = np.full((1, 1), np.nan, dtype=DTYPE)
+                self._adjacency_matrix = np.full((1, 1), np.nan, dtype=DTYPE)
             else:
                 # Add new row.
                 new_row = np.full((1, vertex_number), np.nan, dtype=DTYPE)
-                self.__adjacency_matrix = \
-                    np.append(self.__adjacency_matrix, new_row, axis=0)
+                self._adjacency_matrix = \
+                    np.append(self._adjacency_matrix, new_row, axis=0)
 
                 # Add new column.
                 new_column = np.full((vertex_number + 1, 1), np.nan, dtype=DTYPE)
-                self.__adjacency_matrix = \
-                    np.append(self.__adjacency_matrix, new_column, axis=1)
+                self._adjacency_matrix = \
+                    np.append(self._adjacency_matrix, new_column, axis=1)
     
     cpdef set get_children(self, vertex):
         """
@@ -158,10 +158,10 @@ cdef class StaticGraph(Graph):
         cdef set children = set()
         cdef int u, v
 
-        v = self.__get_vertex_int(vertex)
+        v = self._get_vertex_int(vertex)
 
         for u in range(<int>len(self.vertices)):
-            if not np.isnan(self.__adjacency_matrix_view[v][u]):
+            if not np.isnan(self._adjacency_matrix_view[v][u]):
                 children.add(self.vertices[u])
 
         return children
@@ -182,7 +182,7 @@ cdef class StaticGraph(Graph):
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self.__adjacency_matrix_view[u][v]
+                    edge_weight = self._adjacency_matrix_view[u][v]
                     if not np.isnan(edge_weight):
                         edges.add(
                             (self.vertices[u],
@@ -193,7 +193,7 @@ cdef class StaticGraph(Graph):
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self.__adjacency_matrix_view[u][v]
+                    edge_weight = self._adjacency_matrix_view[u][v]
                     if not np.isnan(edge_weight):
                         # Edge exists. Add it if it hasn't already been found.
                         new_edge = (
@@ -237,10 +237,10 @@ cdef class DynamicGraph(Graph):
         edges: A list of tuples contianing the two vertices of each edge.
     """
 
-    # __adjacency_matrix[u][v] -> weight of edge between u and v.
+    # _adjacency_matrix[u][v] -> weight of edge between u and v.
     # None means there is no edge.
-    cdef readonly list __adjacency_matrix
-    cdef readonly dict __vertex_map
+    cdef readonly list _adjacency_matrix
+    cdef readonly dict _vertex_map
     cdef readonly bint directed
     cdef readonly list vertices
 
@@ -249,21 +249,21 @@ cdef class DynamicGraph(Graph):
         self.directed = directed
 
         # Map vertex names to numbers and vice versa.
-        self.__vertex_map = {}
+        self._vertex_map = {}
         cdef int i
         cdef object v
         for i, v in enumerate(<list?>vertices):
-            self.__vertex_map[v] = i
+            self._vertex_map[v] = i
 
         self.vertices = vertices[:]
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
-        self.__adjacency_matrix = []
+        self._adjacency_matrix = []
         for i in range(size):
-            self.__adjacency_matrix.append([])
+            self._adjacency_matrix.append([])
             for _ in range(size):
-                self.__adjacency_matrix[i].append(None)
+                self._adjacency_matrix[i].append(None)
     
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
@@ -277,12 +277,12 @@ cdef class DynamicGraph(Graph):
         Raises:
             ValueError: At least one of the inputted vertices is not in the graph.
         """
-        cdef int u = self.__get_vertex_int(v1)
-        cdef int v = self.__get_vertex_int(v2)
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
 
-        self.__adjacency_matrix[u][v] = weight
+        self._adjacency_matrix[u][v] = weight
         if not self.directed:
-            self.__adjacency_matrix[v][u] = weight
+            self._adjacency_matrix[v][u] = weight
     
     cpdef void add_vertex(self, v) except *:
         """
@@ -301,17 +301,17 @@ cdef class DynamicGraph(Graph):
             raise ValueError(f"{v} is already in graph")
         else:
             # Map vertex name to number.
-            vertex_number = len(<dict>self.__vertex_map)
-            self.__vertex_map[v] = vertex_number
+            vertex_number = len(<dict>self._vertex_map)
+            self._vertex_map[v] = vertex_number
             self.vertices.append(v)
 
             # Add new row.
             new_row = [None for _ in range(vertex_number + 1)]
-            self.__adjacency_matrix.append(new_row)
+            self._adjacency_matrix.append(new_row)
             
             # Add new column.
-            for i in range(<int> (len(self.__adjacency_matrix) - 1)):
-                self.__adjacency_matrix[i].append(None)
+            for i in range(<int> (len(self._adjacency_matrix) - 1)):
+                self._adjacency_matrix[i].append(None)
     
     cpdef set get_children(self, vertex):
         """
@@ -330,10 +330,10 @@ cdef class DynamicGraph(Graph):
         cdef set children = set()
         cdef int u, v
 
-        v = self.__get_vertex_int(vertex)
+        v = self._get_vertex_int(vertex)
 
         for u in range(<int>len(self.vertices)):
-            if self.__adjacency_matrix[v][u] is not None:
+            if self._adjacency_matrix[v][u] is not None:
                 children.add(self.vertices[u])
 
         return children
@@ -354,7 +354,7 @@ cdef class DynamicGraph(Graph):
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self.__adjacency_matrix[u][v]
+                    edge_weight = self._adjacency_matrix[u][v]
                     if edge_weight is not None:
                         edges.add(
                             (self.vertices[u],
@@ -364,7 +364,7 @@ cdef class DynamicGraph(Graph):
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self.__adjacency_matrix[u][v]
+                    edge_weight = self._adjacency_matrix[u][v]
                     if edge_weight is not None:
                         # Edge exists. Add it if it hasn't already been found.
                         new_edge = (
