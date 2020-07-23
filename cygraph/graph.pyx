@@ -9,8 +9,7 @@ DTYPE = np.float64
 
 cdef class Graph:
     """
-    A base graph class with little independent functionality,
-    but contains methods that are the same for both classes.
+    A semi-abstract base graph class.
     """
 
     cpdef int _get_vertex_int(self, vertex) except -1:
@@ -30,6 +29,15 @@ cdef class Graph:
             return <int>(self._vertex_map[vertex])
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
+    
+    cpdef void add_vertex(self, v) except *:
+        pass
+
+    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
+        pass
+
+    cpdef set get_children(self, vertex):
+        pass
     
     def __repr__(self):
         return f"<{self.__class__.__name__}; vertices: {self.vertices}; edges: {self.edges}>"
