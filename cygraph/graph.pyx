@@ -164,12 +164,6 @@ cdef class StaticGraph(Graph):
         edges: A list of tuples contianing the two vertices of each edge.
     """
 
-    # _adjacency_matrix_view[u][v] -> weight of edge between u and v.
-    # np.nan means there is no edge.
-    cdef double[:,:] _adjacency_matrix_view
-
-    cdef readonly object _adjacency_matrix
-
     def __cinit__(self, bint directed=False, list vertices=[]):
 
         self._vertex_attributes = {}
@@ -343,10 +337,6 @@ cdef class DynamicGraph(Graph):
         vertices: A list of the vertices in this graph.
         edges: A list of tuples contianing the two vertices of each edge.
     """
-
-    # _adjacency_matrix[u][v] -> weight of edge between u and v.
-    # None means there is no edge.
-    cdef readonly list _adjacency_matrix
 
     def __cinit__(self, bint directed=False, list vertices=[]):
 

@@ -23,5 +23,9 @@ cygraph/tests/__pycache__/
 test.pyx
 test.cpython-38-darwin.so
 test.c
+test1.pyx
+test1.cpython-38-darwin.so
+test1.c
+test1.pxd
 test.html
 TODO.md

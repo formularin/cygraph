@@ -20,3 +20,16 @@ cdef class Graph:
     cpdef void set_edge_attribute(self, edge, key, val) except *
     cpdef object get_edge_attribute(self, edge, key)
     cpdef set get_children(self, vertex)
+
+
+cdef class StaticGraph(Graph):
+    # _adjacency_matrix_view[u][v] -> weight of edge between u and v.
+    # np.nan means there is no edge.
+    cdef double[:,:] _adjacency_matrix_view
+
+    cdef readonly object _adjacency_matrix
+
+cdef class DynamicGraph(Graph):
+    # _adjacency_matrix[u][v] -> weight of edge between u and v.
+    # None means there is no edge.
+    cdef readonly list _adjacency_matrix

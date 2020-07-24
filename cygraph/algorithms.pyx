@@ -8,15 +8,40 @@ Currently includes:
  - Number of components (depth-first search)
 """
 
-cimport graph
+import random
+
+from graph cimport Graph
 
 
-cpdef list find_shortest_path(graph.Graph graph, v1, v2):
+cdef set _dfs(Graph graph, v):
+    """
+    Finds all of the vertices in a component of a graph using a
+    depth-first search.
+
+    Args:
+        cygraph.Graph graph: A graph.
+        v: The root vertex of the search.
+    
+    Returns:
+        The set of vertices in the component of the inputted graph that
+        contains the inputted root vertex.
+    
+    Raises:
+        ValueError: vertex is not in graph.
+    """
+    cdef set discovered = {v}
+    for u in graph.get_children(v):
+        if u not in discovered:
+            discovered = discovered.union(_dfs(graph, u))
+    return discovered
+
+
+cpdef list find_shortest_path(Graph graph, v1, v2):
     """
     Takes a graph and finds the shortest path between two vertices in it.
     
     Args:
-        cygraph.graph.Graph graph: A graph.
+        cygraph.Graph graph: A graph.
         v1: One of the vertices in the inputted graph.
         v2: The other vertex in the inputted graph.
     
@@ -28,24 +53,24 @@ cpdef list find_shortest_path(graph.Graph graph, v1, v2):
     """
 
 
-cpdef graph.Graph get_min_spanning_tree(graph.Graph graph):
+cpdef Graph get_min_spanning_tree(Graph graph):
     """
     Finds the minimum spanning tree of a graph.
 
     Args:
-        cygraph.graph.Graph graph: A graph.
+        cygraph.Graph graph: A graph.
     
     Returns:
         The graph that is the minimum spanning tree of the inputted graph.
     """
 
 
-cpdef tuple partition_graph(graph.Graph graph, bint static=False):
+cpdef tuple partition_graph(Graph graph, bint static=False):
     """
     Partitions a graph into two graphs.
 
     Args:
-        cygraph.graph.Graph graph: A graph.
+        cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
     
@@ -57,17 +82,50 @@ cpdef tuple partition_graph(graph.Graph graph, bint static=False):
     """
 
 
-cpdef list get_components(graph.Graph graph, bint static=False):
+cpdef list get_components(Graph graph, bint static=False):
     """
     Gets the components of the inputted graph, where a component is a
     subgraph in which any two vertices are connected to each other by paths.
 
     Args:
-        cygraph.graph.Graph graph: A graph.
+        cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
     
     Returns:
-        A list of cygraph.graph.Graph objects that are the components
+        A list of cygraph.Graph objects that are the components
         of the inputted graph.
     """
+    cdef set discovered_vertices, discovered_components, vertices, new_component
+    cdef object vertex, neighbor
+
+    vertices = set(graph.vertices)
+    discovered_vertices = set()
+    # Contains tuples which contain all the nodes in each component.
+    discovered_components = set()
+    while len(discovered_vertices) < len(vertices):
+        vertex = random.sample(vertices, 1)[0]
+        new_component = _dfs(graph, vertex)
+        discovered_vertices = discovered_vertices.union(new_component)
+        discovered_components.add(tuple(new_component))
+    
+    # Get the induced subgraphs that are each of the components.
+    cdef tuple component
+    cdef Graph component_graph
+    cdef set component_graphs = set()
+    for component in discovered_components:
+        if static:
+            component_graph = graph.StaticGraph(
+                directed=graph.directed, vertices=list(vertices))
+        else:
+            component_graph = graph.DynamicGraph(
+                directed=graph.directed, vertices=list(vertices))
+
+        for vertex in component:
+            for neighbor in graph.childen(vertex):
+                if neighbor in component:
+                    component_graph.add_edge(vertex, neighbor)
+        
+        component_graphs.add(component_graph)
+
+    return component_graphs
