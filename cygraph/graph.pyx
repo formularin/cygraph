@@ -33,8 +33,102 @@ cdef class Graph:
     cpdef void add_vertex(self, v) except *:
         pass
 
+    cpdef void set_vertex_attribute(self, vertex, key, val) except *:
+        """
+        Sets an attribute to a vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+            key: The name of the attribute. Must be of hashable type.
+            val: The value of the attribute.
+
+        Raises:
+            TypeError: key is not of hashable type.
+            ValueError: vertex is not in graph.
+        """
+        try:
+            self._vertex_attributes[vertex][key] = val
+        except KeyError:
+            raise ValueError(f"{vertex} is not in graph.")
+    
+    cpdef object get_vertex_attribute(self, vertex, key):
+        """
+        Gets an attribute of a vertex.
+
+        Args:
+            vertex: A vertex in the graph.
+            key: The name of the attribute. Must be of hashable type.
+        
+        Returns:
+            The value of the attribute.
+        
+        Raises:
+            TypeError: key is not of hashable type.
+            ValueError: vertex is not in graph.
+            KeyError: key is not in vertex's attributes dict.
+        """
+        cdef dict vertex_attributes
+        try:
+            vertex_attributes = self._vertex_attributes[vertex]
+        except KeyError:
+            raise ValueError(f"{vertex} is not in graph.")
+        return vertex_attributes[key]
+
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         pass
+    
+    cpdef void set_edge_attribute(self, edge, key, val) except *:
+        """
+        Sets an attribute to an edge.
+
+        Args:
+            edge: An edge in the graph.
+            key: The name of the attribute. Must be of hashable type.
+            val: The value of the attribute.
+
+        Raises:
+            TypeError: key is not of hashable type.
+            ValueError: edge is not in graph.
+        """
+        try:
+            self._edge_attributes[edge][key] = val
+        except KeyError:
+            if self.directed:
+                raise ValueError(f"{edge} is not in graph.")
+            else:
+                try:
+                    self._edge_attributes[(edge[1], edge[0])][key] = val
+                except KeyError:
+                    raise ValueError(f"{edge} is not in graph.")
+
+    cpdef object get_edge_attribute(self, edge, key):
+        """
+        Gets an attribute of an edge.
+
+        Args:
+            edge: An edge in the graph.
+            key: The name of the attribute. Must be of hashable type.
+        
+        Returns:
+            The value of the attribute.
+        
+        Raises:
+            TypeError: key is not of hashable type.
+            ValueError: edge is not in graph.
+            KeyError: key is not in edge's attributes dict.
+        """
+        cdef dict edge_attributes
+        try:
+            edge_attributes = self._edge_attributes[edge]
+        except KeyError:
+            if self.directed:
+                raise ValueError(f"{edge} is not in graph.")
+            else:
+                try:
+                    edge_attributes = self._edge_attributes[(edge[1], edge[0])]
+                except KeyError:
+                    raise ValueError(f"{edge} is not in graph.")
+        return edge_attributes[key]
 
     cpdef set get_children(self, vertex):
         pass
@@ -75,7 +169,6 @@ cdef class StaticGraph(Graph):
 
     cdef readonly object _adjacency_matrix
     cdef readonly dict _vertex_map  # Maps vertex names to numbers.
-    cdef readonly bint directed
     cdef readonly list vertices
 
     def __cinit__(self, bint directed=False, list vertices=[]):
@@ -88,6 +181,7 @@ cdef class StaticGraph(Graph):
         cdef object v
         for i, v in enumerate(<list?>vertices):
             self._vertex_map[v] = i
+            self._vertex_attributes[v] = {}
         
         self.vertices = vertices[:]
 
@@ -111,6 +205,8 @@ cdef class StaticGraph(Graph):
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
 
+        self._edge_attributes[(v1, v2)] = {}
+
         self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
@@ -128,6 +224,8 @@ cdef class StaticGraph(Graph):
         """
         cdef int vertex_number = len(<dict>self._vertex_map)
         cdef object new_row, new_column
+
+        self._vertex_attributes[v] = {}
 
         if v in self.vertices:
             raise ValueError(f"{v} is already in graph")
@@ -249,7 +347,6 @@ cdef class DynamicGraph(Graph):
     # None means there is no edge.
     cdef readonly list _adjacency_matrix
     cdef readonly dict _vertex_map
-    cdef readonly bint directed
     cdef readonly list vertices
 
     def __cinit__(self, bint directed=False, list vertices=[]):
@@ -262,6 +359,7 @@ cdef class DynamicGraph(Graph):
         cdef object v
         for i, v in enumerate(<list?>vertices):
             self._vertex_map[v] = i
+            self._vertex_attributes[v] = {}
 
         self.vertices = vertices[:]
 
@@ -288,6 +386,8 @@ cdef class DynamicGraph(Graph):
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
 
+        self._vertex_attributes[(v1, v2)] = {}
+
         self._adjacency_matrix[u][v] = weight
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
@@ -304,6 +404,8 @@ cdef class DynamicGraph(Graph):
         """
         cdef int vertex_number, i
         cdef list new_row
+
+        self._vertex_attributes[v] = {}
 
         if v in self.vertices:
             raise ValueError(f"{v} is already in graph")
