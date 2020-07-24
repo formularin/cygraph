@@ -6,7 +6,9 @@ Graph base class header file for cimport by algorithms.pyx
 cdef class Graph:
     cdef dict _vertex_attributes
     cdef dict _edge_attributes
-
+    cdef dict _vertex_map
+    
+    cdef readonly list vertices
     cdef readonly bint directed
 
     cpdef int _get_vertex_int(self, vertex) except -1

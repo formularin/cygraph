@@ -84,7 +84,7 @@ class TestGraph:
             with pytest.raises(ValueError):
                 g2.get_children("d")
 
-    def test_add_vertex(self):
+    def test_vertices(self):
         """
         Tests add_vertex method and vertices property
         for StaticGraph and DynamicGraph classes
@@ -104,3 +104,78 @@ class TestGraph:
 
             # vertices property
             assert g.vertices == ["s", 1]
+    
+    def test_attributes(self):
+        """
+        Tests:
+         - set_vertex_attribute
+         - get_vertex_attribute
+         - set_edge_attribute
+         - get_edge_attribute
+        for StaticGraph and DynamicGraph classes
+        """
+
+        # Edge attributes.
+        for static in [True, False]:
+            # Directed graph.
+            g = create_graph(static=static, directed=True, vertices=["a", "b", "c"])
+            g.add_edge("a", "b")
+
+            # Setting attributes.
+            g.set_edge_attribute(("a", "b"), key="key", val="val")
+            with pytest.raises(TypeError):
+                g.set_edge_attribute(("a", "b"), key=[], val="val")
+            with pytest.raises(ValueError):
+                g.set_edge_attribute(("b", "a"), key="key 2", val="val")
+            g.set_edge_attribute(("a", "b"), key="key", val="new val")
+
+            # Getting attributes.
+            assert g.get_edge_attribute(("a", "b"), key="key") == "new val"
+            with pytest.raises(TypeError):
+                g.get_edge_attribute(("a", "b"), key=[])
+            with pytest.raises(ValueError):
+                g.get_edge_attribute(("b", "a"), key="key")
+            with pytest.raises(KeyError):
+                g.get_edge_attribute(("a", "b"), key="this is not a key")
+            
+            # Undirected graph.
+            g2 = create_graph(static=static, directed=False, vertices=["a", "b", "c"])
+            g2.add_edge("a", "b")
+
+            # Setting attributes.
+            g2.set_edge_attribute(("a", "b"), key="key", val="val")
+            with pytest.raises(TypeError):
+                g2.set_edge_attribute(("a", "b"), key=[], val="val")
+            with pytest.raises(ValueError):
+                g2.set_edge_attribute(("a", "c"), key="key 2", val="val")
+            g2.set_edge_attribute(("a", "b"), key="key", val="new val")
+
+            # Getting attributes.
+            assert g2.get_edge_attribute(("a", "b"), key="key") == "new val"
+            assert g2.get_edge_attribute(("b", "a"), key="key") == "new val"
+            with pytest.raises(TypeError):
+                g2.get_edge_attribute(("a", "b"), key=[])
+            with pytest.raises(ValueError):
+                g2.get_edge_attribute(("a", "c"), key="key")
+            with pytest.raises(KeyError):
+                g2.get_edge_attribute(("a", "b"), key="this is not a key")
+    
+    # Vertex attributes.
+    for static in [True, False]:
+        for directed in [True, False]:
+            g = create_graph(static=static,
+                    directed=directed, vertices=["a", "b", "c"])
+            
+            g.set_vertex_attribute("a", key="key", val="val")
+            with pytest.raises(TypeError):
+                g.set_vertex_attribute("a", key=[], val="val")
+            with pytest.raises(ValueError):
+                g.set_vertex_attribute("d", key="key", val="val")
+
+            assert g.get_vertex_attribute("a", key="key") == "val"
+            with pytest.raises(TypeError):
+                g.get_vertex_attribute("a", key=[])
+            with pytest.raises(ValueError):
+                g.get_vertex_attribute("d", key="key")
+            with pytest.raises(KeyError):
+                g.get_vertex_attribute("a", key="this is not a key")

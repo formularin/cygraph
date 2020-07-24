@@ -82,7 +82,7 @@ cdef class Graph:
         Sets an attribute to an edge.
 
         Args:
-            edge: An edge in the graph.
+            edge: An edge in the graph (v1, v2) tuple.
             key: The name of the attribute. Must be of hashable type.
             val: The value of the attribute.
 
@@ -94,6 +94,7 @@ cdef class Graph:
             self._edge_attributes[edge][key] = val
         except KeyError:
             if self.directed:
+                print(self._edge_attributes)
                 raise ValueError(f"{edge} is not in graph.")
             else:
                 try:
@@ -106,7 +107,7 @@ cdef class Graph:
         Gets an attribute of an edge.
 
         Args:
-            edge: An edge in the graph.
+            edge: An edge in the graph (v1, v2) tuple.
             key: The name of the attribute. Must be of hashable type.
         
         Returns:
@@ -134,7 +135,7 @@ cdef class Graph:
         pass
     
     def __repr__(self):
-        return f"<{self.__class__.__name__}; vertices: {self.vertices}; edges: {self.edges}>"
+        return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
 
     def __str__(self):
         return str(np.array(self._adjacency_matrix))
@@ -168,22 +169,22 @@ cdef class StaticGraph(Graph):
     cdef double[:,:] _adjacency_matrix_view
 
     cdef readonly object _adjacency_matrix
-    cdef readonly dict _vertex_map  # Maps vertex names to numbers.
-    cdef readonly list vertices
 
     def __cinit__(self, bint directed=False, list vertices=[]):
 
+        self._vertex_attributes = {}
+        self._edge_attributes = {}
+        self._vertex_map = {}
+
         self.directed = directed
+        self.vertices = <list?>vertices[:]
 
         # Map vertex names to numbers and vice versa.
-        self._vertex_map = {}
         cdef int i
         cdef object v
         for i, v in enumerate(<list?>vertices):
             self._vertex_map[v] = i
             self._vertex_attributes[v] = {}
-        
-        self.vertices = vertices[:]
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
@@ -346,12 +347,15 @@ cdef class DynamicGraph(Graph):
     # _adjacency_matrix[u][v] -> weight of edge between u and v.
     # None means there is no edge.
     cdef readonly list _adjacency_matrix
-    cdef readonly dict _vertex_map
-    cdef readonly list vertices
 
     def __cinit__(self, bint directed=False, list vertices=[]):
 
+        self._vertex_attributes = {}
+        self._edge_attributes = {}
+        self._vertex_map = {}
+
         self.directed = directed
+        self.vertices = <list?>vertices[:]
 
         # Map vertex names to numbers and vice versa.
         self._vertex_map = {}
@@ -360,8 +364,6 @@ cdef class DynamicGraph(Graph):
         for i, v in enumerate(<list?>vertices):
             self._vertex_map[v] = i
             self._vertex_attributes[v] = {}
-
-        self.vertices = vertices[:]
 
         # Create adjacency matrix.
         cdef int size = len(vertices)
@@ -386,7 +388,7 @@ cdef class DynamicGraph(Graph):
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
 
-        self._vertex_attributes[(v1, v2)] = {}
+        self._edge_attributes[(v1, v2)] = {}
 
         self._adjacency_matrix[u][v] = weight
         if not self.directed:

@@ -20,7 +20,7 @@ def create_graph(static=False, directed=False, vertices=[]):
 
     Args:
         static: Optional; Setting this to true makes overall operations
-            much faster, but it makes adding nodes much slower,
+            much faster, but it makes adding vertices much slower,
             especially on large graphs.
         directed: Optional; Whether or not the graph has directed edges.
         vertices: Optional; A collection of initial vertices for the graph.
