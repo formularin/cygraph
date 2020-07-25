@@ -85,7 +85,10 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
 cpdef list get_components(Graph graph, bint static=False):
     """
     Gets the components of the inputted graph, where a component is a
-    subgraph in which any two vertices are connected to each other by paths.
+    subgraph in which any two vertices are connected to each other by
+    paths. This only works for undirected graphs. If you want to get the
+    components of a directed graph, see
+    cygraph.algorithms.get_strongly_connected_components
 
     Args:
         cygraph.Graph graph: A graph.
@@ -95,7 +98,15 @@ cpdef list get_components(Graph graph, bint static=False):
     Returns:
         A list of cygraph.Graph objects that are the components
         of the inputted graph.
+
+    Raises:
+        ValueError: The inputted graph is directed.
     """
+    if graph.directed:
+        raise ValueError("get_components only applies to undirected "
+                         "graphs. For directed graphs, see "
+                         "get_strongly_connected_components.")
+
     cdef set discovered_vertices, discovered_components, vertices, new_component
     cdef object vertex, neighbor
 
@@ -129,3 +140,25 @@ cpdef list get_components(Graph graph, bint static=False):
         component_graphs.add(component_graph)
 
     return component_graphs
+
+
+cpdef list get_strongly_connected_components(Graph graph, bint static=False):
+    """
+    Gets the strongly connected components of the inputted graph, where
+    a strongly connected component is a subgraph in which every vertex
+    is reachable by every other vertex. This only applies to directed
+    graphs. If you want to get the components of an undirected graph,
+    see cygraph.algorithms.get_components
+
+    Args:
+        cygraph.Graph graph: A graph.
+        bint static: Optional; Whether or not the graphs in the output
+            should be static. Defaults to False.
+    
+    Returns:
+        A list of cygraph.Graph objects that are the components
+        of the inputted graph.
+
+    Raises:
+        ValueError: The inputted graph is directed.
+    """
