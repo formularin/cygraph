@@ -51,9 +51,10 @@ cpdef list find_shortest_path(Graph graph, source, target):
 
     Raises:
         ValueError: One of the vertices is not in the graph.
+        ValueError: There is no path from source to target.
     """
     cdef dict distances, previous_nodes
-    cdef set queue = set()
+    cdef set unprocessed_nodes = set()
     # Minimum distance from target to each node.
     distances = {}
     # Maps nodes to the node that comes before it in the path.
@@ -62,19 +63,25 @@ cpdef list find_shortest_path(Graph graph, source, target):
     for vertex in graph.vertices:
         distances[vertex] = None
         previous_nodes[vertex] = None
-        queue.add(vertex)
+        unprocessed_nodes.add(vertex)
     distances[source] = 0
 
-    while queue != set():
-        u = min(distances)
+    while unprocessed_nodes != set():
+        try:
+            u = min([v for v in distances
+                    if v in unprocessed_nodes and distances[v] is not None])
+        except ValueError:
+            raise ValueError(f"There is no path in {graph!r} from"
+                             f"{source} to {target}")
 
-        queue.remove(u)
+        unprocessed_nodes.remove(u)
         if u == target:
             break
 
         for v in graph.get_children(u):
             alternate_distance = distances[u] + graph.get_edge_weight(u, v)
-            if alternate_distance < distances[v]:
+            if ((distances[v] is not None and alternate_distance < distances[v])
+                    or distances[v] is None):
                 distances[v] = alternate_distance
                 previous_nodes[v] = u
 
@@ -83,7 +90,7 @@ cpdef list find_shortest_path(Graph graph, source, target):
     if previous_nodes[u] is not None or u == source:
         while u is not None:
             sequence.insert(0, u)
-        u = previous_nodes[u]
+            u = previous_nodes[u]
 
     return sequence
 
