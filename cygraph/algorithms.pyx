@@ -10,7 +10,7 @@ Currently includes:
 
 import random
 
-from graph cimport Graph
+from graph cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef set _dfs(Graph graph, v):
@@ -36,21 +36,56 @@ cdef set _dfs(Graph graph, v):
     return discovered
 
 
-cpdef list find_shortest_path(Graph graph, v1, v2):
+cpdef list find_shortest_path(Graph graph, source, target):
     """
     Takes a graph and finds the shortest path between two vertices in it.
     
     Args:
         cygraph.Graph graph: A graph.
-        v1: One of the vertices in the inputted graph.
-        v2: The other vertex in the inputted graph.
+        source: One of the vertices in the inputted graph.
+        target: The other vertex in the inputted graph.
     
     Returns:
-        The list of vertices that constitute the shortest path
+        The list of vertices that constitute the shortest path between
+        source and target.
 
     Raises:
         ValueError: One of the vertices is not in the graph.
     """
+    cdef dict distances, previous_nodes
+    cdef set queue = set()
+    # Minimum distance from target to each node.
+    distances = {}
+    # Maps nodes to the node that comes before it in the path.
+    previous_nodes = {}
+
+    for vertex in graph.vertices:
+        distances[vertex] = None
+        previous_nodes[vertex] = None
+        queue.add(vertex)
+    distances[source] = 0
+
+    while queue != set():
+        u = min(distances)
+
+        queue.remove(u)
+        if u == target:
+            break
+
+        for v in graph.get_children(u):
+            alternate_distance = distances[u] + graph.get_edge_weight(u, v)
+            if alternate_distance < distances[v]:
+                distances[v] = alternate_distance
+                previous_nodes[v] = u
+
+    cdef list sequence = []
+    u = target
+    if previous_nodes[u] is not None or u == source:
+        while u is not None:
+            sequence.insert(0, u)
+        u = previous_nodes[u]
+
+    return sequence
 
 
 cpdef Graph get_min_spanning_tree(Graph graph):
@@ -82,7 +117,7 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
     """
 
 
-cpdef list get_components(Graph graph, bint static=False):
+cpdef set get_components(Graph graph, bint static=False):
     """
     Gets the components of the inputted graph, where a component is a
     subgraph in which any two vertices are connected to each other by
@@ -96,7 +131,7 @@ cpdef list get_components(Graph graph, bint static=False):
             should be static. Defaults to False.
     
     Returns:
-        A list of cygraph.Graph objects that are the components
+        A set of cygraph.Graph objects that are the components
         of the inputted graph.
 
     Raises:
@@ -126,14 +161,14 @@ cpdef list get_components(Graph graph, bint static=False):
     cdef set component_graphs = set()
     for component in discovered_components:
         if static:
-            component_graph = graph.StaticGraph(
-                directed=graph.directed, vertices=list(vertices))
+            component_graph = StaticGraph(
+                directed=graph.directed, vertices=list(component))
         else:
-            component_graph = graph.DynamicGraph(
-                directed=graph.directed, vertices=list(vertices))
+            component_graph = DynamicGraph(
+                directed=graph.directed, vertices=list(component))
 
         for vertex in component:
-            for neighbor in graph.childen(vertex):
+            for neighbor in graph.get_children(vertex):
                 if neighbor in component:
                     component_graph.add_edge(vertex, neighbor)
         
@@ -160,5 +195,5 @@ cpdef list get_strongly_connected_components(Graph graph, bint static=False):
         of the inputted graph.
 
     Raises:
-        ValueError: The inputted graph is directed.
+        ValueError: The inputted graph is undirected.
     """
