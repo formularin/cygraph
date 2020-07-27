@@ -53,6 +53,12 @@ def test_edges():
         assert len(g_edges) == 3
         assert g_edges == {("s", "a", 0.0), ("a", "b", 1.0), ("b", "e", 1.0)}
 
+        # get_edge_weight
+        assert g.get_edge_weight("s", "a") == 0.0
+        assert g.get_edge_weight("a", "b") == 1.0
+        with pytest.raises(ValueError):
+            g.get_edge_weight("b", "a")
+
         # get_children
         assert g.get_children("s") == {"a"}
         with pytest.raises(ValueError):
@@ -73,6 +79,12 @@ def test_edges():
         assert len(g2_edges) == 3
         for edge in g2_edges:
             assert set(edge) in [{"s", "a", 0.0}, {"a", "b", 1.0}, {"b", "e", 1.0}]
+        
+        # get_edge_weight
+        assert g2.get_edge_weight("s", "a") == 0.0
+        assert g2.get_edge_weight("b", "a") == 1.0
+        with pytest.raises(ValueError):
+            g2.get_edge_weight("d", "e")
 
         # get_children
         assert g2.get_children("s") == {"a"}

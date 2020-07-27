@@ -94,7 +94,6 @@ cdef class Graph:
             self._edge_attributes[edge][key] = val
         except KeyError:
             if self.directed:
-                print(self._edge_attributes)
                 raise ValueError(f"{edge} is not in graph.")
             else:
                 try:
@@ -130,6 +129,9 @@ cdef class Graph:
                 except KeyError:
                     raise ValueError(f"{edge} is not in graph.")
         return edge_attributes[key]
+    
+    cpdef double get_edge_weight(self, v1, v2) except *:
+        pass
 
     cpdef set get_children(self, vertex):
         pass
@@ -205,6 +207,30 @@ cdef class StaticGraph(Graph):
         self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
+    
+    cpdef double get_edge_weight(self, v1, v2) except *:
+        """
+        Returns the weight of the edge between vertices v1 and v2.
+
+        Args:
+            v1: One of the edge's vertices.
+            v2: One of the edge's vertices.
+        
+        Returns:
+            The weight of the edge between v1 and v2.
+        
+        Raises:
+            ValueError: At least one of the inputted vertices is not in
+                the graph.
+            ValueError: There is no edge between the inputted nodes.
+        """
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
+        cdef double weight = self._adjacency_matrix_view[u][v]
+        if not np.isnan(weight):
+            return weight
+        else:
+            raise ValueError(f"There is no edge ({v1}, {v2}) in graph.")
 
     cpdef void add_vertex(self, v) except *:
         """
@@ -383,7 +409,32 @@ cdef class DynamicGraph(Graph):
         self._adjacency_matrix[u][v] = weight
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
-    
+
+    cpdef double get_edge_weight(self, v1, v2) except *:
+        """
+        Returns the weight of the edge between vertices v1 and v2.
+
+        Args:
+            v1: One of the edge's vertices.
+            v2: One of the edge's vertices.
+        
+        Returns:
+            The weight of the edge between v1 and v2.
+        
+        Raises:
+            ValueError: At least one of the inputted vertices is not in
+                the graph.
+            ValueError: There is no edge between the two inputted
+                vertices.
+        """
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
+        weight = self._adjacency_matrix[u][v]
+        if weight is not None:
+            return weight
+        else:
+            raise ValueError("edge ({v1}, {v2}) is not in graph.")
+
     cpdef void add_vertex(self, v) except *:
         """
         Adds vertex to the graph.

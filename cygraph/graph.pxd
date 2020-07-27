@@ -19,6 +19,7 @@ cdef class Graph:
     cpdef void add_edge(self, v1, v2, double weight=*) except *
     cpdef void set_edge_attribute(self, edge, key, val) except *
     cpdef object get_edge_attribute(self, edge, key)
+    cpdef double get_edge_weight(self, v1, v2) except *
     cpdef set get_children(self, vertex)
 
 
