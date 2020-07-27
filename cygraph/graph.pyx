@@ -136,6 +136,13 @@ cdef class Graph:
     cpdef set get_children(self, vertex):
         pass
     
+    @property
+    def edges(self):
+        pass
+
+    def __len__(self):
+        return len(self.vertices)
+
     def __repr__(self):
         return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
 
@@ -340,6 +347,12 @@ cdef class StaticGraph(Graph):
                             edges.add(new_edge)
 
         return edges
+    
+    def __copy__(self):
+        new_graph = StaticGraph(directed=self.directed, vertices=self.vertices)
+        for edge in self.edges:
+            new_graph.add_edge(*edge)
+        return new_graph
 
 
 cdef class DynamicGraph(Graph):
@@ -536,3 +549,9 @@ cdef class DynamicGraph(Graph):
                         else:
                             edges.add(new_edge)
         return edges
+    
+    def __copy__(self):
+        new_graph = DynamicGraph(directed=self.directed, vertices=self.vertices)
+        for edge in self.edges:
+            new_graph.add_edge(*edge)
+        return new_graph
