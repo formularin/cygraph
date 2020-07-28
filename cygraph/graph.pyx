@@ -350,8 +350,20 @@ cdef class StaticGraph(Graph):
     
     def __copy__(self):
         new_graph = StaticGraph(directed=self.directed, vertices=self.vertices)
+
+        # Add edges and edge attributes.
         for edge in self.edges:
             new_graph.add_edge(*edge)
+            for key in self._edge_attributes[edge]:
+                new_graph.set_edge_attribute(
+                    edge, key, self._edge_attributes[edge][key])
+        
+        # Add vertex attributes.
+        for vertex in self.vertices:
+            for key in self._vertex_attributes[vertex]:
+                new_graph.set_vertex_attribtue(
+                    vertex, key, self._vertex_attributes[vertex][key])
+
         return new_graph
 
 
@@ -552,6 +564,18 @@ cdef class DynamicGraph(Graph):
     
     def __copy__(self):
         new_graph = DynamicGraph(directed=self.directed, vertices=self.vertices)
+
+        # Add edges and edge attributes.
         for edge in self.edges:
             new_graph.add_edge(*edge)
+            for key in self._edge_attributes[edge]:
+                new_graph.set_edge_attribute(
+                    edge, key, self._edge_attributes[edge][key])
+        
+        # Add vertex attributes.
+        for vertex in self.vertices:
+            for key in self._vertex_attributes[vertex]:
+                new_graph.set_vertex_attribtue(
+                    vertex, key, self._vertex_attributes[vertex][key])
+
         return new_graph
