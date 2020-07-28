@@ -22,13 +22,6 @@ cdef class Graph:
     cpdef double get_edge_weight(self, v1, v2) except *
     cpdef set get_children(self, vertex)
 
-    @property
-    def edges(self)
-
-    def __len__(self)
-    def __repr__(self)
-    def __str__(self)
-
 
 cdef class StaticGraph(Graph):
     # _adjacency_matrix_view[u][v] -> weight of edge between u and v.
@@ -36,6 +29,7 @@ cdef class StaticGraph(Graph):
     cdef double[:,:] _adjacency_matrix_view
 
     cdef readonly object _adjacency_matrix
+
 
 cdef class DynamicGraph(Graph):
     # _adjacency_matrix[u][v] -> weight of edge between u and v.

@@ -139,6 +139,14 @@ cdef class Graph:
     @property
     def edges(self):
         pass
+    
+    @property
+    def edge_attributes(self):
+        return self._edge_attributes
+    
+    @property
+    def vertex_attributes(self):
+        return self._vertex_attributes
 
     def __len__(self):
         return len(self.vertices)
@@ -171,6 +179,10 @@ cdef class StaticGraph(Graph):
         directed: Whether or not the graph contains directed edges.
         vertices: A list of the vertices in this graph.
         edges: A list of tuples contianing the two vertices of each edge.
+        edge_attribtues: A dict which maps (v1, v2) tuples to dicts mapping
+            edge attribute keys to corresponding values.
+        vertex_attribtues: A dict which maps vertex names to dicts mapping
+            vertex attribute keys to corresponding values.
     """
 
     def __cinit__(self, bint directed=False, list vertices=[]):
@@ -387,6 +399,10 @@ cdef class DynamicGraph(Graph):
         directed: Whether or not the graph contains directed edges.
         vertices: A list of the vertices in this graph.
         edges: A list of tuples contianing the two vertices of each edge.
+        edge_attribtues: A dict which maps (v1, v2) tuples to dicts mapping
+            edge attribute keys to corresponding values.
+        vertex_attribtues: A dict which maps vertex names to dicts mapping
+            vertex attribute keys to corresponding values.
     """
 
     def __cinit__(self, bint directed=False, list vertices=[]):
