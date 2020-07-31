@@ -19,7 +19,7 @@ def test_find_shortest_path():
     Tests find_shortest_path function.
     """
     for static in [True, False]:
-        
+
         undirected_graph = create_graph(static=static, directed=False,
             vertices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 's'])
         undirected_graph_edges = [
@@ -36,7 +36,7 @@ def test_find_shortest_path():
         assert undirected_path == ['s', 'b', 'h', 'g', 'e']
         with pytest.raises(ValueError):
             find_shortest_path(undirected_graph, 'y', 'z')
-        
+
         disconnected_undirected_graph = create_graph(
             static=static, directed=False, vertices=['a', 'b'])
         with pytest.raises(ValueError):
@@ -51,10 +51,10 @@ def test_find_shortest_path():
         ]
         for edge in directed_graph_edges:
             directed_graph.add_edge(*edge)
-        
+
         directed_path = find_shortest_path(directed_graph, 's', 'e')
         assert directed_path == ['s', 'a', 'e']
-        
+
         disconnected_directed_graph = create_graph(
             static=static, directed=True, vertices=['a', 'b'])
         disconnected_directed_graph.add_edge('a', 'b')

@@ -21,11 +21,11 @@ cdef set _dfs(Graph graph, v):
     Args:
         cygraph.Graph graph: A graph.
         v: The root vertex of the search.
-    
+
     Returns:
         The set of vertices in the component of the inputted graph that
         contains the inputted root vertex.
-    
+
     Raises:
         ValueError: vertex is not in graph.
     """
@@ -39,12 +39,12 @@ cdef set _dfs(Graph graph, v):
 cpdef list find_shortest_path(Graph graph, source, target):
     """
     Takes a graph and finds the shortest path between two vertices in it.
-    
+
     Args:
         cygraph.Graph graph: A graph.
         source: One of the vertices in the inputted graph.
         target: The other vertex in the inputted graph.
-    
+
     Returns:
         The list of vertices that constitute the shortest path between
         source and target.
@@ -101,7 +101,7 @@ cpdef Graph get_min_spanning_tree(Graph graph):
 
     Args:
         cygraph.Graph graph: A graph.
-    
+
     Returns:
         The graph that is the minimum spanning tree of the inputted graph.
     """
@@ -115,7 +115,7 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
         cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
-    
+
     Returns:
         A tuple of two graphs that are the result of a random partition
         of the inputted graph. Has an (n choose 2)^-1 probability of
@@ -136,7 +136,7 @@ cpdef set get_components(Graph graph, bint static=False):
         cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
-    
+
     Returns:
         A set of cygraph.Graph objects that are the components
         of the inputted graph.
@@ -161,7 +161,7 @@ cpdef set get_components(Graph graph, bint static=False):
         new_component = _dfs(graph, vertex)
         discovered_vertices = discovered_vertices.union(new_component)
         discovered_components.add(tuple(new_component))
-    
+
     # Get the induced subgraphs that are each of the components.
     cdef tuple component
     cdef Graph component_graph
@@ -178,7 +178,7 @@ cpdef set get_components(Graph graph, bint static=False):
             for neighbor in graph.get_children(vertex):
                 if neighbor in component:
                     component_graph.add_edge(vertex, neighbor)
-        
+
         component_graphs.add(component_graph)
 
     return component_graphs
@@ -196,7 +196,7 @@ cpdef list get_strongly_connected_components(Graph graph, bint static=False):
         cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
-    
+
     Returns:
         A list of cygraph.Graph objects that are the components
         of the inputted graph.

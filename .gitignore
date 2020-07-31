@@ -1,6 +1,7 @@
 # Dev
 .vscode
 venv
+maintenance.py
 
 # Cython
 cygraph/*.c

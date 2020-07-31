@@ -31,7 +31,7 @@ def test_constructor():
                 g = create_graph(static=static, directed=directed,
                     vertices=[['s'], ['e']])
                 graphs.append(g)
-    
+
     for graph in graphs:
         g = create_graph(graph=graph)
         assert g.vertices == graph.vertices
@@ -174,7 +174,7 @@ def test_attributes():
             g.get_edge_attribute(('b', 'a'), key='key')
         with pytest.raises(KeyError):
             g.get_edge_attribute(('a', 'b'), key="this is not a key")
-        
+
         # Undirected graph.
         g2 = create_graph(static=static, directed=False, vertices=['a', 'b', 'c'])
         g2.add_edge('a', 'b')
@@ -202,7 +202,7 @@ def test_attributes():
         for directed in [True, False]:
             g = create_graph(static=static,
                     directed=directed, vertices=['a', 'b', 'c'])
-            
+
             g.set_vertex_attribute('a', key='key', val='val')
             with pytest.raises(TypeError):
                 g.set_vertex_attribute('a', key=[], val='val')
