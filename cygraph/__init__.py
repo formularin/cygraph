@@ -3,11 +3,11 @@
 Example usage:
     >>> import cygraph
 
-    >>> graph = cygraph.create_graph(static=True, vertices=["a", "b", "c"])
-    >>> graph.add_edge("a", "b", weight=1.0)
+    >>> graph = cygraph.create_graph(static=True, vertices=['a', 'b', 'c'])
+    >>> graph.add_edge('a', 'b', weight=1.0)
     >>> graph.edges
     {('b', 'a')}
-    >>> graph.get_children("a")
+    >>> graph.get_children('a')
     {'b'}
 """
 
@@ -29,9 +29,9 @@ def create_graph(static=False, directed=False, vertices=[], graph=None):
     """
 
     kwargs = {
-        "directed": directed,
-        "vertices": vertices,
-        "graph": graph
+        'directed': directed,
+        'vertices': vertices,
+        'graph': graph
     }
     if static:
         return StaticGraph(**kwargs)

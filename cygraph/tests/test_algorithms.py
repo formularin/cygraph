@@ -21,7 +21,7 @@ def test_find_shortest_path():
     for static in [True, False]:
         
         undirected_graph = create_graph(static=static, directed=False,
-            vertices=["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "s"])
+            vertices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 's'])
         undirected_graph_edges = [
             ('s', 'a', 7.0), ('s', 'b', 2.0), ('s', 'c', 3.0), ('a', 'b', 3.0),
             ('a', 'd', 4.0), ('b', 'h', 4.0), ('b', 'd', 1.0), ('c', 'l', 2.0),
@@ -32,10 +32,10 @@ def test_find_shortest_path():
         for edge in undirected_graph_edges:
             undirected_graph.add_edge(*edge)
 
-        undirected_path = find_shortest_path(undirected_graph, "s", "e")
-        assert undirected_path == ["s", "b", "h", "g", "e"]
+        undirected_path = find_shortest_path(undirected_graph, 's', 'e')
+        assert undirected_path == ['s', 'b', 'h', 'g', 'e']
         with pytest.raises(ValueError):
-            find_shortest_path(undirected_graph, "y", "z")
+            find_shortest_path(undirected_graph, 'y', 'z')
         
         disconnected_undirected_graph = create_graph(
             static=static, directed=False, vertices=['a', 'b'])
@@ -80,21 +80,21 @@ def test_get_components():
     """
 
     for static in [True, False]:
-        g1 = create_graph(static=static, directed=False, vertices=["a", "b", "c"])
+        g1 = create_graph(static=static, directed=False, vertices=['a', 'b', 'c'])
         components = get_components(g1, static=True)
         assert isinstance(components, set)
         for component in components:
             assert isinstance(component, StaticGraph)
-            assert component.vertices in [["a"], ["b"], ["c"]]
+            assert component.vertices in [['a'], ['b'], ['c']]
             assert len(get_components(component)) == 1
 
         dynamic_components = get_components(g1, static=False)
         for component in dynamic_components:
             assert isinstance(component, DynamicGraph)
-            assert component.vertices in [["a"], ["b"], ["c"]]
+            assert component.vertices in [['a'], ['b'], ['c']]
             assert len(get_components(component)) == 1
 
-        g2 = create_graph(static=static, directed=True, vertices=["a", "b", "c"])
+        g2 = create_graph(static=static, directed=True, vertices=['a', 'b', 'c'])
         with pytest.raises(ValueError):
             get_components(g2)
 
