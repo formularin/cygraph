@@ -1,6 +1,7 @@
 """Implementation of StaticGraph and DynamicGraph classes.
 """
 
+import copy
 import numpy as np
 
 
@@ -11,6 +12,28 @@ cdef class Graph:
     """
     A semi-abstract base graph class.
     """
+
+    def __cinit__(self, *args, **kwargs):
+
+        cdef Graph graph = None
+
+        if len(args) == 3:
+            graph = <Graph?>args[3]
+        
+        if "graph" in kwargs:
+            graph = kwargs["graph"]
+        
+        if len(args) == 1:
+            if isinstance(args[0], Graph):
+                graph = args[0]
+
+        if graph is not None:
+            self._vertex_attributes = copy.deepcopy(graph._vertex_attributes)
+            self._edge_attributes = copy.deepcopy(graph._edge_attributes)
+            self._vertex_map = copy.deepcopy(graph._vertex_map)
+
+            self.directed = bool(graph.directed)
+            self.vertices = graph.vertices[:]
 
     cpdef int _get_vertex_int(self, vertex) except -1:
         """
@@ -174,6 +197,10 @@ cdef class StaticGraph(Graph):
     Args:
         bint directed: Optional; Whether or not the graph contains directed edges.
         list vertices: Optional; A list of vertices (can be any hashable type)
+        Graph graph: Optional; A graph.
+
+        Note that `directed` and `vertices` args will be ignored if
+        graph is not None.
     
     Attributes:
         directed: Whether or not the graph contains directed edges.
@@ -185,26 +212,39 @@ cdef class StaticGraph(Graph):
             vertex attribute keys to corresponding values.
     """
 
-    def __cinit__(self, bint directed=False, list vertices=[]):
+    def __cinit__(self, bint directed=False, list vertices=[], Graph graph=None):
 
-        self._vertex_attributes = {}
-        self._edge_attributes = {}
-        self._vertex_map = {}
+        cdef int size
 
-        self.directed = directed
-        self.vertices = <list?>vertices[:]
-
-        # Map vertex names to numbers and vice versa.
         cdef int i
         cdef object v
-        for i, v in enumerate(<list?>vertices):
-            self._vertex_map[v] = i
-            self._vertex_attributes[v] = {}
 
-        # Create adjacency matrix.
-        cdef int size = len(vertices)
-        self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
-        self._adjacency_matrix_view = self._adjacency_matrix
+        if graph is not None:
+
+            size = len(graph.vertices)
+            self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+            self._adjacency_matrix_view = self._adjacency_matrix
+
+            for edge in graph.edges:
+                self.add_edge(edge[0], edge[1])
+    
+        else:
+            self._vertex_attributes = {}
+            self._edge_attributes = {}
+            self._vertex_map = {}
+
+            self.directed = directed
+            self.vertices = <list?>vertices[:]
+
+            # Map vertex names to numbers and vice versa.
+            for i, v in enumerate(<list?>vertices):
+                self._vertex_map[v] = i
+                self._vertex_attributes[v] = {}
+
+            # Create adjacency matrix.
+            size = len(vertices)
+            self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+            self._adjacency_matrix_view = self._adjacency_matrix
 
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """
@@ -394,6 +434,10 @@ cdef class DynamicGraph(Graph):
     Args:
         bint directed: Optional; Whether or not the graph contains directed edges.
         list vertices: A list of the vertices in this graph.
+        Graph graph: Optional; A graph.
+
+        Note that `directed` and `vertices` args will be ignored if
+        graph is not None.
     
     Attributes:
         directed: Whether or not the graph contains directed edges.
@@ -405,30 +449,46 @@ cdef class DynamicGraph(Graph):
             vertex attribute keys to corresponding values.
     """
 
-    def __cinit__(self, bint directed=False, list vertices=[]):
+    def __cinit__(self, bint directed=False, list vertices=[], Graph graph=None):
 
-        self._vertex_attributes = {}
-        self._edge_attributes = {}
-        self._vertex_map = {}
+        cdef int size
 
-        self.directed = directed
-        self.vertices = <list?>vertices[:]
-
-        # Map vertex names to numbers and vice versa.
-        self._vertex_map = {}
         cdef int i
         cdef object v
-        for i, v in enumerate(<list?>vertices):
-            self._vertex_map[v] = i
-            self._vertex_attributes[v] = {}
 
-        # Create adjacency matrix.
-        cdef int size = len(vertices)
-        self._adjacency_matrix = []
-        for i in range(size):
-            self._adjacency_matrix.append([])
-            for _ in range(size):
-                self._adjacency_matrix[i].append(None)
+        if graph is not None:
+
+            size = len(graph.vertices)
+            self._adjacency_matrix = []
+            for i in range(size):
+                self._adjacency_matrix.append([])
+                for _ in range(size):
+                    self._adjacency_matrix[i].append(None)
+
+            for edge in graph.edges:
+                self.add_edge(edge[0], edge[1])
+
+        else:
+            self._vertex_attributes = {}
+            self._edge_attributes = {}
+            self._vertex_map = {}
+
+            self.directed = directed
+            self.vertices = <list?>vertices[:]
+
+            # Map vertex names to numbers and vice versa.
+            self._vertex_map = {}
+            for i, v in enumerate(<list?>vertices):
+                self._vertex_map[v] = i
+                self._vertex_attributes[v] = {}
+
+            # Create adjacency matrix.
+            size = len(vertices)
+            self._adjacency_matrix = []
+            for i in range(size):
+                self._adjacency_matrix.append([])
+                for _ in range(size):
+                    self._adjacency_matrix[i].append(None)
     
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         """

@@ -14,7 +14,7 @@ Example usage:
 from .graph import StaticGraph, DynamicGraph
 
 
-def create_graph(static=False, directed=False, vertices=[]):
+def create_graph(static=False, directed=False, vertices=[], graph=None):
     """
     Creates an instance of a Graph object.
 
@@ -24,10 +24,16 @@ def create_graph(static=False, directed=False, vertices=[]):
             especially on large graphs.
         directed: Optional; Whether or not the graph has directed edges.
         vertices: Optional; A collection of initial vertices for the graph.
+        graph: Optional; A `cygraph.graph.StaticGraph` or
+            `cygraph.graph.DynamicGraph` object.
     """
 
-    args = [directed, vertices]
+    kwargs = {
+        "directed": directed,
+        "vertices": vertices,
+        "graph": graph
+    }
     if static:
-        return StaticGraph(*args)
+        return StaticGraph(**kwargs)
     else:
-        return DynamicGraph(*args)
+        return DynamicGraph(**kwargs)

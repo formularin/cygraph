@@ -13,20 +13,29 @@ def test_constructor():
     Tests initialization of a StaticGraph and DynamicGraph objects.
     """
 
+    graphs = []
+
     # Smoke tests.
     vertex_lists = [["s", "e"], [0, 1]]
     for lst in vertex_lists:
         for directed in [True, False]:
             for static in [True, False]:
-                create_graph(static=static, directed=directed, vertices=lst)
+                g = create_graph(static=static, directed=directed, vertices=lst)
+                graphs.append(g)
 
     # Exception-raising tests.
     for directed in [True, False]:
         for static in [True, False]:
             with pytest.raises(TypeError):
                 # Non-hashable type vertices.
-                create_graph(static=static, directed=directed,
+                g = create_graph(static=static, directed=directed,
                     vertices=[["s"], ["e"]])
+                graphs.append(g)
+    
+    for graph in graphs:
+        g = create_graph(graph=graph)
+        assert g.vertices == graph.vertices
+        assert g.edges == graph.edges
 
 def test_edges():
     """
