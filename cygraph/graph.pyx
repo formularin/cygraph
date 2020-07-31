@@ -11,6 +11,12 @@ DTYPE = np.float64
 cdef class Graph:
     """
     A semi-abstract base graph class.
+
+    Semi-abstract because anything that involves the adjacency matrix
+    is not implemented, and therefore this class is not meant to be
+    used for instantiating objects. The reason why those methods are
+    even in this class is so that downcasting still works because of
+    early binding.
     """
 
     def __cinit__(self, *args, **kwargs):
@@ -35,7 +41,7 @@ cdef class Graph:
             self.directed = bool(graph.directed)
             self.vertices = graph.vertices[:]
 
-    cpdef int _get_vertex_int(self, vertex) except -1:
+    cpdef int _get_vertex_int(self, object vertex) except -1:
         """
         Returns the int corresponding to a vertex.
 
@@ -53,10 +59,10 @@ cdef class Graph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
 
-    cpdef void add_vertex(self, v) except *:
+    cpdef void add_vertex(self, object v) except *:
         pass
 
-    cpdef void set_vertex_attribute(self, vertex, key, val) except *:
+    cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *:
         """
         Sets an attribute to a vertex.
 
@@ -74,7 +80,7 @@ cdef class Graph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
 
-    cpdef object get_vertex_attribute(self, vertex, key):
+    cpdef object get_vertex_attribute(self, object vertex, object key):
         """
         Gets an attribute of a vertex.
 
@@ -97,7 +103,7 @@ cdef class Graph:
             raise ValueError(f"{vertex} is not in graph.")
         return vertex_attributes[key]
 
-    cpdef bint has_vertex(self, vertex) except *:
+    cpdef bint has_vertex(self, object vertex) except *:
         """
         Returns whether or not the inputted vertex is in this graph.
 
@@ -107,12 +113,12 @@ cdef class Graph:
         Returns:
             bint of whether or not vertex is in this graph.
         """
-        return vertex in self.vertices
+        return <bint> (vertex in self.vertices)
 
-    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
         pass
 
-    cpdef void set_edge_attribute(self, edge, key, val) except *:
+    cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *:
         """
         Sets an attribute to an edge.
 
@@ -136,12 +142,12 @@ cdef class Graph:
                 except KeyError:
                     raise ValueError(f"{edge} is not in graph.")
 
-    cpdef object get_edge_attribute(self, edge, key):
+    cpdef object get_edge_attribute(self, tuple edge, object key):
         """
         Gets an attribute of an edge.
 
         Args:
-            edge: An edge in the graph (v1, v2) tuple.
+            tuple edge: An edge in the graph (v1, v2) tuple.
             key: The name of the attribute. Must be of hashable type.
 
         Returns:
@@ -165,10 +171,10 @@ cdef class Graph:
                     raise ValueError(f"{edge} is not in graph.")
         return edge_attributes[key]
 
-    cpdef double get_edge_weight(self, v1, v2) except *:
+    cpdef double get_edge_weight(self, object v1, object v2) except *:
         pass
 
-    cpdef set get_children(self, vertex):
+    cpdef set get_children(self, object vertex):
         pass
 
     @property
@@ -258,7 +264,7 @@ cdef class StaticGraph(Graph):
             self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
             self._adjacency_matrix_view = self._adjacency_matrix
 
-    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
         """
         Adds edge to graph between two vertices with a weight.
 
@@ -279,7 +285,7 @@ cdef class StaticGraph(Graph):
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
 
-    cpdef bint has_edge(self, v1, v2) except *:
+    cpdef bint has_edge(self, object v1, object v2) except *:
         """
         Returns whether or not an edge exists in this graph.
 
@@ -299,7 +305,7 @@ cdef class StaticGraph(Graph):
 
         return not np.isnan(self._adjacency_matrix_view[u][v])
 
-    cpdef double get_edge_weight(self, v1, v2) except *:
+    cpdef double get_edge_weight(self, object v1, object v2) except *:
         """
         Returns the weight of the edge between vertices v1 and v2.
 
@@ -323,7 +329,7 @@ cdef class StaticGraph(Graph):
         else:
             raise ValueError(f"There is no edge ({v1}, {v2}) in graph.")
 
-    cpdef void add_vertex(self, v) except *:
+    cpdef void add_vertex(self, object v) except *:
         """
         Adds vertex to the graph.
 
@@ -359,7 +365,7 @@ cdef class StaticGraph(Graph):
                 self._adjacency_matrix = \
                     np.append(self._adjacency_matrix, new_column, axis=1)
 
-    cpdef set get_children(self, vertex):
+    cpdef set get_children(self, object vertex):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
@@ -393,7 +399,7 @@ cdef class StaticGraph(Graph):
         cdef set edges = set()
         cdef tuple new_edge, existing_edge
         cdef bint edge_found
-        cdef object edge_weight
+        cdef object edge_weight  # Can also be np.nan
 
         n_vertices = len(self.vertices)
 
@@ -433,9 +439,12 @@ cdef class StaticGraph(Graph):
         return edges
 
     def __copy__(self):
-        new_graph = StaticGraph(directed=self.directed, vertices=self.vertices)
+        cdef StaticGraph new_graph = \
+            StaticGraph(directed=self.directed, vertices=self.vertices)
 
         # Add edges and edge attributes.
+        cdef tuple edge
+        cdef object key
         for edge in self.edges:
             new_graph.add_edge(*edge)
             for key in self._edge_attributes[edge]:
@@ -443,6 +452,7 @@ cdef class StaticGraph(Graph):
                     edge, key, self._edge_attributes[edge][key])
 
         # Add vertex attributes.
+        cdef object vertex
         for vertex in self.vertices:
             for key in self._vertex_attributes[vertex]:
                 new_graph.set_vertex_attribtue(
@@ -522,7 +532,7 @@ cdef class DynamicGraph(Graph):
                 for _ in range(size):
                     self._adjacency_matrix[i].append(None)
 
-    cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
         """
         Adds edge to the graph between two vertices with a weight.
 
@@ -543,7 +553,7 @@ cdef class DynamicGraph(Graph):
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
 
-    cpdef bint has_edge(self, v1, v2) except *:
+    cpdef bint has_edge(self, object v1, object v2) except *:
         """
         Returns whether or not an edge exists in this graph.
 
@@ -563,7 +573,7 @@ cdef class DynamicGraph(Graph):
 
         return self._adjacency_matrix[u][v] is not None
 
-    cpdef double get_edge_weight(self, v1, v2) except *:
+    cpdef double get_edge_weight(self, object v1, object v2) except *:
         """
         Returns the weight of the edge between vertices v1 and v2.
 
@@ -588,7 +598,7 @@ cdef class DynamicGraph(Graph):
         else:
             raise ValueError("edge ({v1}, {v2}) is not in graph.")
 
-    cpdef void add_vertex(self, v) except *:
+    cpdef void add_vertex(self, object v) except *:
         """
         Adds vertex to the graph.
 
@@ -619,7 +629,7 @@ cdef class DynamicGraph(Graph):
             for i in range(<int> (len(self._adjacency_matrix) - 1)):
                 self._adjacency_matrix[i].append(None)
 
-    cpdef set get_children(self, vertex):
+    cpdef set get_children(self, object vertex):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
@@ -653,7 +663,7 @@ cdef class DynamicGraph(Graph):
         cdef set edges = set()
         cdef tuple new_edge, existing_edge
         cdef bint edge_found
-        cdef object edge_weight
+        cdef object edge_weight  # Can also be NoneType.
 
         n_vertices = len(self.vertices)
 
@@ -691,9 +701,12 @@ cdef class DynamicGraph(Graph):
         return edges
 
     def __copy__(self):
-        new_graph = DynamicGraph(directed=self.directed, vertices=self.vertices)
+        cdef DynamicGraph new_graph = \
+            DynamicGraph(directed=self.directed, vertices=self.vertices)
 
         # Add edges and edge attributes.
+        cdef tuple edge
+        cdef object key
         for edge in self.edges:
             new_graph.add_edge(*edge)
             for key in self._edge_attributes[edge]:
@@ -701,6 +714,7 @@ cdef class DynamicGraph(Graph):
                     edge, key, self._edge_attributes[edge][key])
 
         # Add vertex attributes.
+        cdef object vertex
         for vertex in self.vertices:
             for key in self._vertex_attributes[vertex]:
                 new_graph.set_vertex_attribtue(

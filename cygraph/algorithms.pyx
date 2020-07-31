@@ -13,7 +13,7 @@ import random
 from graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cdef set _dfs(Graph graph, v):
+cdef set _dfs(Graph graph, object v):
     """
     Finds all of the vertices in a component of a graph using a
     depth-first search.
@@ -30,13 +30,14 @@ cdef set _dfs(Graph graph, v):
         ValueError: vertex is not in graph.
     """
     cdef set discovered = {v}
+    cdef object u
     for u in graph.get_children(v):
         if u not in discovered:
             discovered = discovered.union(_dfs(graph, u))
     return discovered
 
 
-cpdef list find_shortest_path(Graph graph, source, target):
+cpdef list find_shortest_path(Graph graph, object source, object target):
     """
     Takes a graph and finds the shortest path between two vertices in it.
 
@@ -66,6 +67,7 @@ cpdef list find_shortest_path(Graph graph, source, target):
         unprocessed_nodes.add(vertex)
     distances[source] = 0
 
+    cdef object u ,v
     while unprocessed_nodes != set():
         try:
             u = min([v for v in distances

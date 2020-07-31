@@ -11,17 +11,17 @@ cdef class Graph:
     cdef readonly list vertices
     cdef readonly bint directed
 
-    cpdef int _get_vertex_int(self, vertex) except -1
+    cpdef int _get_vertex_int(self, object vertex) except -1
 
     cpdef void add_vertex(self, v) except *
-    cpdef void set_vertex_attribute(self, vertex, key, val) except *
+    cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *
     cpdef object get_vertex_attribute(self, vertex, key)
-    cpdef bint has_vertex(self, vertex) except *
+    cpdef bint has_vertex(self, object vertex) except *
     cpdef void add_edge(self, v1, v2, double weight=*) except *
-    cpdef void set_edge_attribute(self, edge, key, val) except *
-    cpdef object get_edge_attribute(self, edge, key)
-    cpdef double get_edge_weight(self, v1, v2) except *
-    cpdef set get_children(self, vertex)
+    cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *
+    cpdef object get_edge_attribute(self, tuple edge, object key)
+    cpdef double get_edge_weight(self, object v1, object v2) except *
+    cpdef set get_children(self, object vertex)
 
 
 cdef class StaticGraph(Graph):
@@ -31,7 +31,7 @@ cdef class StaticGraph(Graph):
 
     cdef readonly object _adjacency_matrix
 
-    cpdef bint has_edge(self, v1, v2) except *
+    cpdef bint has_edge(self, object v1, object v2) except *
 
 
 cdef class DynamicGraph(Graph):
@@ -39,4 +39,4 @@ cdef class DynamicGraph(Graph):
     # None means there is no edge.
     cdef readonly list _adjacency_matrix
 
-    cpdef bint has_edge(self, v1, v2) except *
+    cpdef bint has_edge(self, object v1, object v2) except *
