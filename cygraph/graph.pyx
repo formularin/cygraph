@@ -96,6 +96,18 @@ cdef class Graph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
         return vertex_attributes[key]
+    
+    cpdef bint has_vertex(self, vertex) except *:
+        """
+        Returns whether or not the inputted vertex is in this graph.
+
+        Args:
+            vertex: A valid vertex (hashable type).
+        
+        Returns:
+            bint of whether or not vertex is in this graph.
+        """
+        return vertex in self.vertices
 
     cpdef void add_edge(self, v1, v2, double weight=1.0) except *:
         pass
@@ -266,6 +278,26 @@ cdef class StaticGraph(Graph):
         self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
+    
+    cpdef bint has_edge(self, v1, v2) except *:
+        """
+        Returns whether or not an edge exists in this graph.
+
+        Args:
+            v1: First vertex of the edge.
+            v2: Second vertex of the edge.
+        
+        Returns:
+            bint of whether or not edge is in graph.
+        """
+        cdef int u, v
+        try:
+            u = self._vertex_map[v1]
+            v = self._vertex_map[v2]
+        except KeyError:
+            return False
+
+        return not np.isnan(self._adjacency_matrix_view[u][v])
     
     cpdef double get_edge_weight(self, v1, v2) except *:
         """
@@ -510,6 +542,26 @@ cdef class DynamicGraph(Graph):
         self._adjacency_matrix[u][v] = weight
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
+    
+    cpdef bint has_edge(self, v1, v2) except *:
+        """
+        Returns whether or not an edge exists in this graph.
+
+        Args:
+            v1: First vertex of the edge.
+            v2: Second vertex of the edge.
+        
+        Returns:
+            bint of whether or not edge is in graph.
+        """
+        cdef int u, v
+        try:
+            u = self._vertex_map[v1]
+            v = self._vertex_map[v2]
+        except KeyError:
+            return False
+
+        return self._adjacency_matrix[u][v] is not None
 
     cpdef double get_edge_weight(self, v1, v2) except *:
         """

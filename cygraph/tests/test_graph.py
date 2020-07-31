@@ -43,6 +43,7 @@ def test_edges():
         - add_edge
         - get_children
         - edges
+        - has_edge
     for StaticGraph and DynamicGraph classes.
     """
 
@@ -61,6 +62,12 @@ def test_edges():
         g_edges = g.edges
         assert len(g_edges) == 3
         assert g_edges == {('s', 'a', 0.0), ('a', 'b', 1.0), ('b', 'e', 1.0)}
+
+        # has_edge
+        for edge in g_edges:
+            assert g.has_edge(edge[0], edge[1]) == True
+        assert g.has_edge('e', 'b') == False
+        assert g.has_edge(1, 2) == False
 
         # get_edge_weight
         assert g.get_edge_weight('s', 'a') == 0.0
@@ -88,7 +95,13 @@ def test_edges():
         assert len(g2_edges) == 3
         for edge in g2_edges:
             assert set(edge) in [{'s', 'a', 0.0}, {'a', 'b', 1.0}, {'b', 'e', 1.0}]
-        
+
+        # has_edge
+        for edge in g2_edges:
+            assert g2.has_edge(edge[0], edge[1]) == True
+        assert g2.has_edge('e', 'b') == True
+        assert g2.has_edge(1, 2) == False
+
         # get_edge_weight
         assert g2.get_edge_weight('s', 'a') == 0.0
         assert g2.get_edge_weight('b', 'a') == 1.0
@@ -102,8 +115,11 @@ def test_edges():
 
 def test_vertices():
     """
-    Tests add_vertex method and vertices property
-    for StaticGraph and DynamicGraph classes
+    Tests methods:
+        - add_vertex 
+        - has_vertex
+        - vertices
+    for StaticGraph and DynamicGraph classes.
     """
     for static in [True, False]:
         g = create_graph(static=static, directed=True)
@@ -120,6 +136,11 @@ def test_vertices():
 
         # vertices property
         assert g.vertices == ['s', 1]
+
+        # has_vertex
+        assert g.has_vertex('s') == True
+        assert g.has_vertex(1) == True
+        assert g.has_vertex(2) == False
 
 def test_attributes():
     """

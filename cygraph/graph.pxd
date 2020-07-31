@@ -16,6 +16,7 @@ cdef class Graph:
     cpdef void add_vertex(self, v) except *
     cpdef void set_vertex_attribute(self, vertex, key, val) except *
     cpdef object get_vertex_attribute(self, vertex, key)
+    cpdef bint has_vertex(self, vertex) except *
     cpdef void add_edge(self, v1, v2, double weight=*) except *
     cpdef void set_edge_attribute(self, edge, key, val) except *
     cpdef object get_edge_attribute(self, edge, key)
@@ -30,8 +31,12 @@ cdef class StaticGraph(Graph):
 
     cdef readonly object _adjacency_matrix
 
+    cpdef bint has_edge(self, v1, v2) except *
+
 
 cdef class DynamicGraph(Graph):
     # _adjacency_matrix[u][v] -> weight of edge between u and v.
     # None means there is no edge.
     cdef readonly list _adjacency_matrix
+
+    cpdef bint has_edge(self, v1, v2) except *
