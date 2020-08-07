@@ -2,6 +2,7 @@
 """
 
 import copy
+import functools
 
 cimport numpy as np
 import numpy as np
@@ -9,6 +10,11 @@ import numpy as np
 
 cdef type DTYPE = np.float64
 ctypedef np.float64_t DTYPE_t
+
+
+NOT_IMPLEMENTED = ("%s is not implemented for "
+    "cygraph.Graph instance. Try it with cygraph.StaticGraph or "
+    "cygraph.DynamicGraph.")
 
 
 cdef class Graph:
@@ -63,7 +69,10 @@ cdef class Graph:
             raise ValueError(f"{vertex} is not in graph.")
 
     cpdef void add_vertex(self, object v) except *:
-        pass
+        raise NotImplementedError(NOT_IMPLEMENTED % "add_vertex")
+
+    cpdef void remove_vertex(self, object v) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "remove_vertex")
 
     cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *:
         """
@@ -119,7 +128,10 @@ cdef class Graph:
         return vertex in self.vertices
 
     cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
-        pass
+        raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
+
+    cpdef void remove_edge(self, object v1, object v2) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")
 
     cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *:
         """
@@ -175,14 +187,14 @@ cdef class Graph:
         return edge_attributes[key]
 
     cpdef double get_edge_weight(self, object v1, object v2) except *:
-        pass
+        raise NotImplementedError(NOT_IMPLEMENTED % "get_edge_weight")
 
     cpdef set get_children(self, object vertex):
-        pass
+        raise NotImplementedError(NOT_IMPLEMENTED % "get_children")
 
     @property
     def edges(self):
-        pass
+        raise NotImplementedError(NOT_IMPLEMENTED % "edges")
 
     @property
     def edge_attributes(self):
@@ -191,6 +203,9 @@ cdef class Graph:
     @property
     def vertex_attributes(self):
         return self._vertex_attributes
+
+    def __iter__(self):
+        return iter(self.vertices)
 
     def __len__(self):
         return len(self.vertices)
@@ -287,6 +302,8 @@ cdef class StaticGraph(Graph):
         self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
+    
+    cpdef void remove_edge(self, object v1, object v2) except *
 
     cpdef bint has_edge(self, object v1, object v2) except *:
         """

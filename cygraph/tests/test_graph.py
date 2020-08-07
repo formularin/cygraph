@@ -2,10 +2,10 @@
 Unit tests for classes implemented in cygraph/graph.pyx
 """
 
-
 import pytest
 
 from .. import create_graph
+from ..graph import Graph
 
 
 def test_constructor():
@@ -216,3 +216,25 @@ def test_attributes():
                 g.get_vertex_attribute('d', key='key')
             with pytest.raises(KeyError):
                 g.get_vertex_attribute('a', key='this is not a key')
+    
+def test_not_implemented(subtests):
+    """Tests that abstract methods raise NotImplementedErrors.
+    """
+
+    g = Graph()
+
+    methods = {
+        "add_vertex": [0],
+        "remove_vertex": [0],
+        "add_edge": [0, 1],
+        "get_edge_weight": [0, 1],
+        "get_children": [0]
+    }
+
+    for method, args in methods.items():
+        with subtests.test(method=method):
+            with pytest.raises(NotImplementedError):
+                eval(f"g.{method}(*{repr(args)})")
+
+    with pytest.raises(NotImplementedError):
+        g.edges

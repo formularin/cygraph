@@ -24,8 +24,7 @@ def create_graph(static=False, directed=False, vertices=[], graph=None):
             especially on large graphs.
         directed: Optional; Whether or not the graph has directed edges.
         vertices: Optional; A collection of initial vertices for the graph.
-        graph: Optional; A `cygraph.graph.StaticGraph` or
-            `cygraph.graph.DynamicGraph` object.
+        graph: Optional; A `cygraph.StaticGraph` or `cygraph.DynamicGraph` object.
     """
 
     kwargs = {

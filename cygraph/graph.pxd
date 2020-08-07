@@ -15,11 +15,13 @@ cdef class Graph:
 
     cpdef int _get_vertex_int(self, object vertex) except -1
 
-    cpdef void add_vertex(self, v) except *
+    cpdef void add_vertex(self, object v) except *
+    cpdef void remove_vertex(self, object v) except *
     cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *
     cpdef object get_vertex_attribute(self, vertex, key)
     cpdef bint has_vertex(self, object vertex) except *
-    cpdef void add_edge(self, v1, v2, double weight=*) except *
+    cpdef void add_edge(self, object v1, object v2, double weight=*) except *
+    cpdef void remove_edge(self, object v1, object v2) except *
     cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *
     cpdef object get_edge_attribute(self, tuple edge, object key)
     cpdef double get_edge_weight(self, object v1, object v2) except *
