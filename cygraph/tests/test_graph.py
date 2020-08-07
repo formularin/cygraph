@@ -44,6 +44,7 @@ def test_edges():
         - get_children
         - edges
         - has_edge
+        - remove_edge
     for StaticGraph and DynamicGraph classes.
     """
 
@@ -53,6 +54,7 @@ def test_edges():
 
         # add_edge method
         g.add_edge('s', 'a', weight=0.0)  # Make sure weight zero edges are tested.
+        g.add_edge('a', 's')
         g.add_edge('a', 'b')
         g.add_edge('b', 'e')
         with pytest.raises(ValueError):
@@ -60,8 +62,7 @@ def test_edges():
 
         # edges property
         g_edges = g.edges
-        assert len(g_edges) == 3
-        assert g_edges == {('s', 'a', 0.0), ('a', 'b', 1.0), ('b', 'e', 1.0)}
+        assert g_edges == {('s', 'a', 0.0), ('a', 'b', 1.0), ('b', 'e', 1.0), ('a', 's', 1.0)}
 
         # has_edge
         for edge in g_edges:
@@ -69,14 +70,22 @@ def test_edges():
         assert g.has_edge('e', 'b') == False
         assert g.has_edge(1, 2) == False
 
+        # remove_edge
+        g.remove_edge('s', 'a')
+        with pytest.raises(ValueError):
+            g.remove_edge('sdaf', 'dsafsd')
+        with pytest.warns(Warning):
+            g.remove_edge('s', 'e')
+        assert g.has_edge('s', 'a') == False
+        assert g.has_edge('a', 's') == True
+
         # get_edge_weight
-        assert g.get_edge_weight('s', 'a') == 0.0
         assert g.get_edge_weight('a', 'b') == 1.0
         with pytest.raises(ValueError):
             g.get_edge_weight('b', 'a')
 
         # get_children
-        assert g.get_children('s') == {'a'}
+        assert g.get_children('a') == {'s', 'b'}
         with pytest.raises(ValueError):
             g.get_children('d')
 
@@ -102,14 +111,22 @@ def test_edges():
         assert g2.has_edge('e', 'b') == True
         assert g2.has_edge(1, 2) == False
 
+        # remove_edge
+        g2.remove_edge('s', 'a')
+        with pytest.raises(ValueError):
+            g2.remove_edge('sdaf', 'dsafsd')
+        with pytest.warns(Warning):
+            g2.remove_edge('s', 'e')
+        assert g2.has_edge('s', 'a') == False
+        assert g2.has_edge('a', 's') == False
+
         # get_edge_weight
-        assert g2.get_edge_weight('s', 'a') == 0.0
         assert g2.get_edge_weight('b', 'a') == 1.0
         with pytest.raises(ValueError):
             g2.get_edge_weight('d', 'e')
 
         # get_children
-        assert g2.get_children('s') == {'a'}
+        assert g2.get_children('a') == {'b'}
         with pytest.raises(ValueError):
             g2.get_children('d')
 
@@ -119,6 +136,7 @@ def test_vertices():
         - add_vertex 
         - has_vertex
         - vertices
+        - remove_vertex
     for StaticGraph and DynamicGraph classes.
     """
     for static in [True, False]:
@@ -130,7 +148,6 @@ def test_vertices():
         g.add_vertex(1)
         with pytest.raises(TypeError):
             g.add_vertex([])
-        print(g.vertices)
         with pytest.raises(ValueError):
             g.add_vertex('s')
 
@@ -141,6 +158,12 @@ def test_vertices():
         assert g.has_vertex('s') == True
         assert g.has_vertex(1) == True
         assert g.has_vertex(2) == False
+
+        # Remove vertices.
+        g.remove_vertex('s')
+        with pytest.raises(ValueError):
+            g.remove_vertex(2)
+        assert g.has_vertex('s') == False
 
 def test_attributes():
     """

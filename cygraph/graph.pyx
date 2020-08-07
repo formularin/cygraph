@@ -3,6 +3,7 @@
 
 import copy
 import functools
+import warnings
 
 cimport numpy as np
 import numpy as np
@@ -303,7 +304,26 @@ cdef class StaticGraph(Graph):
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
     
-    cpdef void remove_edge(self, object v1, object v2) except *
+    cpdef void remove_edge(self, object v1, object v2) except *:
+        """
+        Removes an edge between two vertices in this graph.
+
+        Args:
+            v1: One of the edge's vertices.
+            v2: One of the edge's vertices.
+        
+        Raises:
+            ValueError: At least one of the inputted vertices is not in the graph.
+        """
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
+
+        if np.isnan(self._adjacency_matrix_view[u][v]):
+            warnings.warn("Attempting to remove edge that doesn't exist.")
+        else:
+            self._adjacency_matrix_view[u][v] = np.nan
+            if not self.directed:
+                self._adjacency_matrix_view[v][u] = np.nan
 
     cpdef bint has_edge(self, object v1, object v2) except *:
         """
@@ -385,13 +405,30 @@ cdef class StaticGraph(Graph):
                 self._adjacency_matrix = \
                     np.append(self._adjacency_matrix, new_column, axis=1)
 
-    cpdef set get_children(self, object vertex):
+    cpdef void remove_vertex(self, object v) except *:
+        """
+        Removes a vertex from this graph.
+
+        Args:
+            v: A vertex in this graph.
+
+        Raises:
+            ValueError: There is no such vertex in this graph.
+        """
+        cdef int u = self._get_vertex_int(v)
+
+        del self._vertex_map[v]
+        self.vertices.remove(v)
+        np.delete(self._adjacency_matrix, u, axis=1)  # Delete column.
+        np.delete(self._adjacency_matrix, u, axis=0)  # Delete row.
+
+    cpdef set get_children(self, object v):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
 
         Args:
-            vertex: A vertex in the graph.
+            v: A vertex in the graph.
 
         Returns:
             A set of the child vertices of the inputted vertex.
@@ -400,12 +437,12 @@ cdef class StaticGraph(Graph):
             ValueError: The inputted vertex is not in the graph.
         """
         cdef set children = set()
-        cdef int u, v
+        cdef int u, w
 
-        v = self._get_vertex_int(vertex)
+        w = self._get_vertex_int(v)
 
         for u in range(len(self.vertices)):
-            if not np.isnan(self._adjacency_matrix_view[v][u]):
+            if not np.isnan(self._adjacency_matrix_view[w][u]):
                 children.add(self.vertices[u])
 
         return children
@@ -573,6 +610,27 @@ cdef class DynamicGraph(Graph):
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
 
+    cpdef void remove_edge(self, object v1, object v2) except *:
+        """
+        Removes an edge between two vertices in this graph.
+
+        Args:
+            v1: One of the edge's vertices.
+            v2: One of the edge's vertices.
+        
+        Raises:
+            ValueError: At least one of the inputted vertices is not in the graph.
+        """
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
+
+        if self._adjacency_matrix[u][v] is None:
+            warnings.warn("Attempting to remove edge that doesn't exist.")
+        else:
+            self._adjacency_matrix[u][v] = None
+            if not self.directed:
+                self._adjacency_matrix[v][u] = None
+
     cpdef bint has_edge(self, object v1, object v2) except *:
         """
         Returns whether or not an edge exists in this graph.
@@ -649,13 +707,33 @@ cdef class DynamicGraph(Graph):
             for i in range((len(self._adjacency_matrix) - 1)):
                 self._adjacency_matrix[i].append(None)
 
-    cpdef set get_children(self, object vertex):
+    cpdef void remove_vertex(self, object v) except *:
+        """
+        Removes a vertex from this graph.
+
+        Args:
+            v: A vertex in this graph.
+
+        Raises:
+            ValueError: There is no such vertex in this graph.
+        """
+        cdef int u = self._get_vertex_int(v)
+
+        del self._vertex_map[v]
+        self.vertices.remove(v)
+        # Delete row.
+        self._adjacency_matrix.pop(u)
+        # Delete column.
+        for row in self._adjacency_matrix:
+            row.pop(u)
+
+    cpdef set get_children(self, object v):
         """
         Returns the names of all the child vertices of a given vertex.
         Equivalent to neighbors if all edges are undirected.
 
         Args:
-            vertex: A vertex in the graph.
+            v: A vertex in the graph.
 
         Returns:
             A set of the child vertices of the inputted vertex.
@@ -664,12 +742,12 @@ cdef class DynamicGraph(Graph):
             ValueError: The inputted vertex is not in the graph.
         """
         cdef set children = set()
-        cdef int u, v
+        cdef int u, w
 
-        v = self._get_vertex_int(vertex)
+        w = self._get_vertex_int(v)
 
         for u in range(len(self.vertices)):
-            if self._adjacency_matrix[v][u] is not None:
+            if self._adjacency_matrix[w][u] is not None:
                 children.add(self.vertices[u])
 
         return children
