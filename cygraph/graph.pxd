@@ -2,6 +2,8 @@
 Graph base class header file for cimport by algorithms.pyx
 """
 
+cimport numpy as np
+
 
 cdef class Graph:
     cdef dict _vertex_attributes
@@ -29,7 +31,7 @@ cdef class StaticGraph(Graph):
     # np.nan means there is no edge.
     cdef double[:,:] _adjacency_matrix_view
 
-    cdef readonly object _adjacency_matrix
+    cdef readonly np.ndarray _adjacency_matrix
 
     cpdef bint has_edge(self, object v1, object v2) except *
 

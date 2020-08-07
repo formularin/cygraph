@@ -6,8 +6,7 @@ maintenance.py
 # Cython
 cygraph/*.c
 cygraph/*.cpython-38-darwin.so
-cygraph/cytests/*.cpython-38-darwin.so
-cygraph/cytests/*.c
+cygraph/*.html
 build/
 
 # Pip
