@@ -111,7 +111,8 @@ cpdef Graph get_min_spanning_tree(Graph graph):
 
 cpdef tuple partition_graph(Graph graph, bint static=False):
     """
-    Partitions a graph into two graphs.
+    Partitions a graph into two graphs. Does not change the inputted
+    graph in any way.
 
     Args:
         cygraph.Graph graph: A graph.
@@ -122,8 +123,83 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
         A tuple of two graphs that are the result of a random partition
         of the inputted graph. Has an (n choose 2)^-1 probability of
         finding the minimum cut partition where n = |V| and the
-        inputted graph G = (V, E).
+        inputted graph G = (V, E). Also returns cutset of partition.
+
+        Therefore, the output type is (Graph, Graph, set<(object, object)>)
     """
+    if graph.directed:
+        raise NotImplementedError(
+            "cygraph.algorithms.partition_graph is not implemented for directed graphs."
+        )
+    if len(graph) < 2:
+        raise ValueError(
+            "Inputted graph has fewer than 2 vertices."
+        )
+
+    cdef DynamicGraph graph_copy = DynamicGraph(graph)
+    cdef object u, v, uv, neighbor
+    cdef set uv_neighbors
+    cdef dict contracted_vertices = {v: {v} for v in graph}
+
+    # Vertices in graph_copy will be pointers to lists, which contain contracted vertices.
+    while len(graph_copy) > 2:
+        # Choose a random edge to contract.
+        u = random.choice(graph_copy.vertices)
+        v = random.sample(graph_copy.get_children(u), 1)[0]
+
+        while True:
+            # Roundabout way of getting random int because
+            # `int(1048576 * random.random())` is significantly
+            # faster than `random.randint(0, 1048576)`
+            uv = hex(int(1048576 * random.random()))[2:]
+            if uv not in graph.vertices:
+                break
+
+        # Contract edge (u, v) to new vertex uv.
+        uv_neighbors = graph_copy.get_children(u) | graph_copy.get_children(v)
+        uv_neighbors.remove(u)
+        uv_neighbors.remove(v)
+        graph_copy.remove_vertex(u)
+        graph_copy.remove_vertex(v)
+        graph_copy.add_vertex(uv)
+        for neighbor in uv_neighbors:
+            graph_copy.add_edge(uv, neighbor)
+
+        # Save which contracted vertices are now in uv.
+        contracted_vertices[uv] = contracted_vertices[u] | contracted_vertices[v]
+        del contracted_vertices[u]
+        del contracted_vertices[v]
+
+    # Generate new two graphs.
+    cdef int i
+    cdef tuple new_graphs
+    if static:
+        new_graphs = tuple([
+            StaticGraph(
+                directed=False,
+                vertices=list(contracted_vertices[graph_copy.vertices[i]]))
+            for i in range(2)
+        ])
+    else:
+        new_graphs = tuple([
+            DynamicGraph(
+                directed=False,
+                vertices=list(contracted_vertices[graph_copy.vertices[i]]))
+            for i in range(2)
+        ])
+    # Add edges to graphs and determine cutset.
+    cdef Graph new_graph
+    cdef set cutset = set()
+    for i, new_graph in enumerate(new_graphs):
+        for u in new_graph.vertices:
+            for v in graph.get_children(u):
+                if v in new_graph.vertices:
+                    new_graph.add_edge(u, v, graph.get_edge_weight(u, v))
+                elif i == 0:
+                    # All of the cut edges will be encountered while
+                    # filling in the first graph.
+                    cutset.add((u, v, graph.get_edge_weight(u, v)))
+    return (*new_graphs, cutset)
 
 
 cpdef set get_components(Graph graph, bint static=False):
