@@ -46,7 +46,6 @@ cdef class Graph:
         if graph is not None:
             self._vertex_attributes = copy.deepcopy(graph._vertex_attributes)
             self._edge_attributes = copy.deepcopy(graph._edge_attributes)
-            self._vertex_map = copy.deepcopy(graph._vertex_map)
 
             self.directed = bool(graph.directed)
             self.vertices = graph.vertices[:]
@@ -65,8 +64,8 @@ cdef class Graph:
             ValueError: vertex is not in graph.
         """
         try:
-            return self._vertex_map[vertex]
-        except KeyError:
+            return self.vertices.index(vertex)
+        except ValueError:
             raise ValueError(f"{vertex} is not in graph.")
 
     cpdef void add_vertex(self, object v) except *:
@@ -232,9 +231,9 @@ cdef class StaticGraph(Graph):
     vertices to your graph, consider using cygraph.DynamicGraph.
 
     Args:
+        Graph graph: Optional; A graph.
         bint directed: Optional; Whether or not the graph contains directed edges.
         list vertices: Optional; A list of vertices (can be any hashable type)
-        Graph graph: Optional; A graph.
 
         Note that `directed` and `vertices` args will be ignored if
         graph is not None.
@@ -249,11 +248,9 @@ cdef class StaticGraph(Graph):
             vertex attribute keys to corresponding values.
     """
 
-    def __cinit__(self, bint directed=False, list vertices=[], Graph graph=None):
+    def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
 
         cdef int size
-
-        cdef int i
         cdef object v
 
         if graph is not None:
@@ -268,14 +265,12 @@ cdef class StaticGraph(Graph):
         else:
             self._vertex_attributes = {}
             self._edge_attributes = {}
-            self._vertex_map = {}
 
             self.directed = directed
             self.vertices = list(vertices)
 
             # Map vertex names to numbers and vice versa.
-            for i, v in enumerate(self.vertices):
-                self._vertex_map[v] = i
+            for v in self.vertices:
                 self._vertex_attributes[v] = {}
 
             # Create adjacency matrix.
@@ -338,9 +333,9 @@ cdef class StaticGraph(Graph):
         """
         cdef int u, v
         try:
-            u = self._vertex_map[v1]
-            v = self._vertex_map[v2]
-        except KeyError:
+            u = self.vertices.index(v1)
+            v = self.vertices.index(v2)
+        except ValueError:
             return False
 
         return not np.isnan(self._adjacency_matrix_view[u][v])
@@ -380,7 +375,7 @@ cdef class StaticGraph(Graph):
             TypeError: vertex type is not hashable.
             ValueError: vertex is already in graph.
         """
-        cdef int vertex_number = len(self._vertex_map)
+        cdef int vertex_number = len(self.vertices)
         cdef np.ndarray new_row, new_column
 
         self._vertex_attributes[v] = {}
@@ -389,7 +384,6 @@ cdef class StaticGraph(Graph):
             raise ValueError(f"{v} is already in graph")
         else:
             # Map vertex name to number.
-            self._vertex_map[v] = vertex_number
             self.vertices.append(v)
 
             if vertex_number == 0:
@@ -417,7 +411,6 @@ cdef class StaticGraph(Graph):
         """
         cdef int u = self._get_vertex_int(v)
 
-        del self._vertex_map[v]
         self.vertices.remove(v)
         np.delete(self._adjacency_matrix, u, axis=1)  # Delete column.
         np.delete(self._adjacency_matrix, u, axis=0)  # Delete row.
@@ -548,7 +541,7 @@ cdef class DynamicGraph(Graph):
             vertex attribute keys to corresponding values.
     """
 
-    def __cinit__(self, bint directed=False, list vertices=[], Graph graph=None):
+    def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
 
         cdef int size
 
@@ -570,15 +563,12 @@ cdef class DynamicGraph(Graph):
         else:
             self._vertex_attributes = {}
             self._edge_attributes = {}
-            self._vertex_map = {}
 
             self.directed = directed
             self.vertices = list(vertices)
 
             # Map vertex names to numbers and vice versa.
-            self._vertex_map = {}
-            for i, v in enumerate(self.vertices):
-                self._vertex_map[v] = i
+            for v in self.vertices:
                 self._vertex_attributes[v] = {}
 
             # Create adjacency matrix.
@@ -644,9 +634,9 @@ cdef class DynamicGraph(Graph):
         """
         cdef int u, v
         try:
-            u = self._vertex_map[v1]
-            v = self._vertex_map[v2]
-        except KeyError:
+            u = self.vertices.index(v1)
+            v = self.vertices.index(v2)
+        except ValueError:
             return False
 
         return self._adjacency_matrix[u][v] is not None
@@ -695,8 +685,7 @@ cdef class DynamicGraph(Graph):
             raise ValueError(f"{v} is already in graph")
         else:
             # Map vertex name to number.
-            vertex_number = len(self._vertex_map)
-            self._vertex_map[v] = vertex_number
+            vertex_number = len(self.vertices)
             self.vertices.append(v)
 
             # Add new row.
@@ -719,11 +708,11 @@ cdef class DynamicGraph(Graph):
         """
         cdef int u = self._get_vertex_int(v)
 
-        del self._vertex_map[v]
         self.vertices.remove(v)
-        # Delete row.
+
+        # Delete row and column from adjacency matrix.
         self._adjacency_matrix.pop(u)
-        # Delete column.
+        cdef list row
         for row in self._adjacency_matrix:
             row.pop(u)
 

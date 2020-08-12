@@ -8,7 +8,6 @@ cimport numpy as np
 cdef class Graph:
     cdef dict _vertex_attributes
     cdef dict _edge_attributes
-    cdef dict _vertex_map
 
     cdef readonly list vertices
     cdef readonly bint directed
