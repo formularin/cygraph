@@ -8,9 +8,16 @@ Currently includes:
  - Number of components (depth-first search)
 """
 
-import random
+from libc.stdlib cimport rand, srand
 
 from graph cimport Graph, StaticGraph, DynamicGraph
+
+
+cdef extern from "time.h":
+    ctypedef int time_t
+    time_t time(time_t*)
+
+srand(time(NULL))
 
 
 cdef set _dfs(Graph graph, object v):
@@ -207,19 +214,18 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
     cdef DynamicGraph graph_copy = DynamicGraph(graph)
     cdef object u, v, uv, neighbor
     cdef set uv_neighbors
+    cdef list neighbors
     cdef dict contracted_vertices = {v: {v} for v in graph}
 
     # Vertices in graph_copy will be pointers to lists, which contain contracted vertices.
     while len(graph_copy) > 2:
         # Choose a random edge to contract.
-        u = random.choice(graph_copy.vertices)
-        v = random.sample(graph_copy.get_children(u), 1)[0]
+        u = graph_copy.vertices[rand() % len(graph_copy.vertices)]
+        neighbors = list(graph_copy.get_children(u))
+        v = neighbors[rand() % len(neighbors)]
 
         while True:
-            # Roundabout way of getting random int because
-            # `int(1048576 * random.random())` is significantly
-            # faster than `random.randint(0, 1048576)`
-            uv = hex(int(1048576 * random.random()))[2:]
+            uv = hex(rand())[2:]
             if uv not in graph.vertices:
                 break
 
@@ -294,17 +300,17 @@ cpdef set get_components(Graph graph, bint static=False):
         raise NotImplementedError("get_components only applies to undirected "
             "graphs. For directed graphs, see get_strongly_connected_components.")
 
-    cdef set discovered_vertices, discovered_components, vertices, new_component
+    cdef list vertices = graph.vertices[:]
+    cdef set discovered_components, new_component
     cdef object vertex, neighbor
 
-    vertices = set(graph.vertices)
-    discovered_vertices = set()
     # Contains tuples which contain all the nodes in each component.
     discovered_components = set()
-    while len(discovered_vertices) < len(vertices):
-        vertex = random.sample(vertices, 1)[0]
+    while vertices:
+        vertex = vertices[0]
         new_component = _dfs(graph, vertex)
-        discovered_vertices = discovered_vertices.union(new_component)
+        for vertex in new_component:
+            vertices.remove(vertex)
         discovered_components.add(tuple(new_component))
 
     # Get the induced subgraphs that are each of the components.
