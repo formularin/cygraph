@@ -1,6 +1,6 @@
 # cygraph
 
-*A graph theory library for both cython and python*
+*A graph theory library implemented in Cython*
 
 ## Installation
 
