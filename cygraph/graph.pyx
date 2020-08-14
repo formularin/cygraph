@@ -354,7 +354,7 @@ cdef class StaticGraph(Graph):
         Raises:
             ValueError: At least one of the inputted vertices is not in
                 the graph.
-            ValueError: There is no edge between the inputted nodes.
+            ValueError: There is no edge between the inputted vertices.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)

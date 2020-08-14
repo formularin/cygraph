@@ -78,7 +78,7 @@ cpdef set find_articulation_points(Graph graph):
         if start in visited:
             continue
         
-        discovery = {start: 0}  # time of first discovery of node during search
+        discovery = {start: 0}  # time of first discovery of vertex during search
         low = {start: 0}
         root_children = 0
         visited.add(start)
@@ -104,7 +104,7 @@ cpdef set find_articulation_points(Graph graph):
                     low[grandparent] = min(low[parent], low[grandparent])
                 elif stack:  # length 1 so grandparent is root
                     root_children += 1
-        # root node is articulation point if it has more than 1 child
+        # root is articulation point if it has more than 1 child
         if root_children > 1:
             articulation_points.add(start)
     
@@ -128,29 +128,29 @@ cpdef list find_shortest_path(Graph graph, object source, object target):
         ValueError: One of the vertices is not in the graph.
         ValueError: There is no path from source to target.
     """
-    cdef dict distances, previous_nodes
-    cdef set unprocessed_nodes = set()
-    # Minimum distance from target to each node.
+    cdef dict distances, previous_vertices
+    cdef set unprocessed_vertices = set()
+    # Minimum distance from target to each vertex.
     distances = {}
-    # Maps nodes to the node that comes before it in the path.
-    previous_nodes = {}
+    # Maps vertices to the vertex that comes before it in the path.
+    previous_vertices = {}
 
     for vertex in graph.vertices:
         distances[vertex] = None
-        previous_nodes[vertex] = None
-        unprocessed_nodes.add(vertex)
+        previous_vertices[vertex] = None
+        unprocessed_vertices.add(vertex)
     distances[source] = 0
 
     cdef object u ,v
-    while unprocessed_nodes != set():
+    while unprocessed_vertices != set():
         try:
             u = min([v for v in distances
-                    if v in unprocessed_nodes and distances[v] is not None])
+                    if v in unprocessed_vertices and distances[v] is not None])
         except ValueError:
             raise ValueError(f"There is no path in {graph!r} from"
                              f"{source} to {target}")
 
-        unprocessed_nodes.remove(u)
+        unprocessed_vertices.remove(u)
         if u == target:
             break
 
@@ -159,14 +159,14 @@ cpdef list find_shortest_path(Graph graph, object source, object target):
             if ((distances[v] is not None and alternate_distance < distances[v])
                     or distances[v] is None):
                 distances[v] = alternate_distance
-                previous_nodes[v] = u
+                previous_vertices[v] = u
 
     cdef list sequence = []
     u = target
-    if previous_nodes[u] is not None or u == source:
+    if previous_vertices[u] is not None or u == source:
         while u is not None:
             sequence.insert(0, u)
-            u = previous_nodes[u]
+            u = previous_vertices[u]
 
     return sequence
 
@@ -304,7 +304,7 @@ cpdef set get_components(Graph graph, bint static=False):
     cdef set discovered_components, new_component
     cdef object vertex, neighbor
 
-    # Contains tuples which contain all the nodes in each component.
+    # Contains tuples which contain all the vertices in each component.
     discovered_components = set()
     while vertices:
         vertex = vertices[0]
