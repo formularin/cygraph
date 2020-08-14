@@ -50,7 +50,7 @@ cdef class Graph:
             self.directed = bool(graph.directed)
             self.vertices = graph.vertices[:]
 
-    cpdef int _get_vertex_int(self, object vertex) except -1:
+    cdef int _get_vertex_int(self, object vertex) except -1:
         """
         Returns the int corresponding to a vertex.
 
@@ -298,7 +298,7 @@ cdef class StaticGraph(Graph):
         self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
             self._adjacency_matrix_view[v][u] = weight
-    
+
     cpdef void remove_edge(self, object v1, object v2) except *:
         """
         Removes an edge between two vertices in this graph.
@@ -306,7 +306,7 @@ cdef class StaticGraph(Graph):
         Args:
             v1: One of the edge's vertices.
             v2: One of the edge's vertices.
-        
+
         Raises:
             ValueError: At least one of the inputted vertices is not in the graph.
         """
@@ -607,7 +607,7 @@ cdef class DynamicGraph(Graph):
         Args:
             v1: One of the edge's vertices.
             v2: One of the edge's vertices.
-        
+
         Raises:
             ValueError: At least one of the inputted vertices is not in the graph.
         """

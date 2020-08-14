@@ -239,7 +239,7 @@ def test_attributes():
                 g.get_vertex_attribute('d', key='key')
             with pytest.raises(KeyError):
                 g.get_vertex_attribute('a', key='this is not a key')
-    
+
 def test_not_implemented(subtests):
     """Tests that abstract methods raise NotImplementedErrors.
     """

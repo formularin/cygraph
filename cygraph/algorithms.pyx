@@ -33,9 +33,76 @@ cdef set _dfs(Graph graph, object v):
     cdef object u
     for u in graph.get_children(v):
         if u not in discovered:
-            discovered = discovered.union(_dfs(graph, u))
+            discovered = discovered | _dfs(graph, u)
     return discovered
 
+
+cpdef set find_articulation_points(Graph graph):
+    """
+    Takes a graph and finds all of its articulation points, where an
+    articulation point is any point that, when removed, causes the graph
+    to increase in number of components.
+
+    Args:
+        cygraph.Graph graph: A graph.
+    
+    Returns:
+        The set of articulation points in the graph.
+    
+    Raises:
+        NotImplementedError: The inputted graph is directed.
+    """
+    if graph.directed:
+        raise NotImplementedError(
+            "cygraph.algorithms.partition_graph is not implemented for directed graphs."
+        )
+
+    cdef set visited = set()
+    cdef set articulation_points = set()
+
+    # Local loop variables.
+    cdef object start, grandparent, parent, child
+    cdef set children
+    cdef dict discovery, low
+    cdef int root_children
+    cdef list stack
+    for start in graph.vertices:
+        # Each iteration that is not skipped is checking a new component.
+        if start in visited:
+            continue
+        
+        discovery = {start: 0}  # time of first discovery of node during search
+        low = {start: 0}
+        root_children = 0
+        visited.add(start)
+        stack = [(start, start, graph.get_children(start))]
+        while stack:
+            grandparent, parent, children = stack[-1]
+            try:
+                child = children.pop()
+                if grandparent == child:
+                    continue
+                if child in visited:
+                    if discovery[child] <= discovery[parent]:  # back edge
+                        low[parent] = min(low[parent], discovery[child])
+                else:
+                    low[child] = discovery[child] = len(discovery)
+                    visited.add(child)
+                    stack.append((parent, child, graph.get_children(child)))
+            except KeyError:  # Iterated through all children.
+                stack.pop()
+                if len(stack) > 1:
+                    if low[parent] >= discovery[grandparent]:
+                        articulation_points.add(grandparent)
+                    low[grandparent] = min(low[parent], low[grandparent])
+                elif stack:  # length 1 so grandparent is root
+                    root_children += 1
+        # root node is articulation point if it has more than 1 child
+        if root_children > 1:
+            articulation_points.add(start)
+    
+    return articulation_points
+        
 
 cpdef list find_shortest_path(Graph graph, object source, object target):
     """
@@ -124,8 +191,9 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
         of the inputted graph. Has an (n choose 2)^-1 probability of
         finding the minimum cut partition where n = |V| and the
         inputted graph G = (V, E). Also returns cutset of partition.
-
-        Therefore, the output type is (Graph, Graph, set<(object, object)>)
+    
+    Raises:
+        NotImplementedError: The inputted graph is directed.
     """
     if graph.directed:
         raise NotImplementedError(
@@ -220,12 +288,11 @@ cpdef set get_components(Graph graph, bint static=False):
         of the inputted graph.
 
     Raises:
-        ValueError: The inputted graph is directed.
+        NotImplementedError: The inputted graph is directed.
     """
     if graph.directed:
-        raise ValueError("get_components only applies to undirected "
-                         "graphs. For directed graphs, see "
-                         "get_strongly_connected_components.")
+        raise NotImplementedError("get_components only applies to undirected "
+            "graphs. For directed graphs, see get_strongly_connected_components.")
 
     cdef set discovered_vertices, discovered_components, vertices, new_component
     cdef object vertex, neighbor

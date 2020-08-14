@@ -12,7 +12,7 @@ cdef class Graph:
     cdef readonly list vertices
     cdef readonly bint directed
 
-    cpdef int _get_vertex_int(self, object vertex) except -1
+    cdef int _get_vertex_int(self, object vertex) except -1
 
     cpdef void add_vertex(self, object v) except *
     cpdef void remove_vertex(self, object v) except *
