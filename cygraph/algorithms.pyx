@@ -20,7 +20,8 @@ cdef extern from "time.h":
 srand(time(NULL))
 
 
-cdef set _dfs(Graph graph, object v):
+cpdef void _dfs(Graph graph, object v, set visited,
+        list vertex_stack=[[]], bint backwards=False):
     """
     Finds all of the vertices in a component of a graph using a
     depth-first search.
@@ -28,6 +29,10 @@ cdef set _dfs(Graph graph, object v):
     Args:
         cygraph.Graph graph: A graph.
         v: The root vertex of the search.
+        list vertex_stack: Optional; A stack containing vertices as they
+            are finished in the DFS.
+        bint backwards: Whether or not to use get_parents instead of
+            get_children().
 
     Returns:
         The set of vertices in the component of the inputted graph that
@@ -36,12 +41,19 @@ cdef set _dfs(Graph graph, object v):
     Raises:
         ValueError: vertex is not in graph.
     """
-    cdef set discovered = {v}
     cdef object u
-    for u in graph.get_children(v):
-        if u not in discovered:
-            discovered = discovered | _dfs(graph, u)
-    return discovered
+    cdef set next_vertices
+
+    if v not in visited:
+        visited.add(v)
+        if backwards:
+            next_vertices = graph.get_parents(v)
+        else:
+            next_vertices = graph.get_children(v)
+        for u in next_vertices:
+            _dfs(graph, u, visited, vertex_stack, backwards)
+        if vertex_stack != [[]]:
+            vertex_stack.append(v)
 
 
 cpdef set find_articulation_points(Graph graph):
@@ -49,6 +61,9 @@ cpdef set find_articulation_points(Graph graph):
     Takes a graph and finds all of its articulation points, where an
     articulation point is any point that, when removed, causes the graph
     to increase in number of components.
+
+    Implementation taken from here:
+    https://github.com/networkx/networkx/blob/master/networkx/algorithms/components/biconnected.py
 
     Args:
         cygraph.Graph graph: A graph.
@@ -188,6 +203,9 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
     Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
+    Implemented from here:
+    https://en.wikipedia.org/wiki/Karger%27s_algorithm
+
     Args:
         cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
@@ -308,7 +326,8 @@ cpdef set get_components(Graph graph, bint static=False):
     discovered_components = set()
     while vertices:
         vertex = vertices[0]
-        new_component = _dfs(graph, vertex)
+        new_component = set()
+        _dfs(graph, vertex, new_component)
         for vertex in new_component:
             vertices.remove(vertex)
         discovered_components.add(tuple(new_component))
@@ -335,7 +354,7 @@ cpdef set get_components(Graph graph, bint static=False):
     return component_graphs
 
 
-cpdef list get_strongly_connected_components(Graph graph, bint static=False):
+cpdef set get_strongly_connected_components(Graph graph, bint static=False):
     """
     Gets the strongly connected components of the inputted graph, where
     a strongly connected component is a subgraph in which every vertex
@@ -349,9 +368,50 @@ cpdef list get_strongly_connected_components(Graph graph, bint static=False):
             should be static. Defaults to False.
 
     Returns:
-        A list of cygraph.Graph objects that are the components
+        A set of cygraph.Graph objects that are the components
         of the inputted graph.
 
     Raises:
-        ValueError: The inputted graph is undirected.
+        NotImplementedError: The inputted graph is undirected.
     """
+    if not graph.directed:
+        raise NotImplementedError("get_strongly_connected_components only"
+            "applies to directed graphs. For undirected graphs, see "
+            "get_components.")
+ 
+    cdef list stack = []
+    cdef set visited = set()
+    cdef object v, u
+    for v in graph.vertices:
+        if v not in visited:
+            _dfs(graph, v, visited, vertex_stack=stack)
+
+    visited = set()
+    cdef set new_vertices = set()
+    cdef set components = set()
+    while stack:
+        v = stack.pop()
+        _dfs(graph, v, new_vertices, backwards=True)
+
+        for v in new_vertices:
+            if v in stack:
+                stack.remove(v)
+        
+        visited |= new_vertices
+        components.add(tuple(new_vertices))
+    
+    cdef set graph_components = set()
+    cdef tuple comp
+    cdef Graph g
+    for comp in components:
+        if static:
+            g = StaticGraph(directed=True, vertices=list(comp))
+        else:
+            g = DynamicGraph(directed=True, vertices=list(comp))
+        
+        for v in comp:
+            for u in graph.get_children(v):
+                if u in comp:
+                    g.add_edge(v, u)
+    
+    return graph_components

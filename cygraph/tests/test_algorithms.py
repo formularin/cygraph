@@ -3,6 +3,7 @@ Unit tests for algorithms implemented in cygraph/algorithms.pyx
 """
 
 import itertools
+import string
 
 import pytest
 
@@ -185,3 +186,28 @@ def test_get_strongly_connected_components():
     """
     Tests get_strongly_connected_components function.
     """
+
+    edges = [
+        ('a', 'b'), ('b', 'c'), ('b', 'e'), ('b', 'f'), ('c', 'd'), ('c', 'g'),
+        ('d', 'c'), ('d', 'h'), ('h', 'd'), ('h', 'g'), ('g', 'f'), ('f', 'g'),
+        ('e', 'a'), ('e', 'f')
+    ]
+    component_vertices = [{'a', 'b', 'e'}, {'c', 'd', 'g'}, {'f', 'g'}]
+    component_edges = [
+        {('a', 'b'), ('b', 'e'), ('e', 'a')}, {('f', 'g'), ('g', 'f')},
+        {('h', 'd'), ('d', 'h'), ('d', 'c'), ('c', 'd')}
+    ]
+
+    for static in [True, False]:
+        g = create_graph(directed=True, vertices=list(string.ascii_lowercase[:8]))
+        for edge in edges:
+            g.add_edge(*edge)
+        test_components = get_strongly_connected_components(g)
+        for component in test_components:
+            assert set(component.vertices) in component_vertices
+            test_component_edges = {e[:-1] for e in component.edges}
+            assert test_component_edges in component_edges
+
+        g2 = create_graph(directed=False)
+        with pytest.raises(NotImplementedError):
+            get_strongly_connected_components(g2)
