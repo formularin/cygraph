@@ -42,6 +42,7 @@ def test_edges():
     Tests:
         - add_edge
         - get_children
+        - get_parents
         - edges
         - has_edge
         - remove_edge
@@ -88,6 +89,11 @@ def test_edges():
         assert g.get_children('a') == {'s', 'b'}
         with pytest.raises(ValueError):
             g.get_children('d')
+        
+        # get_parents
+        assert g.get_parents('e') == {'b'}
+        with pytest.raises(ValueError):
+            g.get_parents('d')
 
         # Undirected graph.
         g2 = create_graph(static=static, directed=False, vertices=['s', 'a', 'b', 'e'])
@@ -129,6 +135,11 @@ def test_edges():
         assert g2.get_children('a') == {'b'}
         with pytest.raises(ValueError):
             g2.get_children('d')
+        
+        # get_parents
+        assert g2.get_parents('a') == {'b'}
+        with pytest.raises(ValueError):
+            g2.get_parents('d')
 
 def test_vertices():
     """

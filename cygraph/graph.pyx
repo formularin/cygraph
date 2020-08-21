@@ -191,6 +191,9 @@ cdef class Graph:
 
     cpdef set get_children(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_children")
+    
+    cpdef set get_parents(self, object vertex):
+        raise NotImplementedError(NOT_IMPLEMENTED % "get_parents")
 
     @property
     def edges(self):
@@ -439,6 +442,31 @@ cdef class StaticGraph(Graph):
                 children.add(self.vertices[u])
 
         return children
+    
+    cpdef set get_parents(self, object v):
+        """
+        Returns the parents (aka "in-neighbors") of a given vertex.
+        Equivalent to get_children in undirected graphs. 
+
+        Args:
+            v: A vertex in the graph.
+        
+        Returns:
+            A set of the parent vertices of the inputted vertex.
+        
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set parents = set()
+        cdef int u, w
+
+        w = self._get_vertex_int(v)
+
+        for u in range(len(self.vertices)):
+            if not np.isnan(self._adjacency_matrix_view[u][w]):
+                parents.add(self.vertices[u])
+
+        return parents
 
     @property
     def edges(self):
@@ -740,6 +768,31 @@ cdef class DynamicGraph(Graph):
                 children.add(self.vertices[u])
 
         return children
+
+    cpdef set get_parents(self, object v):
+        """
+        Returns the parents (aka "in-neighbors") of a given vertex.
+        Equivalent to get_children in undirected graphs. 
+
+        Args:
+            v: A vertex in the graph.
+        
+        Returns:
+            A set of the parent vertices of the inputted vertex.
+        
+        Raises:
+            ValueError: The inputted vertex is not in the graph.
+        """
+        cdef set parents = set()
+        cdef int u, w
+
+        w = self._get_vertex_int(v)
+
+        for u in range(len(self.vertices)):
+            if self._adjacency_matrix[u][w] is not None:
+                parents.add(self.vertices[u])
+
+        return parents
 
     @property
     def edges(self):

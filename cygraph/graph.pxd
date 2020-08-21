@@ -25,6 +25,7 @@ cdef class Graph:
     cpdef object get_edge_attribute(self, tuple edge, object key)
     cpdef double get_edge_weight(self, object v1, object v2) except *
     cpdef set get_children(self, object v)
+    cpdef set get_parents(self, object v)
 
 
 cdef class StaticGraph(Graph):
