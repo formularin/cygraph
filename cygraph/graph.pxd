@@ -1,7 +1,3 @@
-"""
-Graph base class header file for cimport by algorithms.pyx
-"""
-
 cimport numpy as np
 
 

@@ -1,11 +1,5 @@
-"""
-Various graph-theory related algorithm implementations using cygraph classes.
-
-Currently includes:
- - Shortest Path (Dijkstra's algorithm)
- - Minimum spanning tree (Borůvka's algorithm)
- - Graph partition (Karger's algorithm)
- - Number of components (depth-first search)
+"""Various graph-theory related algorithm implementations using cygraph
+classes.
 """
 
 from libc.stdlib cimport rand, srand
@@ -22,24 +16,24 @@ srand(time(NULL))
 
 cpdef void _dfs(Graph graph, object v, set visited,
         list vertex_stack=[[]], bint backwards=False):
-    """
-    Finds all of the vertices in a component of a graph using a
+    """Finds all of the vertices in a component of a graph using a
     depth-first search.
 
-    Args:
-        cygraph.Graph graph: A graph.
-        v: The root vertex of the search.
-        list vertex_stack: Optional; A stack containing vertices as they
-            are finished in the DFS.
-        bint backwards: Whether or not to use get_parents instead of
-            get_children().
+    Parameters
+    graph: cygraph.Graph
+        A graph.
+    v
+        The root vertex of the search.
+    vertex_stack: list, optional
+        A stack containing vertices as they are finished in the DFS.
+    backwards: bint, optional
+        Whether or not to use get_parents instead of get_children when
+        finding vertex neighbors.
 
-    Returns:
-        The set of vertices in the component of the inputted graph that
-        contains the inputted root vertex.
-
-    Raises:
-        ValueError: vertex is not in graph.
+    Returns
+    -------
+    set
+        Vertices in the component of `graph` that contains `v`.
     """
     cdef object u
     cdef set next_vertices
@@ -57,26 +51,32 @@ cpdef void _dfs(Graph graph, object v, set visited,
 
 
 cpdef set find_articulation_points(Graph graph):
-    """
-    Takes a graph and finds all of its articulation points, where an
+    """Takes a graph and finds all of its articulation points, where an
     articulation point is any point that, when removed, causes the graph
     to increase in number of components.
 
     Implementation taken from here:
     https://github.com/networkx/networkx/blob/master/networkx/algorithms/components/biconnected.py
 
-    Args:
-        cygraph.Graph graph: A graph.
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
     
-    Returns:
-        The set of articulation points in the graph.
+    Returns
+    -------
+    set
+        The articulation points in `graph`.
     
-    Raises:
-        NotImplementedError: The inputted graph is directed.
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
     """
     if graph.directed:
         raise NotImplementedError(
-            "cygraph.algorithms.partition_graph is not implemented for directed graphs."
+            "cygraph.algorithms.partition_graph is not implemented for "
+            "directed graphs."
         )
 
     cdef set visited = set()
@@ -127,21 +127,23 @@ cpdef set find_articulation_points(Graph graph):
         
 
 cpdef list find_shortest_path(Graph graph, object source, object target):
-    """
-    Takes a graph and finds the shortest path between two vertices in it.
+    """Takes a graph and finds the shortest path between two vertices in
+    it.
 
-    Args:
-        cygraph.Graph graph: A graph.
-        source: One of the vertices in the inputted graph.
-        target: The other vertex in the inputted graph.
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    source
+        One of the vertices in `graph`.
+    target
+        The other vertex in `graph`.
 
-    Returns:
+    Returns
+    -------
+    list
         The list of vertices that constitute the shortest path between
         source and target.
-
-    Raises:
-        ValueError: One of the vertices is not in the graph.
-        ValueError: There is no path from source to target.
     """
     cdef dict distances, previous_vertices
     cdef set unprocessed_vertices = set()
@@ -186,43 +188,34 @@ cpdef list find_shortest_path(Graph graph, object source, object target):
     return sequence
 
 
-cpdef Graph get_min_spanning_tree(Graph graph):
-    """
-    Finds the minimum spanning tree of a graph.
-
-    Args:
-        cygraph.Graph graph: A graph.
-
-    Returns:
-        The graph that is the minimum spanning tree of the inputted graph.
-    """
-
-
 cpdef tuple partition_graph(Graph graph, bint static=False):
-    """
-    Partitions a graph into two graphs. Does not change the inputted
+    """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
     Implemented from here:
     https://en.wikipedia.org/wiki/Karger%27s_algorithm
 
-    Args:
-        cygraph.Graph graph: A graph.
-        bint static: Optional; Whether or not the graphs in the output
-            should be static. Defaults to False.
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    static: bint, optional
+        Whether or not the graphs in the output should be static.
 
-    Returns:
-        A tuple of two graphs that are the result of a random partition
-        of the inputted graph. Has an (n choose 2)^-1 probability of
-        finding the minimum cut partition where n = |V| and the
-        inputted graph G = (V, E). Also returns cutset of partition.
+    Returns
+    -------
+    tuple
+        Two graphs that are the result of a random partition of `graph`.
     
-    Raises:
-        NotImplementedError: The inputted graph is directed.
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
     """
     if graph.directed:
         raise NotImplementedError(
-            "cygraph.algorithms.partition_graph is not implemented for directed graphs."
+            "cygraph.algorithms.partition_graph is not implemented for"
+            "directed graphs."
         )
     if len(graph) < 2:
         raise ValueError(
@@ -235,7 +228,8 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
     cdef list neighbors
     cdef dict contracted_vertices = {v: {v} for v in graph}
 
-    # Vertices in graph_copy will be pointers to lists, which contain contracted vertices.
+    # Vertices in graph_copy will be pointers to lists, which contain
+    # contracted vertices.
     while len(graph_copy) > 2:
         # Choose a random edge to contract.
         u = graph_copy.vertices[rand() % len(graph_copy.vertices)]
@@ -295,24 +289,27 @@ cpdef tuple partition_graph(Graph graph, bint static=False):
 
 
 cpdef set get_components(Graph graph, bint static=False):
-    """
-    Gets the components of the inputted graph, where a component is a
+    """Gets the components of the inputted graph, where a component is a
     subgraph in which any two vertices are connected to each other by
-    paths. This only works for undirected graphs. If you want to get the
-    components of a directed graph, see
+    a path. This only works for undirected graphs. If you want to get
+    the equivalent of a directed graph, see
     cygraph.algorithms.get_strongly_connected_components
 
-    Args:
+    Parameters
+    ----------
         cygraph.Graph graph: A graph.
         bint static: Optional; Whether or not the graphs in the output
             should be static. Defaults to False.
 
-    Returns:
-        A set of cygraph.Graph objects that are the components
-        of the inputted graph.
+    Returns
+    -------
+    set
+        Graphs that are the components of `graph`.
 
-    Raises:
-        NotImplementedError: The inputted graph is directed.
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
     """
     if graph.directed:
         raise NotImplementedError("get_components only applies to undirected "
@@ -355,24 +352,29 @@ cpdef set get_components(Graph graph, bint static=False):
 
 
 cpdef set get_strongly_connected_components(Graph graph, bint static=False):
-    """
-    Gets the strongly connected components of the inputted graph, where
-    a strongly connected component is a subgraph in which every vertex
-    is reachable by every other vertex. This only applies to directed
-    graphs. If you want to get the components of an undirected graph,
-    see cygraph.algorithms.get_components
+    """Gets the strongly connected components of the inputted graph,
+    where a strongly connected component is a subgraph in which every
+    vertex is reachable by every other vertex. This only applies to
+    directed graphs. If you want to get the equivalent of an undirected
+    graph, see cygraph.algorithms.get_components
 
-    Args:
-        cygraph.Graph graph: A graph.
-        bint static: Optional; Whether or not the graphs in the output
-            should be static. Defaults to False.
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    static: bint, optional
+        Whether or not the graphs in the output should be static.
 
-    Returns:
-        A set of cygraph.Graph objects that are the components
-        of the inputted graph.
+    Returns
+    -------
+    set
+        The set of graphs that are the strongly connnected components of
+        `graph`
 
-    Raises:
-        NotImplementedError: The inputted graph is undirected.
+    Raises
+    ------
+    NotImplementedError
+        `graph` is undirected.
     """
     if not graph.directed:
         raise NotImplementedError("get_strongly_connected_components only"

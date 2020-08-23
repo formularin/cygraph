@@ -1,5 +1,4 @@
-"""
-Unit tests for classes implemented in cygraph/graph.pyx
+"""Unit tests for classes implemented in cygraph/graph.pyx
 """
 
 import pytest
@@ -9,8 +8,7 @@ from ..graph import Graph
 
 
 def test_constructor():
-    """
-    Tests initialization of a StaticGraph and DynamicGraph objects.
+    """Tests initialization of a StaticGraph and DynamicGraph objects.
     """
 
     graphs = []
@@ -38,7 +36,8 @@ def test_constructor():
         assert g.edges == graph.edges
 
 def test_edges():
-    """
+    """Tests various edge-related methods.
+
     Tests:
         - add_edge
         - get_children
@@ -142,7 +141,8 @@ def test_edges():
             g2.get_parents('d')
 
 def test_vertices():
-    """
+    """Tests various vertex-related methods.
+
     Tests methods:
         - add_vertex 
         - has_vertex
@@ -177,7 +177,8 @@ def test_vertices():
         assert g.has_vertex('s') == False
 
 def test_attributes():
-    """
+    """Tests various edge and vertex attribute-related methods.
+
     Tests:
         - set_vertex_attribute
         - get_vertex_attribute

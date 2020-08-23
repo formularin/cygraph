@@ -19,8 +19,7 @@ NOT_IMPLEMENTED = ("%s is not implemented for "
 
 
 cdef class Graph:
-    """
-    A semi-abstract base graph class.
+    """A semi-abstract base graph class.
 
     Semi-abstract because anything that involves the adjacency matrix
     is not implemented, and therefore this class is not meant to be
@@ -51,17 +50,17 @@ cdef class Graph:
             self.vertices = graph.vertices[:]
 
     cdef int _get_vertex_int(self, object vertex) except -1:
-        """
-        Returns the int corresponding to a vertex.
+        """Returns the int corresponding to a vertex.
 
-        Args:
-            vertex: A vertex in the graph.
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
 
-        Returns:
-            The int corresponding to the inputted vertex.
-
-        Raises:
-            ValueError: vertex is not in graph.
+        Returns
+        -------
+        int
+            The integer corresponding to `vertex`.
         """
         try:
             return self.vertices.index(vertex)
@@ -75,17 +74,16 @@ cdef class Graph:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_vertex")
 
     cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *:
-        """
-        Sets an attribute to a vertex.
+        """Sets an attribute to a vertex.
 
-        Args:
-            vertex: A vertex in the graph.
-            key: The name of the attribute. Must be of hashable type.
-            val: The value of the attribute.
-
-        Raises:
-            TypeError: key is not of hashable type.
-            ValueError: vertex is not in graph.
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        key
+            The name of the attribute. Must be of hashable type.
+        val
+            The value of the attribute.
         """
         try:
             self._vertex_attributes[vertex][key] = val
@@ -93,20 +91,18 @@ cdef class Graph:
             raise ValueError(f"{vertex} is not in graph.")
 
     cpdef object get_vertex_attribute(self, object vertex, object key):
-        """
-        Gets an attribute of a vertex.
+        """Gets an attribute of a vertex.
 
-        Args:
-            vertex: A vertex in the graph.
-            key: The name of the attribute. Must be of hashable type.
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        key
+            The name of the attribute. Must be of hashable type.
 
-        Returns:
-            The value of the attribute.
-
-        Raises:
-            TypeError: key is not of hashable type.
-            ValueError: vertex is not in graph.
-            KeyError: key is not in vertex's attributes dict.
+        Returns
+        -------
+        The value of the attribute.
         """
         cdef dict vertex_attributes
         try:
@@ -116,14 +112,17 @@ cdef class Graph:
         return vertex_attributes[key]
 
     cpdef bint has_vertex(self, object vertex) except *:
-        """
-        Returns whether or not the inputted vertex is in this graph.
+        """Returns whether or not a vertex is in this graph.
 
-        Args:
-            vertex: A valid vertex (hashable type).
+        Parameters
+        ----------
+        vertex
+            A valid vertex (hashable type).
 
-        Returns:
-            bint of whether or not vertex is in this graph.
+        Returns
+        -------
+        bint
+            Whether or not `vertex` is in this graph.
         """
         return vertex in self.vertices
 
@@ -134,17 +133,16 @@ cdef class Graph:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")
 
     cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *:
-        """
-        Sets an attribute to an edge.
+        """Sets an attribute to an edge.
 
-        Args:
-            edge: An edge in the graph (v1, v2) tuple.
-            key: The name of the attribute. Must be of hashable type.
-            val: The value of the attribute.
-
-        Raises:
-            TypeError: key is not of hashable type.
-            ValueError: edge is not in graph.
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        key
+            The name of the attribute. Must be of hashable type.
+        val
+            The value of the attribute.
         """
         try:
             self._edge_attributes[edge][key] = val
@@ -158,20 +156,18 @@ cdef class Graph:
                     raise ValueError(f"{edge} is not in graph.")
 
     cpdef object get_edge_attribute(self, tuple edge, object key):
-        """
-        Gets an attribute of an edge.
+        """Gets an attribute of an edge.
 
-        Args:
-            tuple edge: An edge in the graph (v1, v2) tuple.
-            key: The name of the attribute. Must be of hashable type.
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        key
+            The name of the attribute. Must be of hashable type.
 
-        Returns:
-            The value of the attribute.
-
-        Raises:
-            TypeError: key is not of hashable type.
-            ValueError: edge is not in graph.
-            KeyError: key is not in edge's attributes dict.
+        Returns
+        -------
+        The value of the attribute.
         """
         cdef dict edge_attributes
         try:
@@ -221,34 +217,42 @@ cdef class Graph:
 
 
 cdef class StaticGraph(Graph):
-    """
-    A class representing a graph data structure.
+    """A class representing a graph data structure.
 
     This is a directed graph class, although it will function as an
     undirected graph by creating directed edges both ways between two
     vertices. This class contains only basic functionality; algorithms
     are implemented externally.
 
-    Adding vertices to a graph is relatively slow, expecially for
+    Adding vertices to a StaticGraph is relatively slow, expecially for
     already large graphs. If you are going to be adding lots of
     vertices to your graph, consider using cygraph.DynamicGraph.
 
-    Args:
-        Graph graph: Optional; A graph.
-        bint directed: Optional; Whether or not the graph contains directed edges.
-        list vertices: Optional; A list of vertices (can be any hashable type)
+    Parameters
+    graph: cygraph.Graph, optional
+        A graph to create a copy of.
+    directed: bint, optional
+        Whether or not the graph contains directed edges.
+    vertices: list, optional
+        A list of vertices (can be any hashable type).
 
-        Note that `directed` and `vertices` args will be ignored if
-        graph is not None.
+    Note that `directed` and `vertices` args will be ignored if
+    `graph` is not None.
 
-    Attributes:
-        directed: Whether or not the graph contains directed edges.
-        vertices: A list of the vertices in this graph.
-        edges: A list of tuples contianing the two vertices of each edge.
-        edge_attribtues: A dict which maps (v1, v2) tuples to dicts mapping
-            edge attribute keys to corresponding values.
-        vertex_attribtues: A dict which maps vertex names to dicts mapping
-            vertex attribute keys to corresponding values.
+    Attributes
+    ----------
+    directed: bint
+        Whether or not the graph contains directed edges.
+    vertices: list
+        The vertices in this graph.
+    edges: set
+        Tuples contianing the two vertices of each edge.
+    edge_attribtues: dict
+        Maps (v1, v2) tuples to dicts mapping edge attribute keys to
+        corresponding values.
+    vertex_attribtues: dict
+        Maps vertices to dicts mapping vertex attribute keys to
+        corresponding values.
     """
 
     def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
@@ -282,16 +286,16 @@ cdef class StaticGraph(Graph):
             self._adjacency_matrix_view = self._adjacency_matrix
 
     cpdef void add_edge(self, object v1, object v2, DTYPE_t weight=1.0) except *:
-        """
-        Adds edge to graph between two vertices with a weight.
+        """Adds edge to graph between two vertices with a weight.
 
-        Args:
-            v1: One of the edge's vertices.
-            v2: One of the edge's vertices.
-            np.float64 weight: Optional; The weight of the edge.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in the graph.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
+        weight: np.float64, optional
+            The weight of the edge.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -303,15 +307,14 @@ cdef class StaticGraph(Graph):
             self._adjacency_matrix_view[v][u] = weight
 
     cpdef void remove_edge(self, object v1, object v2) except *:
-        """
-        Removes an edge between two vertices in this graph.
+        """Removes an edge between two vertices in this graph.
 
-        Args:
-            v1: One of the edge's vertices.
-            v2: One of the edge's vertices.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in the graph.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -324,15 +327,19 @@ cdef class StaticGraph(Graph):
                 self._adjacency_matrix_view[v][u] = np.nan
 
     cpdef bint has_edge(self, object v1, object v2) except *:
-        """
-        Returns whether or not an edge exists in this graph.
+        """Returns whether or not an edge exists in this graph.
 
-        Args:
-            v1: First vertex of the edge.
-            v2: Second vertex of the edge.
+        Parameters
+        ----------
+        v1
+            First vertex of the edge.
+        v2
+            Second vertex of the edge.
 
-        Returns:
-            bint of whether or not edge is in graph.
+        Returns
+        -------
+        bint
+            Whether or not edge is in graph.
         """
         cdef int u, v
         try:
@@ -344,20 +351,19 @@ cdef class StaticGraph(Graph):
         return not np.isnan(self._adjacency_matrix_view[u][v])
 
     cpdef DTYPE_t get_edge_weight(self, object v1, object v2) except *:
-        """
-        Returns the weight of the edge between vertices v1 and v2.
+        """Returns the weight of the edge between vertices v1 and v2.
 
-        Args:
-            v1: One of the edge's vertices.
-            v2: One of the edge's vertices.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
 
-        Returns:
+        Returns
+        -------
+        np.float64
             The weight of the edge between v1 and v2.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in
-                the graph.
-            ValueError: There is no edge between the inputted vertices.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -368,15 +374,12 @@ cdef class StaticGraph(Graph):
             raise ValueError(f"There is no edge ({v1}, {v2}) in graph.")
 
     cpdef void add_vertex(self, object v) except *:
-        """
-        Adds vertex to the graph.
+        """Adds vertex to the graph.
 
-        Args:
-            v: A vertex of any hashable type.
-
-        Raises:
-            TypeError: vertex type is not hashable.
-            ValueError: vertex is already in graph.
+        Parameters
+        ----------
+        v
+            A vertex of any hashable type.
         """
         cdef int vertex_number = len(self.vertices)
         cdef np.ndarray new_row, new_column
@@ -403,14 +406,12 @@ cdef class StaticGraph(Graph):
                     np.append(self._adjacency_matrix, new_column, axis=1)
 
     cpdef void remove_vertex(self, object v) except *:
-        """
-        Removes a vertex from this graph.
+        """Removes a vertex from this graph.
 
-        Args:
-            v: A vertex in this graph.
-
-        Raises:
-            ValueError: There is no such vertex in this graph.
+        Parameters
+        ----------
+        v
+            A vertex in this graph.
         """
         cdef int u = self._get_vertex_int(v)
 
@@ -419,18 +420,18 @@ cdef class StaticGraph(Graph):
         np.delete(self._adjacency_matrix, u, axis=0)  # Delete row.
 
     cpdef set get_children(self, object v):
-        """
-        Returns the names of all the child vertices of a given vertex.
-        Equivalent to neighbors if all edges are undirected.
+        """Returns the names of all the child vertices of a given
+        vertex. Equivalent to neighbors if graph is undirected.
 
-        Args:
-            v: A vertex in the graph.
+        Parameters
+        ----------
+        v
+            A vertex in the graph.
 
-        Returns:
-            A set of the child vertices of the inputted vertex.
-
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
+        Returns
+        -------
+        set
+            The child vertices of `v`.
         """
         cdef set children = set()
         cdef int u, w
@@ -444,18 +445,18 @@ cdef class StaticGraph(Graph):
         return children
     
     cpdef set get_parents(self, object v):
-        """
-        Returns the parents (aka "in-neighbors") of a given vertex.
+        """Returns the parents (aka "in-neighbors") of a given vertex.
         Equivalent to get_children in undirected graphs. 
 
-        Args:
-            v: A vertex in the graph.
+        Parameters
+        ----------
+        v
+            A vertex in the graph.
         
-        Returns:
-            A set of the parent vertices of the inputted vertex.
-        
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
+        Returns
+        -------
+        set
+            The parent vertices of `v`.
         """
         cdef set parents = set()
         cdef int u, w
@@ -470,9 +471,6 @@ cdef class StaticGraph(Graph):
 
     @property
     def edges(self):
-        """
-        A list of tuples contianing the two vertices of each edge.
-        """
         cdef int u, v, n_vertices
         cdef set edges = set()
         cdef tuple new_edge, existing_edge
@@ -540,8 +538,7 @@ cdef class StaticGraph(Graph):
 
 
 cdef class DynamicGraph(Graph):
-    """
-    A class representing a graph data structure.
+    """A class representing a graph data structure.
 
     This is a directed graph class, although it will function as an
     undirected graph by creating directed edges both ways between two
@@ -549,24 +546,35 @@ cdef class DynamicGraph(Graph):
     are implemented externally.
 
     Adding vertices to a graph is faster than with a StaticGraph, but
-    overall performance is comprimised.
+    overall performance (especially for operations like getting children
+    and getting edge weights)is comprimised.
 
-    Args:
-        bint directed: Optional; Whether or not the graph contains directed edges.
-        list vertices: A list of the vertices in this graph.
-        Graph graph: Optional; A graph.
+    Parameters
+    ----------
+    graph: cygraph.Graph, optional
+        A graph to create a copy of.
+    directed: bint, optional
+        Whether or not the graph contains directed edges.
+    vertices: list, optional
+        A list of vertices (can be any hashable type).
 
-        Note that `directed` and `vertices` args will be ignored if
-        graph is not None.
+    Note that `directed` and `vertices` args will be ignored if
+    `graph` is not None.
 
-    Attributes:
-        directed: Whether or not the graph contains directed edges.
-        vertices: A list of the vertices in this graph.
-        edges: A list of tuples contianing the two vertices of each edge.
-        edge_attribtues: A dict which maps (v1, v2) tuples to dicts mapping
-            edge attribute keys to corresponding values.
-        vertex_attribtues: A dict which maps vertex names to dicts mapping
-            vertex attribute keys to corresponding values.
+    Attributes
+    ----------
+    directed: bint
+        Whether or not the graph contains directed edges.
+    vertices: list
+        The vertices in this graph.
+    edges: set
+        Tuples contianing the two vertices of each edge.
+    edge_attribtues: dict
+        Maps (v1, v2) tuples to dicts mapping edge attribute keys to
+        corresponding values.
+    vertex_attribtues: dict
+        Maps vertices to dicts mapping vertex attribute keys to
+        corresponding values.
     """
 
     def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
@@ -608,16 +616,16 @@ cdef class DynamicGraph(Graph):
                     self._adjacency_matrix[i].append(None)
 
     cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
-        """
-        Adds edge to the graph between two vertices with a weight.
+        """Adds edge to graph between two vertices with a weight.
 
-        Args:
-            v1: One of the edges's vertices.
-            v2: One of the edges's vertices.
-            double weight: Optional; The weight of the edge.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in the graph.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
+        weight: float, optional
+            The weight of the edge.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -629,15 +637,14 @@ cdef class DynamicGraph(Graph):
             self._adjacency_matrix[v][u] = weight
 
     cpdef void remove_edge(self, object v1, object v2) except *:
-        """
-        Removes an edge between two vertices in this graph.
+        """Removes an edge between two vertices in this graph.
 
-        Args:
-            v1: One of the edge's vertices.
-            v2: One of the edge's vertices.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in the graph.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -650,15 +657,19 @@ cdef class DynamicGraph(Graph):
                 self._adjacency_matrix[v][u] = None
 
     cpdef bint has_edge(self, object v1, object v2) except *:
-        """
-        Returns whether or not an edge exists in this graph.
+        """Returns whether or not an edge exists in this graph.
 
-        Args:
-            v1: First vertex of the edge.
-            v2: Second vertex of the edge.
+        Parameters
+        ----------
+        v1
+            First vertex of the edge.
+        v2
+            Second vertex of the edge.
 
-        Returns:
-            bint of whether or not edge is in graph.
+        Returns
+        -------
+        bint
+            Whether or not edge is in graph.
         """
         cdef int u, v
         try:
@@ -670,21 +681,19 @@ cdef class DynamicGraph(Graph):
         return self._adjacency_matrix[u][v] is not None
 
     cpdef double get_edge_weight(self, object v1, object v2) except *:
-        """
-        Returns the weight of the edge between vertices v1 and v2.
+        """Returns the weight of the edge between vertices v1 and v2.
 
-        Args:
-            v1: One of the edge's vertices.
-            v2: One of the edge's vertices.
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
 
-        Returns:
+        Returns
+        -------
+        float
             The weight of the edge between v1 and v2.
-
-        Raises:
-            ValueError: At least one of the inputted vertices is not in
-                the graph.
-            ValueError: There is no edge between the two inputted
-                vertices.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
@@ -695,14 +704,12 @@ cdef class DynamicGraph(Graph):
             raise ValueError("edge ({v1}, {v2}) is not in graph.")
 
     cpdef void add_vertex(self, object v) except *:
-        """
-        Adds vertex to the graph.
+        """Adds vertex to the graph.
 
-        Args:
-            v: A vertex of any hashable type.
-
-        Raises:
-            TypeError: vertex type is not hashable.
+        Parameters
+        ----------
+        v
+            A vertex of any hashable type.
         """
         cdef int vertex_number, i
         cdef list new_row
@@ -725,14 +732,12 @@ cdef class DynamicGraph(Graph):
                 self._adjacency_matrix[i].append(None)
 
     cpdef void remove_vertex(self, object v) except *:
-        """
-        Removes a vertex from this graph.
+        """Removes a vertex from this graph.
 
-        Args:
-            v: A vertex in this graph.
-
-        Raises:
-            ValueError: There is no such vertex in this graph.
+        Parameters
+        ----------
+        v
+            A vertex in this graph.
         """
         cdef int u = self._get_vertex_int(v)
 
@@ -745,18 +750,18 @@ cdef class DynamicGraph(Graph):
             row.pop(u)
 
     cpdef set get_children(self, object v):
-        """
-        Returns the names of all the child vertices of a given vertex.
-        Equivalent to neighbors if all edges are undirected.
+        """Returns the names of all the child vertices of a given
+        vertex. Equivalent to neighbors if graph is undirected.
 
-        Args:
-            v: A vertex in the graph.
+        Parameters
+        ----------
+        v
+            A vertex in the graph.
 
-        Returns:
-            A set of the child vertices of the inputted vertex.
-
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
+        Returns
+        -------
+        set
+            The child vertices of `v`.
         """
         cdef set children = set()
         cdef int u, w
@@ -770,18 +775,18 @@ cdef class DynamicGraph(Graph):
         return children
 
     cpdef set get_parents(self, object v):
-        """
-        Returns the parents (aka "in-neighbors") of a given vertex.
+        """Returns the parents (aka "in-neighbors") of a given vertex.
         Equivalent to get_children in undirected graphs. 
 
-        Args:
-            v: A vertex in the graph.
+        Parameters
+        ----------
+        v
+            A vertex in the graph.
         
-        Returns:
-            A set of the parent vertices of the inputted vertex.
-        
-        Raises:
-            ValueError: The inputted vertex is not in the graph.
+        Returns
+        -------
+        set
+            The parent vertices of `v`.
         """
         cdef set parents = set()
         cdef int u, w
@@ -796,9 +801,6 @@ cdef class DynamicGraph(Graph):
 
     @property
     def edges(self):
-        """
-        A set of tuples contianing the two vertices of each edge.
-        """
         cdef int u, v, n_vertices
         cdef set edges = set()
         cdef tuple new_edge, existing_edge
