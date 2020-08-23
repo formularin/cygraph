@@ -7,6 +7,9 @@ maintenance.py
 cygraph/*.c
 cygraph/*.cpython-38-darwin.so
 cygraph/*.html
+cygraph/algorithms/*.c
+cygraph/algorithms/*.cpython-38-darwin.so
+cygraph/algorithms/*.html
 build/
 
 # Pip
@@ -14,12 +17,14 @@ cygraph.egg-info/
 
 # Python
 cygraph/__pycache__/
+cygraph/algorithms/__pycache__/
 cygraph/tests/__pycache__/
 
 # MacOS
 .DS_Store
 
 # Misc.
+test.py
 test.pyx
 test.cpython-38-darwin.so
 test.c
