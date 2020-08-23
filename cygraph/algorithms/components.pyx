@@ -1,4 +1,4 @@
-"""Algorithms for identifying graph components.
+"""Functions for identifying graph components.
 """
 
 from ..graph cimport Graph, StaticGraph, DynamicGraph

@@ -1,4 +1,4 @@
-"""Algorithms related to graph partitioning.
+"""Functions related to graph partitioning.
 """
 
 from libc.stdlib cimport rand, srand

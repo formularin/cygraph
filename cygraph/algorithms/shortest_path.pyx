@@ -1,10 +1,11 @@
-"""Algorithms for finding shortest paths in graphs.
+"""Functions for finding shortest paths in graphs.
 """
 
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef list find_shortest_path(Graph graph, object source, object target):
+cpdef list find_shortest_path_djikstra(Graph graph, object source,
+        object target):
     """Takes a graph and finds the shortest path between two vertices in
     it.
 
