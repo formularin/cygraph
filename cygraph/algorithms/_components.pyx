@@ -91,24 +91,63 @@ cdef set _get_components(Graph graph, bint vertices):
         return components
 
 
-cdef int get_number_components(Graph graph) except *:
-    """Finds the number of connected components of a graph.
+cdef set _get_strongly_connected_components(Graph graph, bint vertices):
+    """Gets the strongly connected components of a graph
 
     Parameters
     ----------
     graph: cygraph.Graph
-        An undirected graph.
+        A graph.
+    vertices: bint
+        Whether or not to actually keep track of the set of vertices in
+        each strongly connected component.
 
     Returns
-    ------
-    The number of connected components in `graph`
+    -------
+    set
+        The set of sets of vertices that are the strongly connnected
+        components of `graph`, or a set containing a single value that
+        is the number of strongly connected components in `graph`. Which
+        one depends on the value of `vertices`.
 
     Raises
     ------
     NotImplementedError
-        `graph` is directed.
+        `graph` is undirected.
     """
-    return _get_components(graph, False)
+    if not graph.directed:
+        raise NotImplementedError("Cannot get the strongly connected "
+            "components of an undirected graph.")
+
+    cdef list stack = []
+    cdef set visited = set()
+    cdef object v, u
+    for v in graph.vertices:
+        if v not in visited:
+            _dfs(graph, v, visited, stack, False)
+
+    visited = set()
+    cdef set new_vertices = set()
+    cdef set components = set()
+    cdef int n_components = 0
+    while stack:
+        v = stack.pop()
+        _dfs(graph, v, new_vertices, [[]], True)
+
+        for v in new_vertices:
+            if v in stack:
+                stack.remove(v)
+        
+        visited |= new_vertices
+        if vertices:
+            components.add(frozenset(new_vertices))
+        else:
+            n_components += 1
+    
+    if vertices:
+        return components
+    else:
+        return {n_components}
 
 
 cdef set get_components(Graph graph, bint static):
@@ -157,12 +196,29 @@ cdef set get_components(Graph graph, bint static):
     return component_graphs
 
 
+cdef int get_number_components(Graph graph) except *:
+    """Finds the number of connected components of a graph.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        An undirected graph.
+
+    Returns
+    ------
+    int
+        The number of connected components in `graph`
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
+    """
+    return _get_components(graph, False).pop()
+
+
 cdef set get_strongly_connected_components(Graph graph, bint static):
-    """Gets the strongly connected components of the inputted graph,
-    where a strongly connected component is a subgraph in which every
-    vertex is reachable by every other vertex. This only applies to
-    directed graphs. If you want to get the equivalent of an undirected
-    graph, see cygraph.algorithms.get_components
+    """Gets the strongly connected components of a graph
 
     Parameters
     ----------
@@ -182,33 +238,10 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
     NotImplementedError
         `graph` is undirected.
     """
-    if not graph.directed:
-        raise NotImplementedError("Cannot get the strongly connected "
-            "components of an undirected graph.")
+    components = _get_strongly_connected_components(graph, True)
 
-    cdef list stack = []
-    cdef set visited = set()
-    cdef object v, u
-    for v in graph.vertices:
-        if v not in visited:
-            _dfs(graph, v, visited, stack, False)
-
-    visited = set()
-    cdef set new_vertices = set()
-    cdef set components = set()
-    while stack:
-        v = stack.pop()
-        _dfs(graph, v, new_vertices, [[]], True)
-
-        for v in new_vertices:
-            if v in stack:
-                stack.remove(v)
-        
-        visited |= new_vertices
-        components.add(tuple(new_vertices))
-    
     cdef set graph_components = set()
-    cdef tuple comp
+    cdef frozenset comp
     cdef Graph g
     for comp in components:
         if static:
@@ -222,6 +255,27 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
                     g.add_edge(v, u)
     
     return graph_components
+
+
+cdef int get_number_strongly_connected_components(Graph graph) except *:
+    """Gets the number of strongly connected components of a graph.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+
+    Returns
+    -------
+    int
+        The number of strongly connected components in `graph`
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is undirected.
+    """
+    return _get_strongly_connected_components(graph, False).pop()
 
 
 cpdef set py_get_components(Graph graph, bint static=False):
@@ -268,11 +322,7 @@ cpdef int py_get_number_components(Graph graph):
 
 
 cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
-    """Gets the strongly connected components of the inputted graph,
-    where a strongly connected component is a subgraph in which every
-    vertex is reachable by every other vertex. This only applies to
-    directed graphs. If you want to get the equivalent of an undirected
-    graph, see cygraph.algorithms.get_components
+    """Gets the strongly connected components of a graph.
 
     Parameters
     ----------
@@ -293,3 +343,24 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
         `graph` is undirected.
     """
     return get_strongly_connected_components(graph, static)
+
+
+cpdef int py_get_number_strongly_connected_components(Graph graph):
+    """Gets the number of strongly connected components of a graph.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+
+    Returns
+    -------
+    int
+        The number of strongly connected components in `graph`
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is undirected.
+    """
+    return get_number_strongly_connected_components(graph)
