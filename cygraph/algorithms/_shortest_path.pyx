@@ -4,7 +4,7 @@
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef list find_shortest_path_dijkstra(Graph graph, object source,
+cdef list find_shortest_path_dijkstra(Graph graph, object source,
         object target):
     """Takes a graph and finds the shortest path between two vertices in
     it using dijkstra's algorithm.
@@ -65,3 +65,26 @@ cpdef list find_shortest_path_dijkstra(Graph graph, object source,
             u = previous_vertices[u]
 
     return sequence
+
+
+cpdef list py_find_shortest_path_dijkstra(Graph graph, object source,
+        object target):
+    """Takes a graph and finds the shortest path between two vertices in
+    it using dijkstra's algorithm.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    source
+        One of the vertices in `graph`.
+    target
+        The other vertex in `graph`.
+
+    Returns
+    -------
+    list
+        The list of vertices that constitute the shortest path between
+        source and target.
+    """
+    return find_shortest_path_dijkstra(graph, source, target)

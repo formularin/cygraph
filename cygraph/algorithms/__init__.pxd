@@ -2,7 +2,7 @@
 """
 
 
-from algorithms.articulation_points cimport *
-from algorithms.components cimport *
-from algorithms.partitioning cimport *
-from algorithms.shortest_path cimport *
+from algorithms._articulation_points cimport *
+from algorithms._components cimport *
+from algorithms._partitioning cimport *
+from algorithms._shortest_path cimport *

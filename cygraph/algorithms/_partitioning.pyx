@@ -13,7 +13,7 @@ cdef extern from "time.h":
 srand(time(NULL))
 
 
-cpdef set partition_karger(Graph graph, bint static=False):
+cdef set partition_karger(Graph graph, bint static):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
@@ -24,7 +24,7 @@ cpdef set partition_karger(Graph graph, bint static=False):
     ----------
     graph: cygraph.Graph
         A graph.
-    static: bint, optional
+    static: bint
         Whether or not the graphs in the output should be static.
 
     Returns
@@ -109,3 +109,27 @@ cpdef set partition_karger(Graph graph, bint static=False):
                     # filling in the first graph.
                     cutset.add((u, v, graph.get_edge_weight(u, v)))
     return (*new_graphs, cutset)
+
+
+cpdef set py_partition_karger(Graph graph, bint static=False):
+    """Partitions a graph into two graphs. Does not change the inputted
+    graph in any way.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    static: bint, optional
+        Whether or not the graphs in the output should be static.
+
+    Returns
+    -------
+    set
+        Two graphs that are the result of a random partition of `graph`.
+    
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
+    """
+    return partition_karger(graph, static)

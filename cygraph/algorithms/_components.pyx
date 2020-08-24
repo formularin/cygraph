@@ -4,8 +4,8 @@
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef void _dfs(Graph graph, object v, set visited, list vertex_stack=[[]],
-        bint backwards=False):
+cdef void _dfs(Graph graph, object v, set visited, list vertex_stack,
+        bint backwards):
     """Finds all of the vertices in a component of a graph using a
     depth-first search.
 
@@ -15,9 +15,10 @@ cpdef void _dfs(Graph graph, object v, set visited, list vertex_stack=[[]],
         A graph.
     v
         The root vertex of the search.
-    vertex_stack: list, optional
+    vertex_stack: list
         A stack containing vertices as they are finished in the DFS.
-    backwards: bint, optional
+        Set to `[[]]` if you don't want this feature.
+    backwards: bint
         Whether or not to use get_parents instead of get_children when
         finding vertex neighbors.
 
@@ -77,7 +78,7 @@ cdef set _get_components(Graph graph, bint vertices):
     for vertex in graph.vertices:
         if vertex not in vertices:
             component_vertices = set()
-            _dfs(graph, vertex, component_vertices)
+            _dfs(graph, vertex, component_vertices, [[]], False)
             visited |= component_vertices
             if vertices:
                 components.add(frozenset(component_vertices))
@@ -90,7 +91,7 @@ cdef set _get_components(Graph graph, bint vertices):
         return components
 
 
-cpdef int get_number_components(Graph graph):
+cdef int get_number_components(Graph graph) except *:
     """Finds the number of connected components of a graph.
 
     Parameters
@@ -110,14 +111,14 @@ cpdef int get_number_components(Graph graph):
     return _get_components(graph, False)
 
 
-cpdef set get_components(Graph graph, bint static=False):
+cdef set get_components(Graph graph, bint static):
     """Gets the connected components of a graph as connected graphs.
 
     Parameters
     ----------
     graph: cygraph.Graph
         A graph.
-    static: bint, optional
+    static: bint
         Whether or not the graphs in the output should be static.
 
     Returns
@@ -156,7 +157,117 @@ cpdef set get_components(Graph graph, bint static=False):
     return component_graphs
 
 
-cpdef set get_strongly_connected_components(Graph graph, bint static=False):
+cdef set get_strongly_connected_components(Graph graph, bint static):
+    """Gets the strongly connected components of the inputted graph,
+    where a strongly connected component is a subgraph in which every
+    vertex is reachable by every other vertex. This only applies to
+    directed graphs. If you want to get the equivalent of an undirected
+    graph, see cygraph.algorithms.get_components
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    static: bint
+        Whether or not the graphs in the output should be static.
+
+    Returns
+    -------
+    set
+        The set of graphs that are the strongly connnected components of
+        `graph`
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is undirected.
+    """
+    if not graph.directed:
+        raise NotImplementedError("Cannot get the strongly connected "
+            "components of an undirected graph.")
+
+    cdef list stack = []
+    cdef set visited = set()
+    cdef object v, u
+    for v in graph.vertices:
+        if v not in visited:
+            _dfs(graph, v, visited, stack, False)
+
+    visited = set()
+    cdef set new_vertices = set()
+    cdef set components = set()
+    while stack:
+        v = stack.pop()
+        _dfs(graph, v, new_vertices, [[]], True)
+
+        for v in new_vertices:
+            if v in stack:
+                stack.remove(v)
+        
+        visited |= new_vertices
+        components.add(tuple(new_vertices))
+    
+    cdef set graph_components = set()
+    cdef tuple comp
+    cdef Graph g
+    for comp in components:
+        if static:
+            g = StaticGraph(directed=True, vertices=list(comp))
+        else:
+            g = DynamicGraph(directed=True, vertices=list(comp))
+        
+        for v in comp:
+            for u in graph.get_children(v):
+                if u in comp:
+                    g.add_edge(v, u)
+    
+    return graph_components
+
+
+cpdef set py_get_components(Graph graph, bint static=False):
+    """Gets the connected components of a graph as connected graphs.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A graph.
+    static: bint, optional
+        Whether or not the graphs in the output should be static.
+
+    Returns
+    -------
+    set
+        Graphs that are the components of `graph`.
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
+    """
+    return get_components(graph, static)
+
+
+cpdef int py_get_number_components(Graph graph):
+    """Finds the number of connected components of a graph.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        An undirected graph.
+
+    Returns
+    ------
+    The number of connected components in `graph`
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
+    """
+    return get_number_components(graph)
+
+
+cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
     """Gets the strongly connected components of the inputted graph,
     where a strongly connected component is a subgraph in which every
     vertex is reachable by every other vertex. This only applies to
@@ -181,43 +292,4 @@ cpdef set get_strongly_connected_components(Graph graph, bint static=False):
     NotImplementedError
         `graph` is undirected.
     """
-    if not graph.directed:
-        raise NotImplementedError("Cannot get the strongly connected "
-            "components of an undirected graph.")
-
-    cdef list stack = []
-    cdef set visited = set()
-    cdef object v, u
-    for v in graph.vertices:
-        if v not in visited:
-            _dfs(graph, v, visited, vertex_stack=stack)
-
-    visited = set()
-    cdef set new_vertices = set()
-    cdef set components = set()
-    while stack:
-        v = stack.pop()
-        _dfs(graph, v, new_vertices, backwards=True)
-
-        for v in new_vertices:
-            if v in stack:
-                stack.remove(v)
-        
-        visited |= new_vertices
-        components.add(tuple(new_vertices))
-    
-    cdef set graph_components = set()
-    cdef tuple comp
-    cdef Graph g
-    for comp in components:
-        if static:
-            g = StaticGraph(directed=True, vertices=list(comp))
-        else:
-            g = DynamicGraph(directed=True, vertices=list(comp))
-        
-        for v in comp:
-            for u in graph.get_children(v):
-                if u in comp:
-                    g.add_edge(v, u)
-    
-    return graph_components
+    return get_strongly_connected_components(graph, static)

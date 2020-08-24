@@ -4,8 +4,8 @@
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef set get_articulation_points(Graph graph):
-    """Finds the articulation points in a graph. Using the lowpoint
+cdef set get_articulation_points(Graph graph):
+    """Finds the articulation points in a graph using the lowpoint
     theorem.
 
     Implementation taken from here:
@@ -76,3 +76,25 @@ cpdef set get_articulation_points(Graph graph):
             articulation_points.add(start)
 
     return articulation_points
+
+
+cpdef set py_get_articulation_points(Graph graph):
+    """Finds the articulation points in a graph using the lowpoint
+    theorem.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        An undirected graph.
+    
+    Returns
+    -------
+    set
+        The articulation points in `graph`.
+
+    Raises
+    ------
+    NotImplementedError
+        `graph` is directed.
+    """
+    return get_articulation_points(graph)
