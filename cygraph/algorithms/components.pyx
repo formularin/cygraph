@@ -4,8 +4,8 @@
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef void _dfs(Graph graph, object v, set visited,
-        list vertex_stack=[[]], bint backwards=False):
+cpdef void _dfs(Graph graph, object v, set visited, list vertex_stack=[[]],
+        bint backwards=False):
     """Finds all of the vertices in a component of a graph using a
     depth-first search.
 
@@ -97,7 +97,7 @@ cpdef int get_number_components(Graph graph):
     ----------
     graph: cygraph.Graph
         An undirected graph.
-    
+
     Returns
     ------
     The number of connected components in `graph`

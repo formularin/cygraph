@@ -1,0 +1,1 @@
+cpdef set partition_karger(Graph graph, bint static=False)
