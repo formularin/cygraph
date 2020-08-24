@@ -10,6 +10,9 @@ cygraph/*.html
 cygraph/algorithms/*.c
 cygraph/algorithms/*.cpython-38-darwin.so
 cygraph/algorithms/*.html
+cygraph/graph/*.c
+cygraph/graph/*.cpython-38-darwin.so
+cygraph/graph/*.html
 build/
 
 # Pip

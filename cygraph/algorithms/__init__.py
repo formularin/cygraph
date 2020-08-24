@@ -1,3 +1,6 @@
+"""Various graph theory algorithm implemenations.
+"""
+
 from ._articulation_points import py_get_articulation_points as get_articulation_points
 from ._components import py_get_components as get_components
 from ._components import py_get_number_components as get_number_components

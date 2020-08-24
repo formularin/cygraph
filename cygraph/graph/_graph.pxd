@@ -1,6 +1,3 @@
-cimport numpy as np
-
-
 cdef class Graph:
     cdef dict _vertex_attributes
     cdef dict _edge_attributes
@@ -22,21 +19,3 @@ cdef class Graph:
     cpdef double get_edge_weight(self, object v1, object v2) except *
     cpdef set get_children(self, object v)
     cpdef set get_parents(self, object v)
-
-
-cdef class StaticGraph(Graph):
-    # _adjacency_matrix_view[u][v] -> weight of edge between u and v.
-    # np.nan means there is no edge.
-    cdef double[:,:] _adjacency_matrix_view
-
-    cdef readonly np.ndarray _adjacency_matrix
-
-    cpdef bint has_edge(self, object v1, object v2) except *
-
-
-cdef class DynamicGraph(Graph):
-    # _adjacency_matrix[u][v] -> weight of edge between u and v.
-    # None means there is no edge.
-    cdef readonly list _adjacency_matrix
-
-    cpdef bint has_edge(self, object v1, object v2) except *
