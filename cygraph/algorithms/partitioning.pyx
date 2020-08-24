@@ -13,7 +13,7 @@ cdef extern from "time.h":
 srand(time(NULL))
 
 
-cpdef tuple partition_karger(Graph graph, bint static=False):
+cpdef set partition_karger(Graph graph, bint static=False):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
@@ -29,7 +29,7 @@ cpdef tuple partition_karger(Graph graph, bint static=False):
 
     Returns
     -------
-    tuple
+    set
         Two graphs that are the result of a random partition of `graph`.
     
     Raises
@@ -38,10 +38,8 @@ cpdef tuple partition_karger(Graph graph, bint static=False):
         `graph` is directed.
     """
     if graph.directed:
-        raise NotImplementedError(
-            "cygraph.algorithms.partition_graph is not implemented for"
-            "directed graphs."
-        )
+        raise NotImplementedError("Cannot perform Karger partition on "
+            "directed graph.")
     if len(graph) < 2:
         raise ValueError(
             "Inputted graph has fewer than 2 vertices."

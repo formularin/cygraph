@@ -10,6 +10,7 @@ cpdef void _dfs(Graph graph, object v, set visited,
     depth-first search.
 
     Parameters
+    ----------
     graph: cygraph.Graph
         A graph.
     v
@@ -25,109 +26,99 @@ cpdef void _dfs(Graph graph, object v, set visited,
     set
         Vertices in the component of `graph` that contains `v`.
     """
-    cdef object u
+    # Default value of vertex_stack is [[]], because lists are not
+    # hashable, therefore it can never actually be inputted by the user.
+
+    cdef object vertex
     cdef set next_vertices
+    cdef list stack = [v]
+    
+    while stack:
+        vertex = stack.pop()
+        if vertex not in visited:
+            visited.add(vertex)
+            if backwards:
+                next_vertices = graph.get_parents(vertex)
+            else:
+                next_vertices = graph.get_children(vertex)
+            stack += list(next_vertices)
+            if vertex_stack != [[]]:
+                vertex_stack.append(vertex)
 
-    if v not in visited:
-        visited.add(v)
-        if backwards:
-            next_vertices = graph.get_parents(v)
-        else:
-            next_vertices = graph.get_children(v)
-        for u in next_vertices:
-            _dfs(graph, u, visited, vertex_stack, backwards)
-        if vertex_stack != [[]]:
-            vertex_stack.append(v)
 
-
-cpdef set find_articulation_points(Graph graph):
-    """Takes a graph and finds all of its articulation points, where an
-    articulation point is any point that, when removed, causes the graph
-    to increase in number of components.
-
-    Implementation taken from here:
-    https://github.com/networkx/networkx/blob/master/networkx/algorithms/components/biconnected.py
+cdef set _get_components(Graph graph, bint vertices):
+    """Gets the components of a graph.
 
     Parameters
     ----------
     graph: cygraph.Graph
         A graph.
+    vertices: bint
+        Whether to calculate vertices, or the number of components.
     
     Returns
     -------
     set
-        The articulation points in `graph`.
+        Either a set of frozensets containing the vertices in each
+        component, or a set containing a single value that is the number
+        of components in the graph; depending on the value of the
+        `vertices` parameter.
+    """
+    if not graph.directed:
+        raise NotImplementedError("Cannot get the connected components "
+            "of a directed graph.")
+
+    cdef set components = set()
+    cdef set visited = set()
+    cdef int n_components = 0
+    cdef object vertex
+    cdef set component_vertices
+
+    for vertex in graph.vertices:
+        if vertex not in vertices:
+            component_vertices = set()
+            _dfs(graph, vertex, component_vertices)
+            visited |= component_vertices
+            if vertices:
+                components.add(frozenset(component_vertices))
+            else:
+                n_components += 1
     
+    if vertices:
+        return {n_components}
+    else:
+        return components
+
+
+cpdef int get_number_components(Graph graph):
+    """Finds the number of connected components of a graph.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        An undirected graph.
+    
+    Returns
+    ------
+    The number of connected components in `graph`
+
     Raises
     ------
     NotImplementedError
         `graph` is directed.
     """
-    if graph.directed:
-        raise NotImplementedError(
-            "cygraph.algorithms.partition_graph is not implemented for "
-            "directed graphs."
-        )
-
-    cdef set visited = set()
-    cdef set articulation_points = set()
-
-    # Local loop variables.
-    cdef object start, grandparent, parent, child
-    cdef set children
-    cdef dict discovery, low
-    cdef int root_children
-    cdef list stack
-    for start in graph.vertices:
-        # Each iteration that is not skipped is checking a new component.
-        if start in visited:
-            continue
-        
-        discovery = {start: 0}  # time of first discovery of vertex during search
-        low = {start: 0}
-        root_children = 0
-        visited.add(start)
-        stack = [(start, start, graph.get_children(start))]
-        while stack:
-            grandparent, parent, children = stack[-1]
-            try:
-                child = children.pop()
-                if grandparent == child:
-                    continue
-                if child in visited:
-                    if discovery[child] <= discovery[parent]:  # back edge
-                        low[parent] = min(low[parent], discovery[child])
-                else:
-                    low[child] = discovery[child] = len(discovery)
-                    visited.add(child)
-                    stack.append((parent, child, graph.get_children(child)))
-            except KeyError:  # Iterated through all children.
-                stack.pop()
-                if len(stack) > 1:
-                    if low[parent] >= discovery[grandparent]:
-                        articulation_points.add(grandparent)
-                    low[grandparent] = min(low[parent], low[grandparent])
-                elif stack:  # length 1 so grandparent is root
-                    root_children += 1
-        # root is articulation point if it has more than 1 child
-        if root_children > 1:
-            articulation_points.add(start)
-    
-    return articulation_points
+    return _get_components(graph, False)
 
 
 cpdef set get_components(Graph graph, bint static=False):
-    """Gets the components of the inputted graph, where a component is a
-    subgraph in which any two vertices are connected to each other by
-    a path. This only works for undirected graphs. If you want to get
-    the equivalent of a directed graph, see
-    cygraph.algorithms.get_strongly_connected_components
+    """Gets the connected components of a graph as connected graphs.
 
     Parameters
     ----------
-        cygraph.Graph graph: A graph.
-        bint static: Optional; Whether or not the graphs in the output
-            should be static. Defaults to False.
+    graph: cygraph.Graph
+        A graph.
+    static: bint, optional
+        Whether or not the graphs in the output should be static.
 
     Returns
     -------
@@ -139,26 +130,12 @@ cpdef set get_components(Graph graph, bint static=False):
     NotImplementedError
         `graph` is directed.
     """
-    if graph.directed:
-        raise NotImplementedError("get_components only applies to undirected "
-            "graphs. For directed graphs, see get_strongly_connected_components.")
 
-    cdef list vertices = graph.vertices[:]
-    cdef set discovered_components, new_component
-    cdef object vertex, neighbor
-
-    # Contains tuples which contain all the vertices in each component.
-    discovered_components = set()
-    while vertices:
-        vertex = vertices[0]
-        new_component = set()
-        _dfs(graph, vertex, new_component)
-        for vertex in new_component:
-            vertices.remove(vertex)
-        discovered_components.add(tuple(new_component))
+    cdef set discovered_components = _get_components(graph,
+        vertices=True)
 
     # Get the induced subgraphs that are each of the components.
-    cdef tuple component
+    cdef frozenset component
     cdef Graph component_graph
     cdef set component_graphs = set()
     for component in discovered_components:
@@ -205,10 +182,9 @@ cpdef set get_strongly_connected_components(Graph graph, bint static=False):
         `graph` is undirected.
     """
     if not graph.directed:
-        raise NotImplementedError("get_strongly_connected_components only"
-            "applies to directed graphs. For undirected graphs, see "
-            "get_components.")
- 
+        raise NotImplementedError("Cannot get the strongly connected "
+            "components of an undirected graph.")
+
     cdef list stack = []
     cdef set visited = set()
     cdef object v, u

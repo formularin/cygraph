@@ -4,10 +4,10 @@
 from ..graph cimport Graph, StaticGraph, DynamicGraph
 
 
-cpdef list find_shortest_path_djikstra(Graph graph, object source,
+cpdef list find_shortest_path_dijkstra(Graph graph, object source,
         object target):
     """Takes a graph and finds the shortest path between two vertices in
-    it.
+    it using dijkstra's algorithm.
 
     Parameters
     ----------
