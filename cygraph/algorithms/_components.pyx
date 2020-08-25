@@ -1,7 +1,9 @@
+#!python
+#cython: language_level=3
 """Functions for identifying graph components.
 """
 
-from ..graph cimport Graph, StaticGraph, DynamicGraph
+from ..graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef void _dfs(Graph graph, object v, set visited, list vertex_stack,
@@ -65,7 +67,7 @@ cdef set _get_components(Graph graph, bint vertices):
         of components in the graph; depending on the value of the
         `vertices` parameter.
     """
-    if not graph.directed:
+    if graph.directed:
         raise NotImplementedError("Cannot get the connected components "
             "of a directed graph.")
 
@@ -76,7 +78,7 @@ cdef set _get_components(Graph graph, bint vertices):
     cdef set component_vertices
 
     for vertex in graph.vertices:
-        if vertex not in vertices:
+        if vertex not in visited:
             component_vertices = set()
             _dfs(graph, vertex, component_vertices, [[]], False)
             visited |= component_vertices
@@ -86,9 +88,9 @@ cdef set _get_components(Graph graph, bint vertices):
                 n_components += 1
     
     if vertices:
-        return {n_components}
-    else:
         return components
+    else:
+        return {n_components}
 
 
 cdef set _get_strongly_connected_components(Graph graph, bint vertices):
@@ -301,7 +303,7 @@ cpdef set py_get_components(Graph graph, bint static=False):
     return get_components(graph, static)
 
 
-cpdef int py_get_number_components(Graph graph):
+cpdef int py_get_number_components(Graph graph) except *:
     """Finds the number of connected components of a graph.
 
     Parameters
@@ -345,7 +347,7 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
     return get_strongly_connected_components(graph, static)
 
 
-cpdef int py_get_number_strongly_connected_components(Graph graph):
+cpdef int py_get_number_strongly_connected_components(Graph graph) except *:
     """Gets the number of strongly connected components of a graph.
 
     Parameters

@@ -1,3 +1,6 @@
+#!python
+#cython: language_level=3
+
 cdef class Graph:
     cdef dict _vertex_attributes
     cdef dict _edge_attributes

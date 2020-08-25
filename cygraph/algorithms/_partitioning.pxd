@@ -1,4 +1,7 @@
-from ..graph cimport DynamicGraph, Graph, StaticGraph
+#!python
+#cython: language_level=3
+
+from ..graph_ cimport DynamicGraph, Graph, StaticGraph
 
 
-cdef set partition_karger(Graph graph, bint static)
+cdef tuple partition_karger(Graph graph, bint static)

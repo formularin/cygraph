@@ -10,9 +10,9 @@ cygraph/*.html
 cygraph/algorithms/*.c
 cygraph/algorithms/*.cpython-38-darwin.so
 cygraph/algorithms/*.html
-cygraph/graph/*.c
-cygraph/graph/*.cpython-38-darwin.so
-cygraph/graph/*.html
+cygraph/graph_/*.c
+cygraph/graph_/*.cpython-38-darwin.so
+cygraph/graph_/*.html
 build/
 
 # Pip
@@ -21,6 +21,7 @@ cygraph.egg-info/
 # Python
 cygraph/__pycache__/
 cygraph/algorithms/__pycache__/
+cygraph/graph_/__pycache__/
 cygraph/tests/__pycache__/
 
 # MacOS

@@ -1,7 +1,9 @@
+#!python
+#cython: language_level=3
 """Functions for finding shortest paths in graphs.
 """
 
-from ..graph cimport Graph, StaticGraph, DynamicGraph
+from ..graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef list find_shortest_path_dijkstra(Graph graph, object source,

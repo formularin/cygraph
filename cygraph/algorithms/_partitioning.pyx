@@ -1,9 +1,11 @@
+#!python
+#cython: language_level=3
 """Functions related to graph partitioning.
 """
 
 from libc.stdlib cimport rand, srand
 
-from ..graph cimport Graph, StaticGraph, DynamicGraph
+from ..graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef extern from "time.h":
@@ -13,7 +15,7 @@ cdef extern from "time.h":
 srand(time(NULL))
 
 
-cdef set partition_karger(Graph graph, bint static):
+cdef tuple partition_karger(Graph graph, bint static):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
@@ -29,8 +31,9 @@ cdef set partition_karger(Graph graph, bint static):
 
     Returns
     -------
-    set
-        Two graphs that are the result of a random partition of `graph`.
+    tuple
+        Two graphs that are the result of a random partition of `graph`,
+        as well as the cutset of the partition.
     
     Raises
     ------
@@ -111,7 +114,7 @@ cdef set partition_karger(Graph graph, bint static):
     return (*new_graphs, cutset)
 
 
-cpdef set py_partition_karger(Graph graph, bint static=False):
+cpdef tuple py_partition_karger(Graph graph, bint static=False):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
@@ -124,8 +127,9 @@ cpdef set py_partition_karger(Graph graph, bint static=False):
 
     Returns
     -------
-    set
-        Two graphs that are the result of a random partition of `graph`.
+    tuple
+        Two graphs that are the result of a random partition of `graph`,
+        as well as the cutset of the partition.
     
     Raises
     ------

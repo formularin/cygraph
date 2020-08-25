@@ -1,3 +1,5 @@
+#!python
+#cython: language_level=3
 """Various graph theory algorithm implemenations.
 """
 

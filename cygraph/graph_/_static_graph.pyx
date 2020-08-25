@@ -1,13 +1,22 @@
-"""Implementation of graph data structure with python list as adjacency
+#!python
+#cython: language_level=3
+"""Implementation of graph data strucutre with numpy array as adjacency
 matrix.
 """
 
 import warnings
 
-from ._graph cimport Graph
+cimport numpy as np
+import numpy as np
+
+from cygraph.graph_._graph cimport Graph
 
 
-cdef class DynamicGraph(Graph):
+cdef type DTYPE = np.float64
+ctypedef np.float64_t DTYPE_t
+
+
+cdef class StaticGraph(Graph):
     """A class representing a graph data structure.
 
     This is a directed graph class, although it will function as an
@@ -15,12 +24,11 @@ cdef class DynamicGraph(Graph):
     vertices. This class contains only basic functionality; algorithms
     are implemented externally.
 
-    Adding vertices to a graph is faster than with a StaticGraph, but
-    overall performance (especially for operations like getting children
-    and getting edge weights) is comprimised.
+    Adding vertices to a StaticGraph is relatively slow, expecially for
+    already large graphs. If you are going to be adding lots of
+    vertices to your graph, consider using cygraph.DynamicGraph.
 
     Parameters
-    ----------
     graph: cygraph.Graph, optional
         A graph to create a copy of.
     directed: bint, optional
@@ -50,18 +58,13 @@ cdef class DynamicGraph(Graph):
     def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
 
         cdef int size
-
-        cdef int i
         cdef object v
 
         if graph is not None:
 
             size = len(graph.vertices)
-            self._adjacency_matrix = []
-            for i in range(size):
-                self._adjacency_matrix.append([])
-                for _ in range(size):
-                    self._adjacency_matrix[i].append(None)
+            self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+            self._adjacency_matrix_view = self._adjacency_matrix
 
             for edge in graph.edges:
                 self.add_edge(edge[0], edge[1])
@@ -79,13 +82,10 @@ cdef class DynamicGraph(Graph):
 
             # Create adjacency matrix.
             size = len(self.vertices)
-            self._adjacency_matrix = []
-            for i in range(size):
-                self._adjacency_matrix.append([])
-                for _ in range(size):
-                    self._adjacency_matrix[i].append(None)
+            self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+            self._adjacency_matrix_view = self._adjacency_matrix
 
-    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, DTYPE_t weight=1.0) except *:
         """Adds edge to graph between two vertices with a weight.
 
         Parameters
@@ -94,7 +94,7 @@ cdef class DynamicGraph(Graph):
             One of the edge's vertices.
         v2
             One of the edge's vertices.
-        weight: float, optional
+        weight: np.float64, optional
             The weight of the edge.
         """
         cdef int u = self._get_vertex_int(v1)
@@ -102,9 +102,9 @@ cdef class DynamicGraph(Graph):
 
         self._edge_attributes[(v1, v2)] = {}
 
-        self._adjacency_matrix[u][v] = weight
+        self._adjacency_matrix_view[u][v] = weight
         if not self.directed:
-            self._adjacency_matrix[v][u] = weight
+            self._adjacency_matrix_view[v][u] = weight
 
     cpdef void remove_edge(self, object v1, object v2) except *:
         """Removes an edge between two vertices in this graph.
@@ -119,12 +119,12 @@ cdef class DynamicGraph(Graph):
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
 
-        if self._adjacency_matrix[u][v] is None:
+        if np.isnan(self._adjacency_matrix_view[u][v]):
             warnings.warn("Attempting to remove edge that doesn't exist.")
         else:
-            self._adjacency_matrix[u][v] = None
+            self._adjacency_matrix_view[u][v] = np.nan
             if not self.directed:
-                self._adjacency_matrix[v][u] = None
+                self._adjacency_matrix_view[v][u] = np.nan
 
     cpdef bint has_edge(self, object v1, object v2) except *:
         """Returns whether or not an edge exists in this graph.
@@ -148,9 +148,9 @@ cdef class DynamicGraph(Graph):
         except ValueError:
             return False
 
-        return self._adjacency_matrix[u][v] is not None
+        return not np.isnan(self._adjacency_matrix_view[u][v])
 
-    cpdef double get_edge_weight(self, object v1, object v2) except *:
+    cpdef DTYPE_t get_edge_weight(self, object v1, object v2) except *:
         """Returns the weight of the edge between vertices v1 and v2.
 
         Parameters
@@ -162,16 +162,16 @@ cdef class DynamicGraph(Graph):
 
         Returns
         -------
-        float
+        np.float64
             The weight of the edge between v1 and v2.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
-        weight = self._adjacency_matrix[u][v]
-        if weight is not None:
+        cdef DTYPE_t weight = self._adjacency_matrix_view[u][v]
+        if not np.isnan(weight):
             return weight
         else:
-            raise ValueError("edge ({v1}, {v2}) is not in graph.")
+            raise ValueError(f"There is no edge ({v1}, {v2}) in graph.")
 
     cpdef void add_vertex(self, object v) except *:
         """Adds vertex to the graph.
@@ -181,8 +181,8 @@ cdef class DynamicGraph(Graph):
         v
             A vertex of any hashable type.
         """
-        cdef int vertex_number, i
-        cdef list new_row
+        cdef int vertex_number = len(self.vertices)
+        cdef np.ndarray new_row, new_column
 
         self._vertex_attributes[v] = {}
 
@@ -190,16 +190,20 @@ cdef class DynamicGraph(Graph):
             raise ValueError(f"{v} is already in graph")
         else:
             # Map vertex name to number.
-            vertex_number = len(self.vertices)
             self.vertices.append(v)
 
-            # Add new row.
-            new_row = [None for _ in range(vertex_number + 1)]
-            self._adjacency_matrix.append(new_row)
+            if vertex_number == 0:
+                self._adjacency_matrix = np.full((1, 1), np.nan, dtype=DTYPE)
+            else:
+                # Add new row.
+                new_row = np.full((1, vertex_number), np.nan, dtype=DTYPE)
+                self._adjacency_matrix = \
+                    np.append(self._adjacency_matrix, new_row, axis=0)
 
-            # Add new column.
-            for i in range((len(self._adjacency_matrix) - 1)):
-                self._adjacency_matrix[i].append(None)
+                # Add new column.
+                new_column = np.full((vertex_number + 1, 1), np.nan, dtype=DTYPE)
+                self._adjacency_matrix = \
+                    np.append(self._adjacency_matrix, new_column, axis=1)
 
     cpdef void remove_vertex(self, object v) except *:
         """Removes a vertex from this graph.
@@ -212,12 +216,8 @@ cdef class DynamicGraph(Graph):
         cdef int u = self._get_vertex_int(v)
 
         self.vertices.remove(v)
-
-        # Delete row and column from adjacency matrix.
-        self._adjacency_matrix.pop(u)
-        cdef list row
-        for row in self._adjacency_matrix:
-            row.pop(u)
+        np.delete(self._adjacency_matrix, u, axis=1)  # Delete column.
+        np.delete(self._adjacency_matrix, u, axis=0)  # Delete row.
 
     cpdef set get_children(self, object v):
         """Returns the names of all the child vertices of a given
@@ -239,11 +239,11 @@ cdef class DynamicGraph(Graph):
         w = self._get_vertex_int(v)
 
         for u in range(len(self.vertices)):
-            if self._adjacency_matrix[w][u] is not None:
+            if not np.isnan(self._adjacency_matrix_view[w][u]):
                 children.add(self.vertices[u])
 
         return children
-
+    
     cpdef set get_parents(self, object v):
         """Returns the parents (aka "in-neighbors") of a given vertex.
         Equivalent to get_children in undirected graphs. 
@@ -264,7 +264,7 @@ cdef class DynamicGraph(Graph):
         w = self._get_vertex_int(v)
 
         for u in range(len(self.vertices)):
-            if self._adjacency_matrix[u][w] is not None:
+            if not np.isnan(self._adjacency_matrix_view[u][w]):
                 parents.add(self.vertices[u])
 
         return parents
@@ -275,25 +275,26 @@ cdef class DynamicGraph(Graph):
         cdef set edges = set()
         cdef tuple new_edge, existing_edge
         cdef bint edge_found
-        cdef object edge_weight  # Can also be NoneType.
+        cdef DTYPE_t edge_weight
 
         n_vertices = len(self.vertices)
 
         if self.directed:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self._adjacency_matrix[u][v]
-                    if edge_weight is not None:
+                    edge_weight = self._adjacency_matrix_view[u][v]
+                    if not np.isnan(edge_weight):
                         edges.add(
                             (self.vertices[u],
                              self.vertices[v],
-                             edge_weight)
+                             edge_weight
+                            )
                         )
         else:
             for u in range(n_vertices):
                 for v in range(n_vertices):
-                    edge_weight = self._adjacency_matrix[u][v]
-                    if edge_weight is not None:
+                    edge_weight = self._adjacency_matrix_view[u][v]
+                    if not np.isnan(edge_weight):
                         # Edge exists. Add it if it hasn't already been found.
                         new_edge = (
                             self.vertices[u],
@@ -310,11 +311,12 @@ cdef class DynamicGraph(Graph):
                             continue
                         else:
                             edges.add(new_edge)
+
         return edges
 
     def __copy__(self):
-        cdef DynamicGraph new_graph = \
-            DynamicGraph(directed=self.directed, vertices=self.vertices)
+        cdef StaticGraph new_graph = \
+            StaticGraph(directed=self.directed, vertices=self.vertices)
 
         # Add edges and edge attributes.
         cdef tuple edge

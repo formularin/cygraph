@@ -1,6 +1,9 @@
+#!python
+#cython: language_level=3
+
 cimport numpy as np
 
-from ._graph cimport Graph
+from cygraph.graph_._graph cimport Graph
 
 
 cdef class StaticGraph(Graph):

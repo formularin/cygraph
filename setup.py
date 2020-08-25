@@ -11,7 +11,7 @@ if sys.argv[1:3] == ['build_ext', '--inplace']:
     setup(
         ext_modules=cythonize(
             ['cygraph/*.pyx', 'cygraph/algorithms/*.pyx',
-             'cygraph/graph/*.pyx']
+             'cygraph/graph_/*.pyx']
         ),
         # ext_modules=cythonize('test.pyx'),
         include_dirs=[np.get_include()]

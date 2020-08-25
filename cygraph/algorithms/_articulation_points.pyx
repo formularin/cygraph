@@ -1,7 +1,9 @@
+#!python
+#cython: language_level=3
 """Functions involving articulation points.
 """
 
-from ..graph cimport Graph, StaticGraph, DynamicGraph
+from ..graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef set get_articulation_points(Graph graph):

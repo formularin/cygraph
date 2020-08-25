@@ -1,3 +1,5 @@
+#!python
+#cython: language_level=3
 """Implementation of StaticGraph and DynamicGraph classes.
 """
 
