@@ -3,8 +3,7 @@
 
 import pytest
 
-from .. import create_graph
-from ..graph import Graph
+import cygraph as cg
 
 
 def test_constructor():
@@ -14,11 +13,12 @@ def test_constructor():
     graphs = []
 
     # Smoke tests.
+    cg.graph()
     vertex_lists = [['s', 'e'], [0, 1]]
     for lst in vertex_lists:
         for directed in [True, False]:
             for static in [True, False]:
-                g = create_graph(static=static, directed=directed, vertices=lst)
+                g = cg.graph(static=static, directed=directed, vertices=lst)
                 graphs.append(g)
 
     # Exception-raising tests.
@@ -26,12 +26,12 @@ def test_constructor():
         for static in [True, False]:
             with pytest.raises(TypeError):
                 # Non-hashable type vertices.
-                g = create_graph(static=static, directed=directed,
+                g = cg.graph(static=static, directed=directed,
                     vertices=[['s'], ['e']])
                 graphs.append(g)
 
     for graph in graphs:
-        g = create_graph(graph=graph)
+        g = cg.graph(graph_=graph)
         assert g.vertices == graph.vertices
         assert g.edges == graph.edges
 
@@ -50,7 +50,7 @@ def test_edges():
 
     for static in [True, False]:
         # Directed graph.
-        g = create_graph(static=static, directed=True, vertices=['s', 'a', 'b', 'e'])
+        g = cg.graph(static=static, directed=True, vertices=['s', 'a', 'b', 'e'])
 
         # add_edge method
         g.add_edge('s', 'a', weight=0.0)  # Make sure weight zero edges are tested.
@@ -95,7 +95,7 @@ def test_edges():
             g.get_parents('d')
 
         # Undirected graph.
-        g2 = create_graph(static=static, directed=False, vertices=['s', 'a', 'b', 'e'])
+        g2 = cg.graph(static=static, directed=False, vertices=['s', 'a', 'b', 'e'])
 
         # add_edge method
         g2.add_edge('s', 'a', weight=0.0)  # Make sure weight zero edges are tested.
@@ -151,7 +151,7 @@ def test_vertices():
     for StaticGraph and DynamicGraph classes.
     """
     for static in [True, False]:
-        g = create_graph(static=static, directed=True)
+        g = cg.graph(static=static, directed=True)
 
         # Adding to graph with no vertices.
         g.add_vertex('s')
@@ -190,7 +190,7 @@ def test_attributes():
     # Edge attributes.
     for static in [True, False]:
         # Directed graph.
-        g = create_graph(static=static, directed=True, vertices=['a', 'b', 'c'])
+        g = cg.graph(static=static, directed=True, vertices=['a', 'b', 'c'])
         g.add_edge('a', 'b')
 
         # Setting attributes.
@@ -211,7 +211,7 @@ def test_attributes():
             g.get_edge_attribute(('a', 'b'), key="this is not a key")
 
         # Undirected graph.
-        g2 = create_graph(static=static, directed=False, vertices=['a', 'b', 'c'])
+        g2 = cg.graph(static=static, directed=False, vertices=['a', 'b', 'c'])
         g2.add_edge('a', 'b')
 
         # Setting attributes.
@@ -235,7 +235,7 @@ def test_attributes():
     # Vertex attributes.
     for static in [True, False]:
         for directed in [True, False]:
-            g = create_graph(static=static,
+            g = cg.graph(static=static,
                     directed=directed, vertices=['a', 'b', 'c'])
 
             g.set_vertex_attribute('a', key='key', val='val')
@@ -251,25 +251,3 @@ def test_attributes():
                 g.get_vertex_attribute('d', key='key')
             with pytest.raises(KeyError):
                 g.get_vertex_attribute('a', key='this is not a key')
-
-def test_not_implemented(subtests):
-    """Tests that abstract methods raise NotImplementedErrors.
-    """
-
-    g = Graph()
-
-    methods = {
-        "add_vertex": [0],
-        "remove_vertex": [0],
-        "add_edge": [0, 1],
-        "get_edge_weight": [0, 1],
-        "get_children": [0]
-    }
-
-    for method, args in methods.items():
-        with subtests.test(method=method):
-            with pytest.raises(NotImplementedError):
-                eval(f"g.{method}(*{repr(args)})")
-
-    with pytest.raises(NotImplementedError):
-        g.edges
