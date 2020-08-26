@@ -215,6 +215,20 @@ cdef set get_components(Graph graph, bint static):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_components(G)
+    {<DynamicGraph; vertices=[1, 2, 3]; edges={(1, 2, 1.0), (2, 3, 1.0)}>, <DynamicGraph; vertices=[0]; edges=set()>}
+
+    Notes
+    -----
+    To get the number of connected components in a graph,
+    cygraph.algorithms.get_number_components(G) is faster than
+    len(cygraph.algorithms.get_components(G))
     """
 
     cdef set discovered_components = _get_components(graph,
@@ -259,6 +273,14 @@ cdef int get_number_components(Graph graph) except *:
     ------
     NotImplementedError
         `graph` is directed.
+
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_number_components(G)
+    2
     """
     return _get_components(graph, False).pop()
 
@@ -283,6 +305,24 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
     ------
     NotImplementedError
         `graph` is undirected.
+    
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 0)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> G.add_edge(3, 2)
+    >>> alg.get_strongly_connected_components(G)
+    {<DynamicGraph; vertices=[2, 3]; edges={(2, 3, 1.0), (3, 2, 1.0)}>, <DynamicGraph; vertices=[0, 1]; edges={(1, 0, 1.0), (0, 1, 1.0)}>}
+
+    Notes
+    -----
+    To get the number of strongly connected components in a graph,
+    cygraph.algorithms.get_number_strongly_connected_components(G) is
+    faster than
+    len(cygraph.algorithms.get_strongly_connected_components(G))
     """
     components = _get_strongly_connected_components(graph, True)
 
@@ -322,6 +362,17 @@ cdef int get_number_strongly_connected_components(Graph graph) except *:
     ------
     NotImplementedError
         `graph` is undirected.
+    
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 0)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> G.add_edge(3, 2)
+    >>> alg.get_number_strongly_connected_components(G)
+    2
     """
     return _get_strongly_connected_components(graph, False).pop()
 
@@ -345,6 +396,14 @@ cpdef set py_get_components(Graph graph, bint static=False):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_components(G)
+    {<DynamicGraph; vertices=[1, 2, 3]; edges={(1, 2, 1.0), (2, 3, 1.0)}>, <DynamicGraph; vertices=[0]; edges=set()>}
     """
     return get_components(graph, static)
 
@@ -365,6 +424,14 @@ cpdef int py_get_number_components(Graph graph) except *:
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_number_components(G)
+    2
     """
     return get_number_components(graph)
 
@@ -389,6 +456,17 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
     ------
     NotImplementedError
         `graph` is undirected.
+    
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 0)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> G.add_edge(3, 2)
+    >>> alg.get_strongly_connected_components(G)
+    {<DynamicGraph; vertices=[2, 3]; edges={(2, 3, 1.0), (3, 2, 1.0)}>, <DynamicGraph; vertices=[0, 1]; edges={(1, 0, 1.0), (0, 1, 1.0)}>}
     """
     return get_strongly_connected_components(graph, static)
 
@@ -405,10 +483,21 @@ cpdef int py_get_number_strongly_connected_components(Graph graph) except *:
     -------
     int
         The number of strongly connected components in `graph`.
-    
+
     Raises
     ------
     NotImplementedError
         `graph` is undirected.
+
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 0)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> G.add_edge(3, 2)
+    >>> alg.get_number_strongly_connected_components(G)
+    2
     """
     return get_number_strongly_connected_components(graph)

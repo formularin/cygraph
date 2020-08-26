@@ -39,6 +39,13 @@ cdef tuple partition_karger(Graph graph, bint static):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=[1, 2])
+    >>> G.add_edge(1, 2)
+    >>> alg.partition_karger(G)
+    (<DynamicGraph; vertices=[1]; edges=set()>, <DynamicGraph; vertices=[2]; edges=set()>, {(1, 2, 1.0)})
     """
     if graph.directed:
         raise NotImplementedError("Cannot perform Karger partition on "
@@ -135,5 +142,12 @@ cpdef tuple py_partition_karger(Graph graph, bint static=False):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=[1, 2])
+    >>> G.add_edge(1, 2)
+    >>> alg.partition_karger(G)
+    (<DynamicGraph; vertices=[1]; edges=set()>, <DynamicGraph; vertices=[2]; edges=set()>, {(1, 2, 1.0)})
     """
     return partition_karger(graph, static)

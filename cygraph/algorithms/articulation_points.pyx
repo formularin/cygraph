@@ -27,6 +27,15 @@ cdef set get_articulation_points(Graph graph):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_articulation_points(G)
+    {1, 2}
     """
     if graph.directed:
         raise NotImplementedError("Cannot find the articulation points "
@@ -102,5 +111,14 @@ cpdef set py_get_articulation_points(Graph graph):
     ------
     NotImplementedError
         `graph` is directed.
+    
+    Examples
+    --------
+    >>> G = cg.graph(vertices=list(range(4)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 3)
+    >>> alg.get_articulation_points(G)
+    {1, 2}
     """
     return get_articulation_points(graph)

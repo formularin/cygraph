@@ -25,6 +25,22 @@ cdef list get_shortest_path_dijkstra(Graph graph, object source,
     list
         The list of vertices that constitute the shortest path between
         source and target.
+    
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(3)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 0)
+    >>> alg.get_shortest_path_dijkstra(G, 2, 1)
+    [2, 0, 1]
+
+    >>> G = cg.graph(vertices=list(range(3)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 0)
+    >>> alg.get_shortest_path_dijkstra(G, 1, 2)
+    [1, 2]
     """
     cdef dict distances, previous_vertices
     cdef set unprocessed_vertices = set()
@@ -88,5 +104,21 @@ cpdef list py_get_shortest_path_dijkstra(Graph graph, object source,
     list
         The list of vertices that constitute the shortest path between
         source and target.
+    
+    Examples
+    --------
+    >>> G = cg.graph(directed=True, vertices=list(range(3)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 0)
+    >>> alg.get_shortest_path_dijkstra(G, 2, 1)
+    [2, 0, 1]
+
+    >>> G = cg.graph(vertices=list(range(3)))
+    >>> G.add_edge(0, 1)
+    >>> G.add_edge(1, 2)
+    >>> G.add_edge(2, 0)
+    >>> alg.get_shortest_path_dijkstra(G, 1, 2)
+    [1, 2]
     """
     return get_shortest_path_dijkstra(graph, source, target)

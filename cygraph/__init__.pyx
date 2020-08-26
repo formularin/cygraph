@@ -1,6 +1,19 @@
 #!python
 #cython: language_level=3
 """A graph theory library implemented in Cython.
+
+Examples
+--------
+>>> import cygraph as cg
+>>> import cygraph.algorithms as alg
+>>> G = cg.graph(vertices=list(range(4)))
+>>> G.add_edge(1, 2)
+>>> G.add_edge(2, 3)
+>>> G.add_edge(3, 1)
+>>> G.get_children(1)
+{2, 3}
+>>> alg.get_number_components(G)
+2
 """
 
 from .graph_ cimport Graph, DynamicGraph, StaticGraph

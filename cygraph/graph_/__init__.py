@@ -1,6 +1,6 @@
 """Graph data strucutre implementations.
 """
 
-from graph_.dynamic_graph import DynamicGraph
-from graph_.static_graph import StaticGraph
-from graph_.graph import Graph
+from .dynamic_graph import DynamicGraph
+from .static_graph import StaticGraph
+from .graph import Graph
