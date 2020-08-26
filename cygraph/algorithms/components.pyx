@@ -134,7 +134,7 @@ cdef set _get_components(Graph graph, bint vertices):
         return {n_components}
 
 
-cdef set _get_strongly_connected_components(Graph graph):
+cdef set _get_strongly_connected_components(Graph graph, bint vertices):
     """Gets the strongly connected components of a graph using
     Tarjan's algorithm.
 
@@ -142,12 +142,17 @@ cdef set _get_strongly_connected_components(Graph graph):
     ----------
     graph: cygraph.Graph
         A graph.
+    vertices: bint
+        Whether or not to keep track of which vertices are in which
+        strongly connected component.
 
     Returns
     -------
     set
         The set of sets of vertices that are the strongly connnected
-        components of `graph`.
+        components of `graph`, or a set with a single element that is
+        the number of strongly connected components in `graph` if
+        `vertices` is set to False.
 
     Raises
     ------
@@ -166,18 +171,29 @@ cdef set _get_strongly_connected_components(Graph graph):
 
     cdef dict bookkeeping_dict
     cdef set components = set()
+    cdef set visited = set()
     cdef set comp
     cdef object v, w
     cdef int n_components = 0
     for v in graph.vertices:
         if v not in _indices:
             comp = _strongconnect(graph, v)
+            visited |= comp
             _stack = []
-            _indices = {}
-            _lowlinks = {}
-            components.add(frozenset(comp))
+            for bookkeeping_dict in (_indices, _lowlinks):
+                for w in dict(bookkeeping_dict):
+                    if w not in visited:
+                        del bookkeeping_dict[w]
+            
+            if vertices:
+                components.add(frozenset(comp))
+            else:
+                n_components += 1
 
-    return components
+    if vertices:
+        return components
+    else:
+        return {n_components}
 
 
 cdef set get_components(Graph graph, bint static):
@@ -268,7 +284,7 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
     NotImplementedError
         `graph` is undirected.
     """
-    components = _get_strongly_connected_components(graph)
+    components = _get_strongly_connected_components(graph, True)
 
     cdef set graph_components = set()
     cdef frozenset comp
@@ -307,7 +323,7 @@ cdef int get_number_strongly_connected_components(Graph graph) except *:
     NotImplementedError
         `graph` is undirected.
     """
-    return len(_get_strongly_connected_components(graph))
+    return _get_strongly_connected_components(graph, False).pop()
 
 
 cpdef set py_get_components(Graph graph, bint static=False):
