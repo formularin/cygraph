@@ -41,8 +41,8 @@ def test_get_articulation_points():
         assert alg.get_articulation_points(g2) == random_graph_articulation_points
 
 
-def test_find_shortest_path_dijkstra():
-    """Tests find_shortest_path_dijkstra function.
+def test_get_shortest_path_dijkstra():
+    """Tests get_shortest_path_dijkstra function.
     """
     for static in [True, False]:
 
@@ -58,15 +58,15 @@ def test_find_shortest_path_dijkstra():
         for edge in undirected_graph_edges:
             undirected_graph.add_edge(*edge)
 
-        undirected_path = alg.find_shortest_path_dijkstra(undirected_graph, 's', 'e')
+        undirected_path = alg.get_shortest_path_dijkstra(undirected_graph, 's', 'e')
         assert undirected_path == ['s', 'b', 'h', 'g', 'e']
         with pytest.raises(ValueError):
-            alg.find_shortest_path_dijkstra(undirected_graph, 'y', 'z')
+            alg.get_shortest_path_dijkstra(undirected_graph, 'y', 'z')
 
         disconnected_undirected_graph = cg.graph(
             static=static, directed=False, vertices=['a', 'b'])
         with pytest.raises(ValueError):
-            alg.find_shortest_path_dijkstra(disconnected_undirected_graph, 'a', 'b')
+            alg.get_shortest_path_dijkstra(disconnected_undirected_graph, 'a', 'b')
 
         directed_graph = cg.graph(static=static, directed=True,
             vertices=['s', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
@@ -78,14 +78,14 @@ def test_find_shortest_path_dijkstra():
         for edge in directed_graph_edges:
             directed_graph.add_edge(*edge)
 
-        directed_path = alg.find_shortest_path_dijkstra(directed_graph, 's', 'e')
+        directed_path = alg.get_shortest_path_dijkstra(directed_graph, 's', 'e')
         assert directed_path == ['s', 'a', 'e']
 
         disconnected_directed_graph = cg.graph(
             static=static, directed=True, vertices=['a', 'b'])
         disconnected_directed_graph.add_edge('a', 'b')
         with pytest.raises(ValueError):
-            alg.find_shortest_path_dijkstra(disconnected_directed_graph, 'b', 'a')
+            alg.get_shortest_path_dijkstra(disconnected_directed_graph, 'b', 'a')
 
 
 def test_get_min_spanning_tree():
@@ -185,7 +185,8 @@ def test_get_strongly_connected_components():
     ]
 
     for static in [True, False]:
-        g = cg.graph(directed=True, vertices=list(string.ascii_lowercase[:8]))
+        g = cg.graph(static=static, directed=True,
+            vertices=list(string.ascii_lowercase[:8]))
         for edge in edges:
             g.add_edge(*edge)
         test_components = alg.get_strongly_connected_components(g, static=True)
@@ -203,7 +204,7 @@ def test_get_strongly_connected_components():
 
         assert alg.get_number_strongly_connected_components(g) == 3
 
-        g2 = cg.graph(directed=False)
+        g2 = cg.graph(static=static, directed=False)
         with pytest.raises(NotImplementedError):
             alg.get_strongly_connected_components(g2)
         with pytest.raises(NotImplementedError):

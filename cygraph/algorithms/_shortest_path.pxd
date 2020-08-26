@@ -3,4 +3,4 @@
 from ..graph_ cimport DynamicGraph, Graph, StaticGraph
 
 
-cdef list find_shortest_path_dijkstra(Graph graph, object source, object target)
+cdef list get_shortest_path_dijkstra(Graph graph, object source, object target)

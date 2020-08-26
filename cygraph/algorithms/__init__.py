@@ -9,4 +9,4 @@ from ._components import py_get_number_components as get_number_components
 from ._components import py_get_strongly_connected_components as get_strongly_connected_components
 from ._components import py_get_number_strongly_connected_components as get_number_strongly_connected_components
 from ._partitioning import py_partition_karger as partition_karger
-from ._shortest_path import py_find_shortest_path_dijkstra as find_shortest_path_dijkstra
+from ._shortest_path import py_get_shortest_path_dijkstra as get_shortest_path_dijkstra
