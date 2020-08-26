@@ -3,11 +3,19 @@
 """Functions for identifying graph components.
 """
 
+from collections import deque
+
 from ..graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
-cdef void _dfs(Graph graph, object v, set visited, list vertex_stack,
-        bint backwards):
+# Global variables required for Tarjan's algorithm.
+cdef int _index = 0
+cdef list _stack = []
+cdef dict _indices = {}
+cdef dict _lowlinks = {}
+
+
+cdef void _dfs(Graph graph, object root, set visited) except *:
     """Finds all of the vertices in a component of a graph using a
     depth-first search.
 
@@ -15,38 +23,71 @@ cdef void _dfs(Graph graph, object v, set visited, list vertex_stack,
     ----------
     graph: cygraph.Graph
         A graph.
-    v
+    root
         The root vertex of the search.
-    vertex_stack: list
-        A stack containing vertices as they are finished in the DFS.
-        Set to `[[]]` if you don't want this feature.
-    backwards: bint
-        Whether or not to use get_parents instead of get_children when
-        finding vertex neighbors.
+    visited: set
+        The set of already visited vertices.
+    """
+    cdef object v, w
+    cdef set next_vertices
+    cdef list stack = [root]
 
+    while stack:
+        v = stack.pop()
+        if v not in visited:
+            visited.add(v)
+            for w in graph.get_children(v):
+                if w not in visited:
+                    stack.append(w)
+
+
+cdef set _strongconnect(Graph graph, object v):
+    """The strongconnect function for Tarjan's strongly connected
+    component algorithm.
+
+    Parameters
+    ----------
+    graph: cygraph.Graph
+        A directed graph.
+    v
+        A vertex to use as the root node of this component.
+    
     Returns
     -------
     set
-        Vertices in the component of `graph` that contains `v`.
+        The set of vertices in the same strongly connected component as
+        `v`, including v.
     """
-    # Default value of vertex_stack is [[]], because lists are not
-    # hashable, therefore it can never actually be inputted by the user.
 
-    cdef object vertex
-    cdef set next_vertices
-    cdef list stack = [v]
+    global _index, _stack, _indices, _lowlinks
+
+    _indices[v] = _index
+    _lowlinks[v] = _index
+    _index += 1
+    _stack.append(v)
+
+    cdef object w
+    for w in graph.get_children(v):
+        if w not in _indices:
+            # Child has not yet been visited; recurse on it.
+            _strongconnect(graph, w)
+            _lowlinks[v] = min(_lowlinks[v], _lowlinks[w])
+        elif w in _stack:
+            # w is in stack and hence in the current SCC.
+            # If w is not on stack, the w was already visited in a
+            # previous depth 0 call of strongconnect.
+            _lowlinks[v] = min(_lowlinks[v], _indices[w])
     
-    while stack:
-        vertex = stack.pop()
-        if vertex not in visited:
-            visited.add(vertex)
-            if backwards:
-                next_vertices = graph.get_parents(vertex)
-            else:
-                next_vertices = graph.get_children(vertex)
-            stack += list(next_vertices)
-            if vertex_stack != [[]]:
-                vertex_stack.append(vertex)
+    # If v is a root node, pop the stack and generate an SCC.
+    cdef set comp = set()
+    if _lowlinks[v] == _indices[v]:
+        while True:
+            w = _stack.pop()
+            comp.add(w)
+            if w == v:
+                break
+    
+    return comp
 
 
 cdef set _get_components(Graph graph, bint vertices):
@@ -80,7 +121,7 @@ cdef set _get_components(Graph graph, bint vertices):
     for vertex in graph.vertices:
         if vertex not in visited:
             component_vertices = set()
-            _dfs(graph, vertex, component_vertices, [[]], False)
+            _dfs(graph, vertex, component_vertices)
             visited |= component_vertices
             if vertices:
                 components.add(frozenset(component_vertices))
@@ -93,24 +134,20 @@ cdef set _get_components(Graph graph, bint vertices):
         return {n_components}
 
 
-cdef set _get_strongly_connected_components(Graph graph, bint vertices):
-    """Gets the strongly connected components of a graph
+cdef set _get_strongly_connected_components(Graph graph):
+    """Gets the strongly connected components of a graph using
+    Tarjan's algorithm.
 
     Parameters
     ----------
     graph: cygraph.Graph
         A graph.
-    vertices: bint
-        Whether or not to actually keep track of the set of vertices in
-        each strongly connected component.
 
     Returns
     -------
     set
         The set of sets of vertices that are the strongly connnected
-        components of `graph`, or a set containing a single value that
-        is the number of strongly connected components in `graph`. Which
-        one depends on the value of `vertices`.
+        components of `graph`.
 
     Raises
     ------
@@ -121,35 +158,26 @@ cdef set _get_strongly_connected_components(Graph graph, bint vertices):
         raise NotImplementedError("Cannot get the strongly connected "
             "components of an undirected graph.")
 
-    cdef list stack = []
-    cdef set visited = set()
-    cdef object v, u
-    for v in graph.vertices:
-        if v not in visited:
-            _dfs(graph, v, visited, stack, False)
+    global _index, _stack, _indices, _lowlinks
+    _index = 0
+    _stack = []
+    _indices = {}
+    _lowlinks = {}
 
-    visited = set()
-    cdef set new_vertices = set()
+    cdef dict bookkeeping_dict
     cdef set components = set()
+    cdef set comp
+    cdef object v, w
     cdef int n_components = 0
-    while stack:
-        v = stack.pop()
-        _dfs(graph, v, new_vertices, [[]], True)
+    for v in graph.vertices:
+        if v not in _indices:
+            comp = _strongconnect(graph, v)
+            _stack = []
+            _indices = {}
+            _lowlinks = {}
+            components.add(frozenset(comp))
 
-        for v in new_vertices:
-            if v in stack:
-                stack.remove(v)
-        
-        visited |= new_vertices
-        if vertices:
-            components.add(frozenset(new_vertices))
-        else:
-            n_components += 1
-    
-    if vertices:
-        return components
-    else:
-        return {n_components}
+    return components
 
 
 cdef set get_components(Graph graph, bint static):
@@ -240,7 +268,7 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
     NotImplementedError
         `graph` is undirected.
     """
-    components = _get_strongly_connected_components(graph, True)
+    components = _get_strongly_connected_components(graph)
 
     cdef set graph_components = set()
     cdef frozenset comp
@@ -250,34 +278,36 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
             g = StaticGraph(directed=True, vertices=list(comp))
         else:
             g = DynamicGraph(directed=True, vertices=list(comp))
-        
+
         for v in comp:
             for u in graph.get_children(v):
                 if u in comp:
                     g.add_edge(v, u)
-    
+        
+        graph_components.add(g)
+
     return graph_components
 
 
 cdef int get_number_strongly_connected_components(Graph graph) except *:
-    """Gets the number of strongly connected components of a graph.
+    """Gets the number of strongly connected components in a graph.
 
     Parameters
     ----------
     graph: cygraph.Graph
-        A graph.
-
+        A directed graph.
+    
     Returns
     -------
     int
-        The number of strongly connected components in `graph`
-
+        The number of strongly connected components in `graph`.
+    
     Raises
     ------
     NotImplementedError
         `graph` is undirected.
     """
-    return _get_strongly_connected_components(graph, False).pop()
+    return len(_get_strongly_connected_components(graph))
 
 
 cpdef set py_get_components(Graph graph, bint static=False):
@@ -348,18 +378,18 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
 
 
 cpdef int py_get_number_strongly_connected_components(Graph graph) except *:
-    """Gets the number of strongly connected components of a graph.
+    """Gets the number of strongly connected components in a graph.
 
     Parameters
     ----------
     graph: cygraph.Graph
-        A graph.
-
+        A directed graph.
+    
     Returns
     -------
     int
-        The number of strongly connected components in `graph`
-
+        The number of strongly connected components in `graph`.
+    
     Raises
     ------
     NotImplementedError

@@ -178,7 +178,7 @@ def test_get_strongly_connected_components():
         ('d', 'c'), ('d', 'h'), ('h', 'd'), ('h', 'g'), ('g', 'f'), ('f', 'g'),
         ('e', 'a'), ('e', 'f')
     ]
-    component_vertices = [{'a', 'b', 'e'}, {'c', 'd', 'g'}, {'f', 'g'}]
+    component_vertices = [{'a', 'b', 'e'}, {'c', 'd', 'h'}, {'f', 'g'}]
     component_edges = [
         {('a', 'b'), ('b', 'e'), ('e', 'a')}, {('f', 'g'), ('g', 'f')},
         {('h', 'd'), ('d', 'h'), ('d', 'c'), ('c', 'd')}
