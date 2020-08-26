@@ -89,4 +89,4 @@ cpdef list py_get_shortest_path_dijkstra(Graph graph, object source,
         The list of vertices that constitute the shortest path between
         source and target.
     """
-    return find_shortest_path_dijkstra(graph, source, target)
+    return get_shortest_path_dijkstra(graph, source, target)

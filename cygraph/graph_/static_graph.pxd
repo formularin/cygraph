@@ -3,7 +3,7 @@
 
 cimport numpy as np
 
-from cygraph.graph_._graph cimport Graph
+from cygraph.graph_.graph cimport Graph
 
 
 cdef class StaticGraph(Graph):

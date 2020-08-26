@@ -1,7 +1,7 @@
 #!python
 #cython: language_level=3
 
-from cygraph.graph_._graph cimport Graph
+from cygraph.graph_.graph cimport Graph
 
 
 cdef class DynamicGraph(Graph):

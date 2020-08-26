@@ -9,7 +9,7 @@ import warnings
 cimport numpy as np
 import numpy as np
 
-from cygraph.graph_._graph cimport Graph
+from cygraph.graph_.graph cimport Graph
 
 
 cdef type DTYPE = np.float64
