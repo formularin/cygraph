@@ -5,7 +5,7 @@
 
 from collections import deque
 
-from ..graph_ cimport Graph, StaticGraph, DynamicGraph
+from cygraph.graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 # Global variables required for Tarjan's algorithm.

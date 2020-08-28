@@ -3,7 +3,7 @@
 """Functions involving articulation points.
 """
 
-from ..graph_ cimport Graph, StaticGraph, DynamicGraph
+from cygraph.graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef set get_articulation_points(Graph graph):

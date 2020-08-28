@@ -16,7 +16,10 @@ Examples
 2
 """
 
-from .graph_ cimport Graph, DynamicGraph, StaticGraph
+from cygraph.graph_ cimport Graph, DynamicGraph, StaticGraph
+
+
+__version__ = '0.1.3'
 
 
 cpdef Graph graph(bint static=False, Graph graph_=None, bint directed=False,

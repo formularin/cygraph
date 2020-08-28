@@ -5,7 +5,7 @@
 
 from libc.stdlib cimport rand, srand
 
-from ..graph_ cimport Graph, StaticGraph, DynamicGraph
+from cygraph.graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef extern from "time.h":

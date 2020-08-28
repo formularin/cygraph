@@ -3,7 +3,7 @@
 """Functions for finding shortest paths in graphs.
 """
 
-from ..graph_ cimport Graph, StaticGraph, DynamicGraph
+from cygraph.graph_ cimport Graph, StaticGraph, DynamicGraph
 
 
 cdef list get_shortest_path_dijkstra(Graph graph, object source,

@@ -4,19 +4,8 @@
 
 ## Installation
 
-
-### With pip
-
 ```
 pip install cygraph
-```
-
-### From source
-
-```
-git clone 'https://github.com/lol-cubes/cygraph.git'
-cd cygraph
-python3 setup.py install
 ```
 
 ## Usage
