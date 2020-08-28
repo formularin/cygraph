@@ -18,6 +18,7 @@ build/
 # Pip
 cygraph.egg-info/
 dist/
+.eggs
 
 # Python
 cygraph/__pycache__/

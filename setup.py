@@ -1,8 +1,5 @@
 import sys
 from setuptools import setup, find_packages
-from setuptools import dist
-
-dist.Distribution().fetch_build_eggs(['Cython>=0.29.21', 'numpy>=1.19.0'])
 
 import numpy as np
 from Cython.Build import cythonize
@@ -14,7 +11,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='cygraph',
-    version='0.1.0',
+    version='0.1.1',
     author='Arin Khare',
     author_email='arinmkhare@gmail.com',
     description='A graph theory library written in Cython',
