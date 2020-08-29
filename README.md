@@ -4,24 +4,56 @@
 
 ## Installation
 
-```
+```bash
 pip install cygraph
 ```
 
 ## Usage
 
-Here is a basic example of some features in cygraph.
+### Python
+
+Here is an example Python script that utilizes some of the features of cygraph.
+
 ```python
->>> import cygraph as cg
->>> import cygraph.algorithms as alg
->>> G = cg.graph(vertices=list(range(4)))
->>> G.add_edge(1, 2)
->>> G.add_edge(2, 3)
->>> G.add_edge(3, 1)
->>> G.get_children(1)
-{2, 3}
->>> alg.get_number_components(G)
-2
+import cygraph as cg
+import cygraph.algorithms as alg
+
+G = cg.graph(vertices=list(range(4)))
+G.add_edge(1, 2)
+G.add_edge(2, 3)
+G.add_edge(3, 1)
+children = G.get_children(1)
+print(f'{children=}')
+components = alg.get_number_components(G)
+print(f'{components=}')
+```
+
+It should output:
+
+```
+children={2, 3}
+components=2
+```
+
+### Cython
+
+Here is the above script but with static typing in Cython.
+
+```
+#!python
+#cython: language_level=3
+import cygraph as cg  # cg.graph function.
+cimport cygraph.graph_ as gp  # StaticGraph and DynamicGraph types.
+cimport cygraph.algorithms as alg
+
+cdef gp.DynamicGraph G = cg.graph(vertices=list(range(4)))
+G.add_edge(1, 2)
+G.add_edge(2, 3)
+G.add_edge(3, 1)
+cdef set children = G.get_children(1)
+print(f'children={str(children)}')
+cdef int components = alg.get_number_components(G)
+print(f'components={components}')
 ```
 
 For more information on the Python and Cython APIs, see [the documentation](https://lol-cubes.github.io/cygraph)
