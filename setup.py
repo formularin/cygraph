@@ -10,7 +10,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='cygraph',
-    version='0.1.5',
+    version='0.1.6',
     author='Arin Khare',
     author_email='arinmkhare@gmail.com',
     description='A graph theory library written in Cython',
@@ -19,8 +19,7 @@ setup(
     url='https://github.com/lol-cubes/cygraph',
     packages=['cygraph', 'cygraph/algorithms', 'cygraph/graph_'],
     ext_modules=cythonize(
-        ['cygraph/*.pyx', 'cygraph/algorithms/*.pyx',
-            'cygraph/graph_/*.pyx']
+        ['cygraph/algorithms/*.pyx', 'cygraph/graph_/*.pyx']
     ),
     include_dirs=[np.get_include()],
     install_requires=['numpy>=1.19.0'],

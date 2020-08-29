@@ -35,6 +35,7 @@ test.py
 test.pyx
 test.cpython-38-darwin.so
 test.c
+test_setup.py
 test1.pyx
 test1.cpython-38-darwin.so
 test1.c

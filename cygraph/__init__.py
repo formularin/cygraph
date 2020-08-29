@@ -1,5 +1,3 @@
-#!python
-#cython: language_level=3
 """A graph theory library implemented in Cython.
 
 Examples
@@ -16,14 +14,13 @@ Examples
 2
 """
 
-from cygraph.graph_ cimport Graph, DynamicGraph, StaticGraph
+from cygraph.graph_ import DynamicGraph, StaticGraph
 
 
-__version__ = '0.1.3'
+__version__ = '0.1.6'
 
 
-cpdef Graph graph(bint static=False, Graph graph_=None, bint directed=False,
-        list vertices=[]):
+def graph(static=False, graph_=None, directed=False, vertices=[]):
     """Create an instance of a cygraph.Graph object.
 
     Parameters
@@ -45,7 +42,7 @@ cpdef Graph graph(bint static=False, Graph graph_=None, bint directed=False,
     cygraph.Graph
         A graph.
     """
-    cdef dict kwargs = {
+    kwargs = {
         'graph': graph_,
         'directed': directed,
         'vertices': vertices
