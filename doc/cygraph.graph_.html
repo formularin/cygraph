@@ -1,0 +1,827 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cygraph.graph_ &#8212; cygraph 0.1.6 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="cygraph.tests" href="cygraph.tests.html" />
+    <link rel="prev" title="cygraph.algorithms" href="cygraph.algorithms.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.tests.html" title="cygraph.tests"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cygraph.algorithms.html" title="cygraph.algorithms"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >cygraph</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="cygraph.html" accesskey="U">cygraph package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cygraph-graph">
+<h1>cygraph.graph_<a class="headerlink" href="#cygraph-graph" title="Permalink to this headline">¶</a></h1>
+<p>Contains graph classes. These are not meant to be imported by Python client modules, but it is kept possible if absolutely necessary (in case one needs to use them for inheritance or something similar).</p>
+<div class="section" id="module-cygraph.graph_.dynamic_graph">
+<span id="cygraph-graph-dynamic-graph"></span><h2>cygraph.graph_.dynamic_graph<a class="headerlink" href="#module-cygraph.graph_.dynamic_graph" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of graph data structure with python list as adjacency
+matrix.</p>
+<dl class="class">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph">
+<em class="property">class </em><code class="descclassname">cygraph.graph_.dynamic_graph.</code><code class="descname">DynamicGraph</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cygraph.graph_.graph.Graph" title="cygraph.graph_.graph.Graph"><code class="xref py py-class docutils literal notranslate"><span class="pre">cygraph.graph_.graph.Graph</span></code></a></p>
+<p>A class representing a graph data structure.</p>
+<p>This is a directed graph class, although it will function as an
+undirected graph by creating directed edges both ways between two
+vertices. This class contains only basic functionality; algorithms
+are implemented externally.</p>
+<p>Adding vertices to a graph is faster than with a StaticGraph, but
+overall performance (especially for operations like getting children
+and getting edge weights) is comprimised.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em><em>, </em><em>optional</em>) – A graph to create a copy of.</li>
+<li><strong>directed</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether or not the graph contains directed edges.</li>
+<li><strong>vertices</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of vertices (can be any hashable type).</li>
+<li><strong>that directed and vertices args will be ignored if</strong> (<em>Note</em>) – </li>
+<li><strong>is not None.</strong> (<em>graph</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.directed">
+<code class="descname">directed</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.directed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not the graph contains directed edges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bint</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The vertices in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.edges">
+<code class="descname">edges</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuples contianing the two vertices of each edge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.edge_attribtues">
+<code class="descname">edge_attribtues</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.edge_attribtues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps (v1, v2) tuples to dicts mapping edge attribute keys to
+corresponding values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.vertex_attribtues">
+<code class="descname">vertex_attribtues</code><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.vertex_attribtues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps vertices to dicts mapping vertex attribute keys to
+corresponding values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.add_edge">
+<code class="descname">add_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds edge to graph between two vertices with a weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+<li><strong>weight</strong> (<em>float</em><em>, </em><em>optional</em>) – The weight of the edge.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.add_vertex">
+<code class="descname">add_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.add_vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds vertex to the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex of any hashable type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">edges</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.get_children">
+<code class="descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all the child vertices of a given
+vertex. Equivalent to neighbors if graph is undirected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in the graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The child vertices of <cite>v</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the weight of the edge between vertices v1 and v2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The weight of the edge between v1 and v2.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">float</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.get_parents">
+<code class="descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the parents (aka “in-neighbors”) of a given vertex.
+Equivalent to get_children in undirected graphs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in the graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The parent vertices of <cite>v</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.has_edge">
+<code class="descname">has_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.has_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether or not an edge exists in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>v1</strong> – First vertex of the edge.</li>
+<li><strong>v2</strong> – Second vertex of the edge.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether or not edge is in graph.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bint</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.remove_edge">
+<code class="descname">remove_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.remove_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an edge between two vertices in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.dynamic_graph.DynamicGraph.remove_vertex">
+<code class="descname">remove_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.dynamic_graph.DynamicGraph.remove_vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a vertex from this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in this graph.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cygraph.graph_.graph">
+<span id="cygraph-graph-graph"></span><h2>cygraph.graph_.graph<a class="headerlink" href="#module-cygraph.graph_.graph" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of StaticGraph and DynamicGraph classes.</p>
+<dl class="class">
+<dt id="cygraph.graph_.graph.Graph">
+<em class="property">class </em><code class="descclassname">cygraph.graph_.graph.</code><code class="descname">Graph</code><a class="headerlink" href="#cygraph.graph_.graph.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A semi-abstract base graph class.</p>
+<p>Semi-abstract because anything that involves the adjacency matrix
+is not implemented, and therefore this class is not meant to be
+used for instantiating objects. The reason why those methods are
+even in this class is so that downcasting still works because of
+early binding.</p>
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.add_edge">
+<code class="descname">add_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.add_vertex">
+<code class="descname">add_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.add_vertex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.graph.Graph.directed">
+<code class="descname">directed</code><a class="headerlink" href="#cygraph.graph_.graph.Graph.directed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.graph.Graph.edge_attributes">
+<code class="descname">edge_attributes</code><a class="headerlink" href="#cygraph.graph_.graph.Graph.edge_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.graph.Graph.edges">
+<code class="descname">edges</code><a class="headerlink" href="#cygraph.graph_.graph.Graph.edges" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.get_children">
+<code class="descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.get_children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.get_edge_attribute">
+<code class="descname">get_edge_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.get_edge_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets an attribute of an edge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>edge</strong> (<em>tuple</em>) – An edge in the graph in the form (v1, v2).</li>
+<li><strong>key</strong> – The name of the attribute. Must be of hashable type.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The value of the attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.get_parents">
+<code class="descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.get_vertex_attribute">
+<code class="descname">get_vertex_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.get_vertex_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets an attribute of a vertex.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>vertex</strong> – A vertex in the graph.</li>
+<li><strong>key</strong> – The name of the attribute. Must be of hashable type.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">The value of the attribute.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.has_vertex">
+<code class="descname">has_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.has_vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether or not a vertex is in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>vertex</strong> – A valid vertex (hashable type).</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Whether or not <cite>vertex</cite> is in this graph.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">bint</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.remove_edge">
+<code class="descname">remove_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.remove_edge" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.remove_vertex">
+<code class="descname">remove_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.remove_vertex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.set_edge_attribute">
+<code class="descname">set_edge_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.set_edge_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets an attribute to an edge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>edge</strong> (<em>tuple</em>) – An edge in the graph in the form (v1, v2).</li>
+<li><strong>key</strong> – The name of the attribute. Must be of hashable type.</li>
+<li><strong>val</strong> – The value of the attribute.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.graph.Graph.set_vertex_attribute">
+<code class="descname">set_vertex_attribute</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.graph.Graph.set_vertex_attribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets an attribute to a vertex.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>vertex</strong> – A vertex in the graph.</li>
+<li><strong>key</strong> – The name of the attribute. Must be of hashable type.</li>
+<li><strong>val</strong> – The value of the attribute.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.graph.Graph.vertex_attributes">
+<code class="descname">vertex_attributes</code><a class="headerlink" href="#cygraph.graph_.graph.Graph.vertex_attributes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.graph.Graph.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#cygraph.graph_.graph.Graph.vertices" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-cygraph.graph_.static_graph">
+<span id="cygraph-graph-static-graph"></span><h2>cygraph.graph_.static_graph<a class="headerlink" href="#module-cygraph.graph_.static_graph" title="Permalink to this headline">¶</a></h2>
+<p>Implementation of graph data strucutre with numpy array as adjacency
+matrix.</p>
+<dl class="class">
+<dt id="cygraph.graph_.static_graph.StaticGraph">
+<em class="property">class </em><code class="descclassname">cygraph.graph_.static_graph.</code><code class="descname">StaticGraph</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#cygraph.graph_.graph.Graph" title="cygraph.graph_.graph.Graph"><code class="xref py py-class docutils literal notranslate"><span class="pre">cygraph.graph_.graph.Graph</span></code></a></p>
+<p>A class representing a graph data structure.</p>
+<p>This is a directed graph class, although it will function as an
+undirected graph by creating directed edges both ways between two
+vertices. This class contains only basic functionality; algorithms
+are implemented externally.</p>
+<p>Adding vertices to a StaticGraph is relatively slow, expecially for
+already large graphs. If you are going to be adding lots of
+vertices to your graph, consider using cygraph.DynamicGraph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em><em>, </em><em>optional</em>) – A graph to create a copy of.</li>
+<li><strong>directed</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether or not the graph contains directed edges.</li>
+<li><strong>vertices</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of vertices (can be any hashable type).</li>
+<li><strong>that directed and vertices args will be ignored if</strong> (<em>Note</em>) – </li>
+<li><strong>is not None.</strong> (<em>graph</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="cygraph.graph_.static_graph.StaticGraph.directed">
+<code class="descname">directed</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.directed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether or not the graph contains directed edges.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">bint</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.static_graph.StaticGraph.vertices">
+<code class="descname">vertices</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.vertices" title="Permalink to this definition">¶</a></dt>
+<dd><p>The vertices in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.static_graph.StaticGraph.edges">
+<code class="descname">edges</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tuples contianing the two vertices of each edge.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.static_graph.StaticGraph.edge_attribtues">
+<code class="descname">edge_attribtues</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.edge_attribtues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps (v1, v2) tuples to dicts mapping edge attribute keys to
+corresponding values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="cygraph.graph_.static_graph.StaticGraph.vertex_attribtues">
+<code class="descname">vertex_attribtues</code><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.vertex_attribtues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maps vertices to dicts mapping vertex attribute keys to
+corresponding values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.add_edge">
+<code class="descname">add_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.add_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds edge to graph between two vertices with a weight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+<li><strong>weight</strong> (<em>np.float64</em><em>, </em><em>optional</em>) – The weight of the edge.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.add_vertex">
+<code class="descname">add_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.add_vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds vertex to the graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex of any hashable type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">edges</code></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.get_children">
+<code class="descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.get_children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the names of all the child vertices of a given
+vertex. Equivalent to neighbors if graph is undirected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in the graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The child vertices of <cite>v</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.get_edge_weight">
+<code class="descname">get_edge_weight</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.get_edge_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the weight of the edge between vertices v1 and v2.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The weight of the edge between v1 and v2.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">np.float64</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.get_parents">
+<code class="descname">get_parents</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.get_parents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the parents (aka “in-neighbors”) of a given vertex.
+Equivalent to get_children in undirected graphs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in the graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The parent vertices of <cite>v</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.has_edge">
+<code class="descname">has_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.has_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns whether or not an edge exists in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>v1</strong> – First vertex of the edge.</li>
+<li><strong>v2</strong> – Second vertex of the edge.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Whether or not edge is in graph.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bint</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.remove_edge">
+<code class="descname">remove_edge</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.remove_edge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes an edge between two vertices in this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>v1</strong> – One of the edge’s vertices.</li>
+<li><strong>v2</strong> – One of the edge’s vertices.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="cygraph.graph_.static_graph.StaticGraph.remove_vertex">
+<code class="descname">remove_vertex</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph_.static_graph.StaticGraph.remove_vertex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a vertex from this graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>v</strong> – A vertex in this graph.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cygraph.graph_</a><ul>
+<li><a class="reference internal" href="#module-cygraph.graph_.dynamic_graph">cygraph.graph_.dynamic_graph</a></li>
+<li><a class="reference internal" href="#module-cygraph.graph_.graph">cygraph.graph_.graph</a></li>
+<li><a class="reference internal" href="#module-cygraph.graph_.static_graph">cygraph.graph_.static_graph</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cygraph.algorithms.html"
+                        title="previous chapter">cygraph.algorithms</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cygraph.tests.html"
+                        title="next chapter">cygraph.tests</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cygraph.graph_.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.tests.html" title="cygraph.tests"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cygraph.algorithms.html" title="cygraph.algorithms"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >cygraph</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="cygraph.html" >cygraph package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Arin Khare.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

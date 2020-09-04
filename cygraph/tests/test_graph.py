@@ -45,6 +45,7 @@ def test_edges():
         - edges
         - has_edge
         - remove_edge
+
     for StaticGraph and DynamicGraph classes.
     """
 
@@ -148,6 +149,7 @@ def test_vertices():
         - has_vertex
         - vertices
         - remove_vertex
+
     for StaticGraph and DynamicGraph classes.
     """
     for static in [True, False]:
@@ -184,6 +186,7 @@ def test_attributes():
         - get_vertex_attribute
         - set_edge_attribute
         - get_edge_attribute
+
     for StaticGraph and DynamicGraph classes
     """
 

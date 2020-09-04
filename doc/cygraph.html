@@ -1,0 +1,190 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cygraph package &#8212; cygraph 0.1.6 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="cygraph.algorithms" href="cygraph.algorithms.html" />
+    <link rel="prev" title="cygraph" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.algorithms.html" title="cygraph.algorithms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="cygraph"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">cygraph</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cygraph-package">
+<h1>cygraph package<a class="headerlink" href="#cygraph-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cygraph.algorithms.html">cygraph.algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.algorithms.html#module-cygraph.algorithms.articulation_points">cygraph.algorithms.articulation_points</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.algorithms.html#module-cygraph.algorithms.components">cygraph.algorithms.components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.algorithms.html#module-cygraph.algorithms.partitioning">cygraph.algorithms.partitioning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.algorithms.html#module-cygraph.algorithms.shortest_path">cygraph.algorithms.shortest_path</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cygraph.graph_.html">cygraph.graph_</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.graph_.html#module-cygraph.graph_.dynamic_graph">cygraph.graph_.dynamic_graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.graph_.html#module-cygraph.graph_.graph">cygraph.graph_.graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.graph_.html#module-cygraph.graph_.static_graph">cygraph.graph_.static_graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cygraph.tests.html">cygraph.tests</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.tests.html#module-cygraph.tests.test_algorithms">cygraph.tests.test_algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cygraph.tests.html#module-cygraph.tests.test_graph">cygraph.tests.test_graph</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="module-cygraph">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cygraph" title="Permalink to this headline">¶</a></h2>
+<p>A graph theory library implemented in Cython.</p>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cygraph</span> <span class="k">as</span> <span class="nn">cg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">cygraph.algorithms</span> <span class="k">as</span> <span class="nn">alg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">{2, 3}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_number_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="cygraph.graph">
+<code class="descclassname">cygraph.</code><code class="descname">graph</code><span class="sig-paren">(</span><em>static=False</em>, <em>graph_=None</em>, <em>directed=False</em>, <em>vertices=[]</em><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create an instance of a cygraph.Graph object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>static</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether to create a cygraph.StaticGraph or cygraph.DynamicGraph
+instance. Setting this to True will mean algorithms will mean
+all operations will run faster, but adding vertices after
+initialization will be slow.</li>
+<li><strong>graph</strong> (<em>cygraph.Graph</em><em>, </em><em>optional</em>) – A graph to create a copy of.</li>
+<li><strong>directed</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether to create a directed graph (otherwise undirected).</li>
+<li><strong>vertices</strong> (<em>list</em><em>, </em><em>optional</em>) – A list of the vertices in this graph.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A graph.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">cygraph.Graph</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cygraph package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#module-cygraph">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="previous chapter">cygraph</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cygraph.algorithms.html"
+                        title="next chapter">cygraph.algorithms</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cygraph.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.algorithms.html" title="cygraph.algorithms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="cygraph"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >cygraph</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Arin Khare.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

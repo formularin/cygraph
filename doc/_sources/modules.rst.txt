@@ -1,0 +1,7 @@
+cygraph
+=======
+
+.. toctree::
+   :maxdepth: 4
+
+   cygraph

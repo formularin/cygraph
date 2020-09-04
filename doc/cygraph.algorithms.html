@@ -1,0 +1,383 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>cygraph.algorithms &#8212; cygraph 0.1.6 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="cygraph.graph_" href="cygraph.graph_.html" />
+    <link rel="prev" title="cygraph package" href="cygraph.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.graph_.html" title="cygraph.graph_"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="cygraph.html" title="cygraph package"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >cygraph</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="cygraph.html" accesskey="U">cygraph package</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="cygraph-algorithms">
+<h1>cygraph.algorithms<a class="headerlink" href="#cygraph-algorithms" title="Permalink to this headline">¶</a></h1>
+<p>Contains various graph theory algorithms.</p>
+<div class="section" id="module-cygraph.algorithms.articulation_points">
+<span id="cygraph-algorithms-articulation-points"></span><h2>cygraph.algorithms.articulation_points<a class="headerlink" href="#module-cygraph.algorithms.articulation_points" title="Permalink to this headline">¶</a></h2>
+<p>Functions involving articulation points.</p>
+<dl class="function">
+<dt id="cygraph.algorithms.articulation_points.get_articulation_points">
+<code class="descclassname">cygraph.algorithms.articulation_points.</code><code class="descname">get_articulation_points</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.articulation_points.get_articulation_points" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the articulation points in a graph using the lowpoint
+theorem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>cygraph.Graph</em>) – An undirected graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The articulation points in <cite>graph</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">set</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is directed.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_articulation_points</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">{1, 2}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cygraph.algorithms.components">
+<span id="cygraph-algorithms-components"></span><h2>cygraph.algorithms.components<a class="headerlink" href="#module-cygraph.algorithms.components" title="Permalink to this headline">¶</a></h2>
+<p>Functions for identifying graph components.</p>
+<dl class="function">
+<dt id="cygraph.algorithms.components.get_components">
+<code class="descclassname">cygraph.algorithms.components.</code><code class="descname">get_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.components.get_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the connected components of a graph as connected graphs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em>) – A graph.</li>
+<li><strong>static</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether or not the graphs in the output should be static.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Graphs that are the components of <cite>graph</cite>.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">set</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is directed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">{&lt;DynamicGraph; vertices=[1, 2, 3]; edges={(1, 2, 1.0), (2, 3, 1.0)}&gt;, &lt;DynamicGraph; vertices=[0]; edges=set()&gt;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="cygraph.algorithms.components.get_number_components">
+<code class="descclassname">cygraph.algorithms.components.</code><code class="descname">get_number_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.components.get_number_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the number of connected components of a graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>cygraph.Graph</em>) – An undirected graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">The number of connected components in <cite>graph</cite></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is directed.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_number_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="cygraph.algorithms.components.get_number_strongly_connected_components">
+<code class="descclassname">cygraph.algorithms.components.</code><code class="descname">get_number_strongly_connected_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.components.get_number_strongly_connected_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the number of strongly connected components in a graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>graph</strong> (<em>cygraph.Graph</em>) – A directed graph.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The number of strongly connected components in <cite>graph</cite>.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is undirected.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_number_strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="cygraph.algorithms.components.get_strongly_connected_components">
+<code class="descclassname">cygraph.algorithms.components.</code><code class="descname">get_strongly_connected_components</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.components.get_strongly_connected_components" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the strongly connected components of a graph.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em>) – A graph.</li>
+<li><strong>static</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether or not the graphs in the output should be static.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The set of graphs that are the strongly connnected components of
+<cite>graph</cite></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">set</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is undirected.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_strongly_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">{&lt;DynamicGraph; vertices=[2, 3]; edges={(2, 3, 1.0), (3, 2, 1.0)}&gt;, &lt;DynamicGraph; vertices=[0, 1]; edges={(1, 0, 1.0), (0, 1, 1.0)}&gt;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cygraph.algorithms.partitioning">
+<span id="cygraph-algorithms-partitioning"></span><h2>cygraph.algorithms.partitioning<a class="headerlink" href="#module-cygraph.algorithms.partitioning" title="Permalink to this headline">¶</a></h2>
+<p>Functions related to graph partitioning.</p>
+<dl class="function">
+<dt id="cygraph.algorithms.partitioning.partition_karger">
+<code class="descclassname">cygraph.algorithms.partitioning.</code><code class="descname">partition_karger</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.partitioning.partition_karger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Partitions a graph into two graphs. Does not change the inputted
+graph in any way.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em>) – A graph.</li>
+<li><strong>static</strong> (<em>bint</em><em>, </em><em>optional</em>) – Whether or not the graphs in the output should be static.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Two graphs that are the result of a random partition of <cite>graph</cite>,
+as well as the cutset of the partition.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">tuple</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotImplementedError</span></code> – <cite>graph</cite> is directed.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">partition_karger</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+<span class="go">(&lt;DynamicGraph; vertices=[1]; edges=set()&gt;, &lt;DynamicGraph; vertices=[2]; edges=set()&gt;, {(1, 2, 1.0)})</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="module-cygraph.algorithms.shortest_path">
+<span id="cygraph-algorithms-shortest-path"></span><h2>cygraph.algorithms.shortest_path<a class="headerlink" href="#module-cygraph.algorithms.shortest_path" title="Permalink to this headline">¶</a></h2>
+<p>Functions for finding shortest paths in graphs.</p>
+<dl class="function">
+<dt id="cygraph.algorithms.shortest_path.get_shortest_path_dijkstra">
+<code class="descclassname">cygraph.algorithms.shortest_path.</code><code class="descname">get_shortest_path_dijkstra</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cygraph.algorithms.shortest_path.get_shortest_path_dijkstra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a graph and finds the shortest path between two vertices in
+it using dijkstra’s algorithm.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>graph</strong> (<em>cygraph.Graph</em>) – A graph.</li>
+<li><strong>source</strong> – One of the vertices in <cite>graph</cite>.</li>
+<li><strong>target</strong> – The other vertex in <cite>graph</cite>.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The list of vertices that constitute the shortest path between
+source and target.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">directed</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_shortest_path_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">[2, 0, 1]</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">G</span> <span class="o">=</span> <span class="n">cg</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">vertices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">)))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">alg</span><span class="o">.</span><span class="n">get_shortest_path_dijkstra</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="go">[1, 2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">cygraph.algorithms</a><ul>
+<li><a class="reference internal" href="#module-cygraph.algorithms.articulation_points">cygraph.algorithms.articulation_points</a></li>
+<li><a class="reference internal" href="#module-cygraph.algorithms.components">cygraph.algorithms.components</a></li>
+<li><a class="reference internal" href="#module-cygraph.algorithms.partitioning">cygraph.algorithms.partitioning</a></li>
+<li><a class="reference internal" href="#module-cygraph.algorithms.shortest_path">cygraph.algorithms.shortest_path</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="cygraph.html"
+                        title="previous chapter">cygraph package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="cygraph.graph_.html"
+                        title="next chapter">cygraph.graph_</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/cygraph.algorithms.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="cygraph.graph_.html" title="cygraph.graph_"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="cygraph.html" title="cygraph package"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">cygraph 0.1.6 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >cygraph</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="cygraph.html" >cygraph package</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Arin Khare.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.5.
+    </div>
+  </body>
+</html>

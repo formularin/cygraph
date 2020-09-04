@@ -265,7 +265,7 @@ cdef int get_number_components(Graph graph) except *:
         An undirected graph.
 
     Returns
-    ------
+    -------
     int
         The number of connected components in `graph`
 

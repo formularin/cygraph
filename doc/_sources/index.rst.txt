@@ -1,0 +1,25 @@
+.. cygraph documentation master file, created by
+   sphinx-quickstart on Wed Sep  2 19:20:07 2020.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Cygraph documentation
+===================================
+
+Cygraph is a graph theory library implemented in Cython_. Its main purpose is to be a fast alternative to networkx_ for developers using Cython; however, it still has a simple Python API. I am not accepting any contributions currently, since this project is still in its very early stages.
+
+.. toctree::
+   :maxdepth: 4
+   :caption: Contents:
+
+   modules
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+
+.. _Cython: http://www.cython.org/
+.. _networkx: https://networkx.github.io

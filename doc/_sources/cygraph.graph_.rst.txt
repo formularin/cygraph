@@ -1,0 +1,28 @@
+cygraph.graph\_
+===============
+
+Contains graph classes. These are not meant to be imported by Python client modules, but it is kept possible if absolutely necessary (in case one needs to use them for inheritance or something similar).
+
+cygraph.graph\_.dynamic\_graph
+------------------------------
+
+.. automodule:: cygraph.graph_.dynamic_graph
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cygraph.graph\_.graph
+---------------------
+
+.. automodule:: cygraph.graph_.graph
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cygraph.graph\_.static\_graph
+-----------------------------
+
+.. automodule:: cygraph.graph_.static_graph
+    :members:
+    :undoc-members:
+    :show-inheritance:

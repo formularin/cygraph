@@ -1,0 +1,19 @@
+cygraph package
+===============
+
+Subpackages
+-----------
+
+.. toctree::
+
+    cygraph.algorithms
+    cygraph.graph_
+    cygraph.tests
+
+Module contents
+---------------
+
+.. automodule:: cygraph
+    :members:
+    :undoc-members:
+    :show-inheritance:

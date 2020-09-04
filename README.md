@@ -1,4 +1,4 @@
-# cygraph
+# Cygraph
 
 *A graph theory library implemented in Cython*
 

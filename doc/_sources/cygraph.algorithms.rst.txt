@@ -1,0 +1,36 @@
+cygraph.algorithms
+==========================
+
+Contains various graph theory algorithms.
+
+cygraph.algorithms.articulation\_points
+---------------------------------------
+
+.. automodule:: cygraph.algorithms.articulation_points
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cygraph.algorithms.components
+-----------------------------
+
+.. automodule:: cygraph.algorithms.components
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cygraph.algorithms.partitioning
+-------------------------------
+
+.. automodule:: cygraph.algorithms.partitioning
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+cygraph.algorithms.shortest\_path
+---------------------------------
+
+.. automodule:: cygraph.algorithms.shortest_path
+    :members:
+    :undoc-members:
+    :show-inheritance:

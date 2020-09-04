@@ -1,0 +1,23 @@
+cygraph.tests
+=====================
+
+Unit tests for Cygraph. They require the installation of pytest_ and can be run with the command:
+.. code_block:: bash
+
+    pytest
+
+cygraph.tests.test\_algorithms
+------------------------------
+
+.. automodule:: cygraph.tests.test_algorithms
+    :members:
+    :show-inheritance:
+
+cygraph.tests.test\_graph
+-------------------------
+
+.. automodule:: cygraph.tests.test_graph
+    :members:
+    :show-inheritance:
+
+.. _pytest: https://www.pytest.org

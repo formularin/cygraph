@@ -29,6 +29,7 @@ cdef class StaticGraph(Graph):
     vertices to your graph, consider using cygraph.DynamicGraph.
 
     Parameters
+    ----------
     graph: cygraph.Graph, optional
         A graph to create a copy of.
     directed: bint, optional
