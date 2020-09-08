@@ -4,8 +4,16 @@
 
 ## Installation
 
+### Windows and Mac OS X
+
 ```bash
 pip install cygraph
+```
+
+## Ubuntu
+
+```bash
+pip install git+https://github.com/lol-cubes/cygraph
 ```
 
 ## Usage
