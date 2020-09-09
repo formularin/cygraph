@@ -5,17 +5,14 @@ maintenance.py
 clean
 
 # Cython
-cygraph/*.c
-cygraph/*.cpython-38-darwin.so
-cygraph/*.html
 cygraph/algorithms/*.c
-cygraph/algorithms/*.cpython-38-darwin.so
-cygraph/algorithms/*.cpython-38-x86_64-linux-gnu.so
+cygraph/algorithms/*.cpython-38**
 cygraph/algorithms/*.html
 cygraph/graph_/*.c
-cygraph/graph_/*.cpython-38-darwin.so
-cygraph/graph_/*.cpython-38-x86_64-linux-gnu.so
+cygraph/graph_/*.cpython-38**
 cygraph/graph_/*.html
+examples/cython/*.c
+examples/cython/*.cpython-38**
 build/
 
 # Pip
@@ -36,12 +33,12 @@ cygraph/tests/__pycache__/
 # Misc.
 test.py
 test.pyx
-test.cpython-38-darwin.so
+test.cpython-38*
 test.c
 test.pxd
 test_setup.py
 test1.pyx
-test1.cpython-38-darwin.so
+test1.cpython-38*
 test1.c
 test1.pxd
 test.html
