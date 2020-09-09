@@ -5,14 +5,8 @@ maintenance.py
 clean
 
 # Cython
-cygraph/algorithms/*.c
-cygraph/algorithms/*.cpython-38**
-cygraph/algorithms/*.html
-cygraph/graph_/*.c
-cygraph/graph_/*.cpython-38**
-cygraph/graph_/*.html
-examples/cython/*.c
-examples/cython/*.cpython-38**
+*.c
+*.cpython-38**
 build/
 
 # Pip
@@ -22,10 +16,6 @@ dist/
 
 # Python
 __pycache__/
-cygraph/__pycache__/
-cygraph/algorithms/__pycache__/
-cygraph/graph_/__pycache__/
-cygraph/tests/__pycache__/
 
 # MacOS
 .DS_Store
@@ -33,13 +23,9 @@ cygraph/tests/__pycache__/
 # Misc.
 test.py
 test.pyx
-test.cpython-38*
-test.c
 test.pxd
 test_setup.py
 test1.pyx
-test1.cpython-38*
-test1.c
 test1.pxd
 test.html
 TODO.md
