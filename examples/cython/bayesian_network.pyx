@@ -10,20 +10,12 @@ cdef class BayesianNetwork:
     """A bayesian network class capable of inneficient inference using
     the enumeration algorithm. Only capable of handling binary
     variables.
-
-    Parameters
-    ----------
-    variables: list of tuples
-        A list of variable names, their probabilities of being true, and
-        descriptions of their meaning.
-        Assumes tuples are (str, float, str).
     """
 
     cdef DynamicGraph graph
 
-    def __cinit__(self, list variables=[]):
-        self.graph = DynamicGraph(graph=None, directed=True,
-            vertices=variables)
+    def __cinit__(self):
+        self.graph = DynamicGraph(graph=None, directed=True, vertices=[])
 
     cpdef void add_edge(self, str A, str B, float conditional_probability
             ) except *:
@@ -114,6 +106,12 @@ cdef class BayesianNetwork:
         nuisance_variables: list
             A list of variables to exclude from the joint probability
             using marginalization.
+
+        Returns
+        -------
+        float
+            The joint probability of the network after summing out each
+            of the variables in `nuisance_variables`.
         """
         cdef int i
         cdef str var
