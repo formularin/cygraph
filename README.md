@@ -4,13 +4,13 @@
 
 ## Installation
 
-### Windows and Mac OS X
+First, try:
 
 ```bash
 pip install cygraph
 ```
 
-## Ubuntu
+if that doesn't work, try:
 
 ```bash
 pip install git+https://github.com/lol-cubes/cygraph
