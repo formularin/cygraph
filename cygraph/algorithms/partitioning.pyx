@@ -121,7 +121,7 @@ cdef tuple partition_karger(Graph graph, bint static):
     return (*new_graphs, cutset)
 
 
-cpdef tuple py_partition_karger(Graph graph, bint static=False):
+def py_partition_karger(graph, static=False):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 

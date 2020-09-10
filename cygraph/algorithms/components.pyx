@@ -377,7 +377,7 @@ cdef int get_number_strongly_connected_components(Graph graph) except *:
     return _get_strongly_connected_components(graph, False).pop()
 
 
-cpdef set py_get_components(Graph graph, bint static=False):
+def py_get_components(graph, static=False):
     """Gets the connected components of a graph as connected graphs.
 
     Parameters
@@ -408,7 +408,7 @@ cpdef set py_get_components(Graph graph, bint static=False):
     return get_components(graph, static)
 
 
-cpdef int py_get_number_components(Graph graph) except *:
+def py_get_number_components(graph):
     """Finds the number of connected components of a graph.
 
     Parameters
@@ -436,7 +436,7 @@ cpdef int py_get_number_components(Graph graph) except *:
     return get_number_components(graph)
 
 
-cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
+def py_get_strongly_connected_components(graph, static=False):
     """Gets the strongly connected components of a graph.
 
     Parameters
@@ -471,7 +471,7 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
     return get_strongly_connected_components(graph, static)
 
 
-cpdef int py_get_number_strongly_connected_components(Graph graph) except *:
+def py_get_number_strongly_connected_components(graph):
     """Gets the number of strongly connected components in a graph.
 
     Parameters

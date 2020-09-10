@@ -93,7 +93,7 @@ cdef set get_articulation_points(Graph graph):
     return articulation_points
 
 
-cpdef set py_get_articulation_points(Graph graph):
+def py_get_articulation_points(graph):
     """Finds the articulation points in a graph using the lowpoint
     theorem.
 

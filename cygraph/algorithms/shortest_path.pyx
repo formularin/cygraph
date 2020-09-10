@@ -85,8 +85,7 @@ cdef list get_shortest_path_dijkstra(Graph graph, object source,
     return sequence
 
 
-cpdef list py_get_shortest_path_dijkstra(Graph graph, object source,
-        object target):
+def py_get_shortest_path_dijkstra(graph, source, target):
     """Takes a graph and finds the shortest path between two vertices in
     it using dijkstra's algorithm.
 
