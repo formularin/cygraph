@@ -3,6 +3,7 @@
 venv
 maintenance.py
 clean
+TODO.md
 
 # Cython
 *.c
@@ -21,14 +22,14 @@ __pycache__/
 .DS_Store
 
 # Misc.
+test
+test.h
 test.py
 test.pyx
 test.pxd
 test_setup.py
-test1.pyx
-test1.pxd
+test.cpp
 test.html
-TODO.md
 
 # Sphinx
 doc
