@@ -33,9 +33,11 @@ cdef class DynamicGraph(Graph):
         A list of vertices (can be any hashable type).
     adjacency_matrix: list, optional
         An adjacency matrix to generate the graph from.
-
-    Note that `directed` and `vertices` args will be ignored if
-    `graph` is not None.
+    adjacency_list: dict of int and set of int, optional
+        An adjacency list to generate the graph from. Note that the
+        vertices inside this dictionary must be integers, referring to
+        vertices by their index in `vertices`. Assumes all edge weights
+        are 1.0.
 
     Attributes
     ----------
@@ -53,14 +55,16 @@ cdef class DynamicGraph(Graph):
         corresponding values.
     adjacency_matrix: list of lists
         The adjacency matrix that represents this graph.
+    adjacency_list: list of lists
+        The adjacency list that represents this graph.
     """
 
     def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[],
-            list adjacency_matrix=[]):
+            list adjacency_matrix=[], list adjacency_list=[]):
 
         cdef int size
 
-        cdef int i, r, row_size, n_rows, n_vertices
+        cdef int i, r, row_size, n_rows, n_vertices, n_adj_list_vertices
         cdef object v
         cdef list col
 
@@ -102,10 +106,14 @@ cdef class DynamicGraph(Graph):
                     raise ValueError("Different number of vertices as rows in"
                                     f" adjacency matrix. {n_vertices} vertices"
                                     f" and {n_rows} rows.")
+                # Check that there is no specified adjacency list.
+                if adjacency_list != {}:
+                    raise ValueError("both adjacency list and adjacency matrix "
+                                     "specified.")
 
                 self._adjacency_matrix = adjacency_matrix
             else:
-                # Create adjacency matrix.
+                # Create empty adjacency matrix.
                 size = len(self.vertices)
                 self._adjacency_matrix = []
                 for i in range(size):
@@ -113,6 +121,21 @@ cdef class DynamicGraph(Graph):
                     for _ in range(size):
                         self._adjacency_matrix[i].append(None)
 
+                if adjacency_list:
+                    # Check that there is the right number of vertices.
+                    n_vertices = len(vertices)
+                    n_adj_list_vertices = len(adjacency_list)
+                    if n_vertices != n_adj_list_vertices:
+                        raise ValueError("Different number of vertices in "
+                                        "`vertices` than in `adjacency_list`."
+                                        f"{n_vertices} in `vertices` and "
+                                        f"{n_adj_list_vertices} in "
+                                        "`adjacency_list`")
+                    # Fill in the adjacency matrix.
+                    for vertex in range(n_vertices):
+                        for vertex_ in range(n_vertices):
+                            if vertex_ in adjacency_list[vertex]:
+                                self._adjacency_matrix[vertex][vertex_] = 1.0
 
     def __copy__(self):
         cdef DynamicGraph new_graph = \
@@ -135,10 +158,6 @@ cdef class DynamicGraph(Graph):
                     vertex, key, self._vertex_attributes[vertex][key])
 
         return new_graph
-
-    @property
-    def adjacency_matrix(self):
-        return self._adjacency_matrix
 
     @property
     def edges(self):

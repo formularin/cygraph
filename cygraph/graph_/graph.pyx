@@ -64,6 +64,21 @@ cdef class Graph:
     def vertex_attributes(self):
         return self._vertex_attributes
 
+    @property
+    def adjacency_list(self):
+        cdef object u, v
+        cdef int i, j
+        cdef list adj_list = [[] for _ in self.vertices]
+        for i, u in enumerate(self.vertices):
+            for j, v in enumerate(self.vertices):
+                if self.has_edge(u, v):
+                    adj_list[i].append(j)
+        return adj_list
+
+    @property
+    def adjacency_matrix(self):
+        return self._adjacency_matrix
+
     cdef int _get_vertex_int(self, object vertex) except -1:
         """Returns the int corresponding to a vertex.
 
