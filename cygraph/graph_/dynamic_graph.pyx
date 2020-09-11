@@ -87,6 +87,71 @@ cdef class DynamicGraph(Graph):
                 for _ in range(size):
                     self._adjacency_matrix[i].append(None)
 
+    def __copy__(self):
+        cdef DynamicGraph new_graph = \
+            DynamicGraph(directed=self.directed, vertices=self.vertices)
+
+        # Add edges and edge attributes.
+        cdef tuple edge
+        cdef object key
+        for edge in self.edges:
+            new_graph.add_edge(*edge)
+            for key in self._edge_attributes[edge]:
+                new_graph.set_edge_attribute(
+                    edge, key, self._edge_attributes[edge][key])
+
+        # Add vertex attributes.
+        cdef object vertex
+        for vertex in self.vertices:
+            for key in self._vertex_attributes[vertex]:
+                new_graph.set_vertex_attribtue(
+                    vertex, key, self._vertex_attributes[vertex][key])
+
+        return new_graph
+
+    @property
+    def edges(self):
+        cdef int u, v, n_vertices
+        cdef set edges = set()
+        cdef tuple new_edge, existing_edge
+        cdef bint edge_found
+        cdef object edge_weight  # Can also be NoneType.
+
+        n_vertices = len(self.vertices)
+
+        if self.directed:
+            for u in range(n_vertices):
+                for v in range(n_vertices):
+                    edge_weight = self._adjacency_matrix[u][v]
+                    if edge_weight is not None:
+                        edges.add(
+                            (self.vertices[u],
+                             self.vertices[v],
+                             edge_weight)
+                        )
+        else:
+            for u in range(n_vertices):
+                for v in range(n_vertices):
+                    edge_weight = self._adjacency_matrix[u][v]
+                    if edge_weight is not None:
+                        # Edge exists. Add it if it hasn't already been found.
+                        new_edge = (
+                            self.vertices[u],
+                            self.vertices[v],
+                            edge_weight
+                        )
+                        edge_found = False
+                        for existing_edge in edges:
+                            if (    existing_edge[0] == new_edge[1]
+                                    and existing_edge[1] == new_edge[0]):
+                                edge_found = True
+                                break
+                        if edge_found:
+                            continue
+                        else:
+                            edges.add(new_edge)
+        return edges
+
     cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
         """Adds edge to graph between two vertices with a weight.
 
@@ -270,68 +335,3 @@ cdef class DynamicGraph(Graph):
                 parents.add(self.vertices[u])
 
         return parents
-
-    @property
-    def edges(self):
-        cdef int u, v, n_vertices
-        cdef set edges = set()
-        cdef tuple new_edge, existing_edge
-        cdef bint edge_found
-        cdef object edge_weight  # Can also be NoneType.
-
-        n_vertices = len(self.vertices)
-
-        if self.directed:
-            for u in range(n_vertices):
-                for v in range(n_vertices):
-                    edge_weight = self._adjacency_matrix[u][v]
-                    if edge_weight is not None:
-                        edges.add(
-                            (self.vertices[u],
-                             self.vertices[v],
-                             edge_weight)
-                        )
-        else:
-            for u in range(n_vertices):
-                for v in range(n_vertices):
-                    edge_weight = self._adjacency_matrix[u][v]
-                    if edge_weight is not None:
-                        # Edge exists. Add it if it hasn't already been found.
-                        new_edge = (
-                            self.vertices[u],
-                            self.vertices[v],
-                            edge_weight
-                        )
-                        edge_found = False
-                        for existing_edge in edges:
-                            if (    existing_edge[0] == new_edge[1]
-                                    and existing_edge[1] == new_edge[0]):
-                                edge_found = True
-                                break
-                        if edge_found:
-                            continue
-                        else:
-                            edges.add(new_edge)
-        return edges
-
-    def __copy__(self):
-        cdef DynamicGraph new_graph = \
-            DynamicGraph(directed=self.directed, vertices=self.vertices)
-
-        # Add edges and edge attributes.
-        cdef tuple edge
-        cdef object key
-        for edge in self.edges:
-            new_graph.add_edge(*edge)
-            for key in self._edge_attributes[edge]:
-                new_graph.set_edge_attribute(
-                    edge, key, self._edge_attributes[edge][key])
-
-        # Add vertex attributes.
-        cdef object vertex
-        for vertex in self.vertices:
-            for key in self._vertex_attributes[vertex]:
-                new_graph.set_vertex_attribtue(
-                    vertex, key, self._vertex_attributes[vertex][key])
-
-        return new_graph

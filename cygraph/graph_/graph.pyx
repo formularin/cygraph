@@ -44,6 +44,26 @@ cdef class Graph:
             self.directed = bool(graph.directed)
             self.vertices = graph.vertices[:]
 
+    def __iter__(self):
+        return iter(self.vertices)
+
+    def __len__(self):
+        return len(self.vertices)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
+
+    def __str__(self):
+        return str(np.array(self._adjacency_matrix))
+
+    @property
+    def edge_attributes(self):
+        return self._edge_attributes
+
+    @property
+    def vertex_attributes(self):
+        return self._vertex_attributes
+
     cdef int _get_vertex_int(self, object vertex) except -1:
         """Returns the int corresponding to a vertex.
 
@@ -185,27 +205,3 @@ cdef class Graph:
     
     cpdef set get_parents(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_parents")
-
-    @property
-    def edges(self):
-        raise NotImplementedError(NOT_IMPLEMENTED % "edges")
-
-    @property
-    def edge_attributes(self):
-        return self._edge_attributes
-
-    @property
-    def vertex_attributes(self):
-        return self._vertex_attributes
-
-    def __iter__(self):
-        return iter(self.vertices)
-
-    def __len__(self):
-        return len(self.vertices)
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
-
-    def __str__(self):
-        return str(np.array(self._adjacency_matrix))
