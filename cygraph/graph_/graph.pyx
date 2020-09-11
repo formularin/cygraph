@@ -200,6 +200,9 @@ cdef class Graph:
     cpdef double get_edge_weight(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "get_edge_weight")
 
+    cpdef bint has_edge(self, object v1, object v2) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "has_edge")
+
     cpdef set get_children(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_children")
     

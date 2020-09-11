@@ -20,5 +20,6 @@ cdef class Graph:
     cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *
     cpdef object get_edge_attribute(self, tuple edge, object key)
     cpdef double get_edge_weight(self, object v1, object v2) except *
+    cpdef bint has_edge(self, object v1, object v2) except *
     cpdef set get_children(self, object v)
     cpdef set get_parents(self, object v)
