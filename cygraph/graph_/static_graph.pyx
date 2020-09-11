@@ -31,11 +31,15 @@ cdef class StaticGraph(Graph):
     Parameters
     ----------
     graph: cygraph.Graph, optional
-        A graph to create a copy of.
+        A graph to create a copy of. If this is not None, all other
+        parameters are ignored. Edge and vertex attributes are
+        deepcopied.
     directed: bint, optional
         Whether or not the graph contains directed edges.
     vertices: list, optional
         A list of vertices (can be any hashable type).
+    adjacency_matrix: list, optional
+        An adjacency matrix to generate the graph from.
 
     Note that `directed` and `vertices` args will be ignored if
     `graph` is not None.
@@ -56,9 +60,10 @@ cdef class StaticGraph(Graph):
         corresponding values.
     """
 
-    def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[]):
+    def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[],
+            np.ndarray[DTYPE_t] adjacency_matrix=None):
 
-        cdef int size
+        cdef int size, n_vertices, n_rows
         cdef object v
 
         if graph is not None:
@@ -77,14 +82,28 @@ cdef class StaticGraph(Graph):
             self.directed = directed
             self.vertices = list(vertices)
 
-            # Map vertex names to numbers and vice versa.
+            # Initialize attribute dictionary for each vertex.
             for v in self.vertices:
                 self._vertex_attributes[v] = {}
 
-            # Create adjacency matrix.
-            size = len(self.vertices)
-            self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
-            self._adjacency_matrix_view = self._adjacency_matrix
+            if adjacency_matrix is not None:
+                # Check that there is the right number of vertices.
+                n_vertices = len(vertices)
+                n_rows = len(adjacency_matrix)
+                if n_vertices != n_rows:
+                    raise ValueError("Different number of vertices as rows in"
+                                    f" adjacency matrix. {n_vertices} vertices"
+                                    f" and {n_rows} rows.")
+                self._adjacency_matrix = adjacency_matrix
+            else:
+                # Create adjacency matrix.
+                size = len(self.vertices)
+                self._adjacency_matrix = np.full((size, size), np.nan, dtype=DTYPE)
+                self._adjacency_matrix_view = self._adjacency_matrix
+
+    @property
+    def adjacency_matrix(self):
+        return self._adjacency_matrix
 
     def __copy__(self):
         cdef StaticGraph new_graph = \
