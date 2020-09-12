@@ -65,7 +65,7 @@ cdef class StaticGraph(Graph):
     """
 
     def __cinit__(self, Graph graph=None, bint directed=False, list vertices=[],
-            np.ndarray[DTYPE_t] adjacency_matrix=None, list adjacency_list=[]):
+            np.ndarray adjacency_matrix=None, list adjacency_list=[]):
 
         cdef int size, n_vertices, n_rows, n_adj_list_vertices, vertex
         cdef object v
@@ -77,7 +77,7 @@ cdef class StaticGraph(Graph):
             self._adjacency_matrix_view = self._adjacency_matrix
 
             for edge in graph.edges:
-                self.add_edge(edge[0], edge[1])
+                self.add_edge(*edge)
 
         else:
             self._vertex_attributes = {}
@@ -99,11 +99,12 @@ cdef class StaticGraph(Graph):
                                     f" adjacency matrix. {n_vertices} vertices"
                                     f" and {n_rows} rows.")
                 # Check that there is no specified adjacency list.
-                if adjacency_list != {}:
+                if adjacency_list != []:
                     raise ValueError("both adjacency list and adjacency matrix "
                                      "specified.")
 
                 self._adjacency_matrix = adjacency_matrix
+                self._adjacency_matrix_view = self._adjacency_matrix
             else:
 
                 # Create empty adjacency matrix.

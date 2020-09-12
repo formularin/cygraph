@@ -1,6 +1,7 @@
 """Unit tests for classes implemented in cygraph/graph.pyx
 """
 
+import numpy as np
 import pytest
 
 import cygraph as cg
@@ -30,10 +31,53 @@ def test_constructor():
                     vertices=[['s'], ['e']])
                 graphs.append(g)
 
+    # Generating from graph data structures.
+    adjacency_matrix = [[0, 1, 0, 0, 0, 0, 0],
+                        [1, 0, 1, 0, 0, 0, 0],
+                        [0, 1, 0, 1, 1, 1, 0],
+                        [0, 0, 1, 0, 0, 0, 0],
+                        [0, 0, 1, 0, 0, 1, 0],
+                        [0, 0, 1, 0, 1, 0, 1],
+                        [0, 0, 0, 0, 0, 1, 0]]
+    adjacency_list = [
+        [1],
+        [0, 2],
+        [1, 3, 4, 5],
+        [2],
+        [2, 5],
+        [2, 4, 6],
+        [5]
+    ]
+    edges = [(0, 1), (1, 2), (2, 3), (2, 4), (2, 5), (4, 5), (5, 6)]
+    for static in [True, False]:
+        adj_list_graph = cg.graph(static=static, vertices=list(range(7)),
+            adjacency_list=adjacency_list)
+        if static:
+            np_adjacency_matrix = [[val if val else np.nan for val in row]
+                                   for row in adjacency_matrix]
+            np_adjacency_matrix = np.array(np_adjacency_matrix)
+            adj_mat_graph = cg.graph(static=static, vertices=list(range(7)),
+                adjacency_matrix=np_adjacency_matrix)
+        else:
+            adj_mat_graph = cg.graph(static=static, vertices=list(range(7)),
+                adjacency_matrix=[[val if val else None for val in row]
+                                  for row in adjacency_matrix])
+        for edge in edges:
+            assert adj_list_graph.has_edge(*edge)
+            assert adj_mat_graph.has_edge(*edge)
+        for edge in adj_mat_graph.edges:
+            assert edge[:-1] in edges
+        for edge in adj_list_graph.edges:
+            assert edge[:-1] in edges
+        graphs.append(adj_list_graph)
+        graphs.append(adj_mat_graph)
+
+    # Copying another graph.
     for graph in graphs:
         g = cg.graph(graph_=graph)
         assert g.vertices == graph.vertices
         assert g.edges == graph.edges
+
 
 def test_edges():
     """Tests various edge-related methods.
@@ -45,6 +89,8 @@ def test_edges():
         - edges
         - has_edge
         - remove_edge
+        - adjacency_matrix
+        - adjacency_list
 
     for StaticGraph and DynamicGraph classes.
     """
@@ -140,6 +186,33 @@ def test_edges():
         assert g2.get_parents('a') == {'b'}
         with pytest.raises(ValueError):
             g2.get_parents('d')
+
+        # adjacency_matrix and adjacency_list
+        g = cg.graph(static=static, directed=False, vertices=list(range(3)))
+        g.add_edge(0, 1)
+        g.add_edge(1, 2)
+        undirected_adj = [[0, 1, 0],
+                          [1, 0, 1],
+                          [0, 1, 0]]
+        if static:
+            assert (np.nan_to_num(g.adjacency_matrix) == undirected_adj).all()
+        else:
+            assert g.adjacency_matrix == \
+                [[None if not x else x for x in lst] for lst in undirected_adj]
+        assert g.adjacency_list == [[1], [0, 2], [1]]
+        g = cg.graph(static=static, directed=True, vertices=list(range(3)))
+        g.add_edge(0, 1)
+        g.add_edge(1, 2)
+        directed_adj = [[0, 1, 0],
+                        [0, 0, 1],
+                        [0, 0, 0]]
+        if static:
+            assert (np.nan_to_num(g.adjacency_matrix) == directed_adj).all()
+        else:
+            assert g.adjacency_matrix == \
+                [[None if not x else x for x in lst] for lst in directed_adj]
+        assert g.adjacency_list == [[1], [2], []]
+
 
 def test_vertices():
     """Tests various vertex-related methods.

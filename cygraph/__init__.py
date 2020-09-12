@@ -14,13 +14,16 @@ Examples
 2
 """
 
+import numpy as np
+
 from cygraph.graph_ import DynamicGraph, StaticGraph
 
 
 __version__ = '0.1.6'
 
 
-def graph(static=False, graph_=None, directed=False, vertices=[]):
+def graph(static=False, graph_=None, directed=False, vertices=[],
+        adjacency_matrix=None, adjacency_list=[]):
     """Create an instance of a cygraph.Graph object.
 
     Parameters
@@ -31,21 +34,38 @@ def graph(static=False, graph_=None, directed=False, vertices=[]):
         all operations will run faster, but adding vertices after
         initialization will be slow.
     graph_: cygraph.Graph, optional
-        A graph to create a copy of.
+        A graph to create a copy of. This overrides all of the following
+        parameters.
     directed: bint, optional
         Whether to create a directed graph (otherwise undirected).
     vertices: list, optional
         A list of the vertices in this graph.
-    
+    adjacency_matrix: list or np.ndarray, optional
+        An adjanceny matrix for creating a graph that has edges to start
+        with. If static, must be np.ndarray, if not static, must be list.
+    adjacency_list: list, optional
+        An adjacency list for creating a graph that has edges to start
+        with.
+
     Returns
     -------
     cygraph.Graph
         A graph.
     """
+
+    if not isinstance(adjacency_matrix, np.ndarray):
+        if adjacency_matrix == [] or adjacency_matrix is None:
+            if static:
+                adjacency_matrix = None
+            else:
+                adjacency_matrix = []
+
     kwargs = {
         'graph': graph_,
         'directed': directed,
-        'vertices': vertices
+        'vertices': vertices,
+        'adjacency_matrix': adjacency_matrix,
+        'adjacency_list': adjacency_list
     }
     if static:
         return StaticGraph(**kwargs)

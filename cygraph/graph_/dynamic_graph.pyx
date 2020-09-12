@@ -78,7 +78,7 @@ cdef class DynamicGraph(Graph):
                     self._adjacency_matrix[i].append(None)
 
             for edge in graph.edges:
-                self.add_edge(edge[0], edge[1])
+                self.add_edge(*edge)
 
         else:
             self._vertex_attributes = {}
@@ -107,7 +107,7 @@ cdef class DynamicGraph(Graph):
                                     f" adjacency matrix. {n_vertices} vertices"
                                     f" and {n_rows} rows.")
                 # Check that there is no specified adjacency list.
-                if adjacency_list != {}:
+                if adjacency_list != []:
                     raise ValueError("both adjacency list and adjacency matrix "
                                      "specified.")
 
