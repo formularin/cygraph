@@ -105,6 +105,9 @@ cdef class Graph:
     cpdef void add_vertex(self, object v) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_vertex")
 
+    cpdef void add_vertices(self, set vertices) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "add_vertices")
+
     cpdef void remove_vertex(self, object v) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_vertex")
 
@@ -163,6 +166,9 @@ cdef class Graph:
 
     cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
+
+    cpdef void add_edges(self, set edges) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "add_edges")
 
     cpdef void remove_edge(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")

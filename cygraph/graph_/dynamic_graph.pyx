@@ -223,6 +223,19 @@ cdef class DynamicGraph(Graph):
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
 
+    cpdef void add_edges(self, set edges) except *:
+        """Adds a set of edges to graph.
+
+        Parameters
+        ----------
+        edges: set
+            A set of tuples, each containing an edge in the format
+            (v1, v2, weight) or (v1, v2)
+        """
+        cdef tuple edge
+        for edge in edges:
+            self.add_edge(edge)
+
     cpdef void remove_edge(self, object v1, object v2) except *:
         """Removes an edge between two vertices in this graph.
 
@@ -305,18 +318,49 @@ cdef class DynamicGraph(Graph):
 
         if v in self.vertices:
             raise ValueError(f"{v} is already in graph")
-        else:
-            # Map vertex name to number.
-            vertex_number = len(self.vertices)
+        # Map vertex name to number.
+        vertex_number = len(self.vertices)
+        self.vertices.append(v)
+
+        # Add new row.
+        new_row = [None for _ in range(vertex_number + 1)]
+        self._adjacency_matrix.append(new_row)
+
+        # Add new column.
+        for i in range(len(self._adjacency_matrix) - 1):
+            self._adjacency_matrix[i].append(None)
+
+    cpdef void add_vertices(self, set vertices) except *:
+        """Adds a set of vertices to graph.
+
+        Parameters
+        ----------
+        vertices: set
+            A set of vertices, which can be of any hashable type.
+        """
+        cdef int i, starting_n_vertices, new_n_vertices, n_new_vertices
+        cdef object v
+        cdef list new_row
+
+        starting_n_vertices = len(self.vertices)
+        n_new_vertices = len(vertices)
+
+        for v in vertices:
+            self._vertex_attributes[v] = {}
+            if v in self.vertices:
+                raise ValueError(f"{v} is already in graph.")
             self.vertices.append(v)
 
-            # Add new row.
-            new_row = [None for _ in range(vertex_number + 1)]
+        new_n_vertices = len(self.vertices)
+
+        # Add new rows.
+        for _ in range(new_n_vertices):
+            new_row = [None for _ in range(new_n_vertices)]
             self._adjacency_matrix.append(new_row)
 
-            # Add new column.
-            for i in range((len(self._adjacency_matrix) - 1)):
-                self._adjacency_matrix[i].append(None)
+        # Add new columns.
+        for i in range(n_starting_vertices):
+            self._adjacency_matrix[i] += [None for _ in range(n_new_vertices)]
 
     cpdef void remove_vertex(self, object v) except *:
         """Removes a vertex from this graph.
