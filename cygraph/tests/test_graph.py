@@ -327,3 +327,33 @@ def test_attributes():
                 g.get_vertex_attribute('d', key='key')
             with pytest.raises(KeyError):
                 g.get_vertex_attribute('a', key='this is not a key')
+
+
+def test_comparisons():
+    """Tests comparison operations between graphs.
+    """
+    # __eq__ and equals
+    for directed in [True, False]:
+        for static1 in [True, False]:
+            for static2 in [True, False]:
+                g1 = cg.graph(static=static1, directed=directed,
+                    vertices=list(range(3)))
+                g2 = cg.graph(static=static2, directed=directed,
+                    vertices=list(range(3)))
+                with pytest.raises(ValueError):
+                    g1 == g2
+                    g2 == g1
+                assert g1.equals(g2)
+                assert g2.equals(g1)
+                g1.add_edge(0, 1)
+                assert not g1.equals(g2)
+                assert not g2.equals(g1)
+                g2.add_edge(0, 1)
+                assert g1.equals(g2)
+                assert g2.equals(g1)
+                g1.set_edge_attribute((0, 1), key="Attribute", val=True)
+                assert not g1.equals(g2, edge_attrs=True)
+                assert not g2.equals(g1, edge_attrs=True)
+                g1.set_vertex_attribute(0, key="Attribute", val=True)
+                assert not g1.equals(g2, vertex_attrs=True)
+                assert not g2.equals(g1, vertex_attrs=True)
