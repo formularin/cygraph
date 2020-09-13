@@ -251,7 +251,12 @@ cdef class Graph:
         """
         cdef bool vertices = (self.vertices == other.vertices)
         cdef object weight, u, v
+
+        if self.directed != other.directed:
+            return False
+
         if vertices:
+
             # Check that adjacency matrices are the same.
             for u in self.vertices:
                 for v in self.vertices:
