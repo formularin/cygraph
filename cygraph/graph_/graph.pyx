@@ -57,9 +57,9 @@ cdef class Graph:
         return str(np.array(self._adjacency_matrix))
 
     def __eq__(self, other):
-        raise NotImplementedError("Comparing graphs is ambiguous, use the "
-                                  ".equals() method to specify whether or not "
-                                  "to consider edge and vertex attributes.")
+        raise ValueError("Comparing graphs is ambiguous, use the "
+                         ".equals() method to specify whether or not "
+                         "to consider edge and vertex attributes.")
 
     @property
     def edge_attributes(self):
