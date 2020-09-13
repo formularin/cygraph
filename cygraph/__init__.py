@@ -10,7 +10,7 @@ Examples
 >>> G.add_edge(3, 1)
 >>> G.get_children(1)
 {2, 3}
->>> alg.get_number_components(G)
+>>> alg.get_number_connected_components(G)
 2
 """
 
