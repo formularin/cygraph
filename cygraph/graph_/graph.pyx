@@ -56,6 +56,11 @@ cdef class Graph:
     def __str__(self):
         return str(np.array(self._adjacency_matrix))
 
+    def __eq__(self, other):
+        raise NotImplementedError("Comparing graphs is ambiguous, use the "
+                                  ".equals() method to specify whether or not "
+                                  "to consider edge and vertex attributes.")
+
     @property
     def edge_attributes(self):
         return self._edge_attributes
@@ -223,3 +228,50 @@ cdef class Graph:
     
     cpdef set get_parents(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_parents")
+
+    cpdef bint equals(self, Graph other, bint vertex_attrs=False,
+            bint edge_attrs=False) except *:
+        """Determines whether two graphs are equal.
+
+        Parameters
+        ----------
+        other: cygraph.Graph
+            The graph to make the comparison with.
+        vertex_attrs: bint, optional
+            Whether or not to consider vertex attributes when detemining
+            equality.
+        edge_attrs: bint, optional
+            Whether or not to consider edge attributes when determining
+            equality.
+
+        Returns
+        -------
+        bint
+            Whether or not the two graphs are equal.
+        """
+        cdef bool vertices = (self.vertices == other.vertices)
+        cdef object weight, u, v
+        if vertices:
+            # Check that adjacency matrices are the same.
+            for u in self.vertices:
+                for v in self.vertices:
+                    try:
+                        weight = self.get_edge_weight(u, v)
+                    except ValueError:
+                        weight = None
+                    try:
+                        if other.get_edge_weight(u, v) != weight:
+                            return False
+                    except ValueError:
+                        if weight is not None:
+                            return False
+
+            # Check that edge and vertex attributes are the same.
+            if vertex_attrs:
+                return self.vertex_attributes == other.vertex_attributes
+            if edge_attrs:
+                return self.edge_attributes == other.vertex_attributes
+
+            return True
+        else:
+            return False

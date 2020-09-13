@@ -23,3 +23,4 @@ cdef class Graph:
     cpdef bint has_edge(self, object v1, object v2) except *
     cpdef set get_children(self, object v)
     cpdef set get_parents(self, object v)
+    cpdef bint equals(self, Graph other, bint vertex_attrs=False, bint edge_attrs=False) except *

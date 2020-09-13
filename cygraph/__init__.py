@@ -16,7 +16,7 @@ Examples
 
 import numpy as np
 
-from cygraph.graph_ import DynamicGraph, StaticGraph
+from cygraph.graph_ import Graph, DynamicGraph, StaticGraph
 
 
 __version__ = '0.1.6'
