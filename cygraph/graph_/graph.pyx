@@ -249,7 +249,7 @@ cdef class Graph:
         bint
             Whether or not the two graphs are equal.
         """
-        cdef bool vertices = (self.vertices == other.vertices)
+        cdef bint vertices = (self.vertices == other.vertices)
         cdef object weight, u, v
 
         if self.directed != other.directed:
