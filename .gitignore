@@ -1,6 +1,7 @@
 # Dev
-.vscode
-venv
+.pytest_cache/
+.vscode/
+venv/
 maintenance.py
 clean
 TODO.md
@@ -22,12 +23,12 @@ __pycache__/
 .DS_Store
 
 # Misc.
+setup_test.py
 test
 test.h
 test.py
 test.pyx
 test.pxd
-test_setup.py
 test.cpp
 test.html
 

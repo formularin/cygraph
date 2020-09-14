@@ -223,19 +223,6 @@ cdef class DynamicGraph(Graph):
         if not self.directed:
             self._adjacency_matrix[v][u] = weight
 
-    cpdef void add_edges(self, set edges) except *:
-        """Adds a set of edges to graph.
-
-        Parameters
-        ----------
-        edges: set
-            A set of tuples, each containing an edge in the format
-            (v1, v2, weight) or (v1, v2)
-        """
-        cdef tuple edge
-        for edge in edges:
-            self.add_edge(edge)
-
     cpdef void remove_edge(self, object v1, object v2) except *:
         """Removes an edge between two vertices in this graph.
 
@@ -359,7 +346,7 @@ cdef class DynamicGraph(Graph):
             self._adjacency_matrix.append(new_row)
 
         # Add new columns.
-        for i in range(n_starting_vertices):
+        for i in range(starting_n_vertices):
             self._adjacency_matrix[i] += [None for _ in range(n_new_vertices)]
 
     cpdef void remove_vertex(self, object v) except *:
@@ -407,13 +394,13 @@ cdef class DynamicGraph(Graph):
 
     cpdef set get_parents(self, object v):
         """Returns the parents (aka "in-neighbors") of a given vertex.
-        Equivalent to get_children in undirected graphs. 
+        Equivalent to get_children in undirected graphs.
 
         Parameters
         ----------
         v
             A vertex in the graph.
-        
+
         Returns
         -------
         set

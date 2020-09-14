@@ -168,7 +168,9 @@ cdef class Graph:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
 
     cpdef void add_edges(self, set edges) except *:
-        raise NotImplementedError(NOT_IMPLEMENTED % "add_edges")
+        cdef tuple edge
+        for edge in edges:
+            self.add_edge(*edge)
 
     cpdef void remove_edge(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")
@@ -231,7 +233,7 @@ cdef class Graph:
 
     cpdef set get_children(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_children")
-    
+
     cpdef set get_parents(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_parents")
 
