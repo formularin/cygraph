@@ -315,6 +315,45 @@ cdef class StaticGraph(Graph):
                 self._adjacency_matrix = \
                     np.append(self._adjacency_matrix, new_column, axis=1)
 
+    cpdef void add_vertices(self, set vertices) except *:
+        """Adds a set of vertices to the graph.
+
+        Parameters
+        ----------
+        vertices: set
+            A set of vertices, which can be of any hashable type.
+        """
+        cdef object v
+        cdef np.ndarray new_rows, new_columns
+        cdef int starting_n_vertices, new_n_vertices, n_new_vertices
+
+        starting_n_vertices = len(self.vertices)
+        n_new_vertices = len(vertices)
+        new_n_vertices = starting_n_vertices + n_new_vertices
+
+        for v in vertices:
+            if v in self.vertices:
+                raise ValueError(f"{v} is already in graph.")
+
+        for v in vertices:
+            self._vertex_attributes[v] = {}
+            self.vertices.append(v)
+
+        if starting_n_vertices = 0:
+            self._adjacency_matrix = np.full((n_new_vertices, n_new_vertices),
+                np.nan, dtype=DTYPE)
+            # Add new rows.
+            new_rows = np.full((n_new_vertices, starting_n_vertices), np.nan,
+                dtype=DTYPE)
+            self._adjacency_matrix = np.append(self._adjacency_matrix, new_rows,
+                axis=0)
+
+            # Add new columns.
+            new_columns = np.full((new_n_vertices, n_new_vertices), np.nan,
+                dtype=DTYPE)
+            self._adjacency_matrix = np.append(self._adjacency_matrix, new_columns,
+                axis=1)
+
     cpdef void remove_vertex(self, object v) except *:
         """Removes a vertex from this graph.
 
@@ -353,16 +392,16 @@ cdef class StaticGraph(Graph):
                 children.add(self.vertices[u])
 
         return children
-    
+
     cpdef set get_parents(self, object v):
         """Returns the parents (aka "in-neighbors") of a given vertex.
-        Equivalent to get_children in undirected graphs. 
+        Equivalent to get_children in undirected graphs.
 
         Parameters
         ----------
         v
             A vertex in the graph.
-        
+
         Returns
         -------
         set

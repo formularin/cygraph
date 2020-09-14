@@ -333,9 +333,11 @@ cdef class DynamicGraph(Graph):
         n_new_vertices = len(vertices)
 
         for v in vertices:
-            self._vertex_attributes[v] = {}
             if v in self.vertices:
                 raise ValueError(f"{v} is already in graph.")
+
+        for v in vertices:
+            self._vertex_attributes[v] = {}
             self.vertices.append(v)
 
         new_n_vertices = len(self.vertices)
