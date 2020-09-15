@@ -339,7 +339,7 @@ cdef class StaticGraph(Graph):
             self._vertex_attributes[v] = {}
             self.vertices.append(v)
 
-        if starting_n_vertices = 0:
+        if starting_n_vertices == 0:
             self._adjacency_matrix = np.full((n_new_vertices, n_new_vertices),
                 np.nan, dtype=DTYPE)
             # Add new rows.

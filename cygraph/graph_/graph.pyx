@@ -168,9 +168,26 @@ cdef class Graph:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
 
     cpdef void add_edges(self, set edges) except *:
-        cdef tuple edge
+        """Adds a set of edges to the graph.
+
+        Parameters
+        ----------
+        edges: set
+            A set of tuples, each of which represents an edge to be
+            added to the graph in a format that can be passed to
+            `add_edge`. i.e. `(vertex, vertex)` or
+            `(vertex, vertex, weight)`.
+        """
+        cdef tuple edge, edge_
+        cdef set added_edges = set()
         for edge in edges:
-            self.add_edge(*edge)
+            try:
+                self.add_edge(*edge)
+                added_edges.add(edge)
+            except ValueError as ve:
+                for edge_ in added_edges:
+                    self.remove_edge(*edge_)
+                raise ValueError(str(ve)) from ve
 
     cpdef void remove_edge(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")

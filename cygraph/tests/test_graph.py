@@ -91,6 +91,7 @@ def test_edges():
         - remove_edge
         - adjacency_matrix
         - adjacency_list
+        - add_edges
 
     for StaticGraph and DynamicGraph classes.
     """
@@ -113,9 +114,9 @@ def test_edges():
 
         # has_edge
         for edge in g_edges:
-            assert g.has_edge(edge[0], edge[1]) == True
-        assert g.has_edge('e', 'b') == False
-        assert g.has_edge(1, 2) == False
+            assert g.has_edge(edge[0], edge[1])
+        assert not g.has_edge('e', 'b')
+        assert not g.has_edge(1, 2)
 
         # remove_edge
         g.remove_edge('s', 'a')
@@ -123,8 +124,8 @@ def test_edges():
             g.remove_edge('sdaf', 'dsafsd')
         with pytest.warns(Warning):
             g.remove_edge('s', 'e')
-        assert g.has_edge('s', 'a') == False
-        assert g.has_edge('a', 's') == True
+        assert not g.has_edge('s', 'a')
+        assert g.has_edge('a', 's')
 
         # get_edge_weight
         assert g.get_edge_weight('a', 'b') == 1.0
@@ -135,11 +136,19 @@ def test_edges():
         assert g.get_children('a') == {'s', 'b'}
         with pytest.raises(ValueError):
             g.get_children('d')
-        
+
         # get_parents
         assert g.get_parents('e') == {'b'}
         with pytest.raises(ValueError):
             g.get_parents('d')
+
+        # add_edges
+        g.add_edges({('b', 'a', 2.0), ('e', 'b')})
+        assert g.get_edge_weight('b', 'a') == 2.0
+        assert g.get_edge_weight('e', 'b') == 1.0
+        with pytest.raises(ValueError):
+            g.add_edges({('s', 'a'), ('sdaf', 'dsafsd')})
+        assert not g.has_edge('s', 'a')
 
         # Undirected graph.
         g2 = cg.graph(static=static, directed=False, vertices=['s', 'a', 'b', 'e'])
@@ -159,9 +168,9 @@ def test_edges():
 
         # has_edge
         for edge in g2_edges:
-            assert g2.has_edge(edge[0], edge[1]) == True
-        assert g2.has_edge('e', 'b') == True
-        assert g2.has_edge(1, 2) == False
+            assert g2.has_edge(edge[0], edge[1])
+        assert g2.has_edge('e', 'b')
+        assert not g2.has_edge(1, 2)
 
         # remove_edge
         g2.remove_edge('s', 'a')
@@ -169,8 +178,8 @@ def test_edges():
             g2.remove_edge('sdaf', 'dsafsd')
         with pytest.warns(Warning):
             g2.remove_edge('s', 'e')
-        assert g2.has_edge('s', 'a') == False
-        assert g2.has_edge('a', 's') == False
+        assert not g2.has_edge('s', 'a')
+        assert not g2.has_edge('a', 's')
 
         # get_edge_weight
         assert g2.get_edge_weight('b', 'a') == 1.0
@@ -181,11 +190,20 @@ def test_edges():
         assert g2.get_children('a') == {'b'}
         with pytest.raises(ValueError):
             g2.get_children('d')
-        
+
         # get_parents
         assert g2.get_parents('a') == {'b'}
         with pytest.raises(ValueError):
             g2.get_parents('d')
+
+        # add_edges
+        g.remove_edge('e', 'b')
+        g.add_edges({('b', 'a', 2.0), ('e', 'b')})
+        assert g.get_edge_weight('b', 'a') == 2.0
+        assert g.get_edge_weight('e', 'b') == 1.0
+        with pytest.raises(ValueError):
+            g.add_edges({('s', 'a'), ('sdaf', 'dsafsd')})
+        assert not g.has_edge('s', 'a')
 
         # adjacency_matrix and adjacency_list
         g = cg.graph(static=static, directed=False, vertices=list(range(3)))
@@ -218,10 +236,11 @@ def test_vertices():
     """Tests various vertex-related methods.
 
     Tests methods:
-        - add_vertex 
+        - add_vertex
         - has_vertex
         - vertices
         - remove_vertex
+        - add_vertices
 
     for StaticGraph and DynamicGraph classes.
     """
@@ -237,19 +256,29 @@ def test_vertices():
         with pytest.raises(ValueError):
             g.add_vertex('s')
 
-        # vertices property
+        # vertices attribute
         assert g.vertices == ['s', 1]
 
         # has_vertex
-        assert g.has_vertex('s') == True
-        assert g.has_vertex(1) == True
-        assert g.has_vertex(2) == False
+        assert g.has_vertex('s')
+        assert g.has_vertex(1)
+        assert not g.has_vertex(2)
 
-        # Remove vertices.
+        # remove_vertex
         g.remove_vertex('s')
         with pytest.raises(ValueError):
             g.remove_vertex(2)
-        assert g.has_vertex('s') == False
+        assert not g.has_vertex('s')
+
+        # add_vertices
+        g.add_vertices({'a', 'b', 's'})
+        assert g.has_vertex('a')
+        assert g.has_vertex('b')
+        assert g.has_vertex('s')
+        with pytest.raises(ValueError):
+            g.add_vertices({'c', 's'})
+        assert not g.has_vertex('c')
+        assert g.has_vertex('s')
 
 def test_attributes():
     """Tests various edge and vertex attribute-related methods.
