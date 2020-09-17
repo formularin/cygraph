@@ -1,6 +1,9 @@
 """Unit tests for classes implemented in cygraph/graph.pyx
 """
 
+import os
+import pickle
+
 import numpy as np
 import pytest
 
@@ -386,3 +389,18 @@ def test_comparisons():
                 g1.set_vertex_attribute(0, key="Attribute", val=True)
                 assert not g1.equals(g2, vertex_attrs=True)
                 assert not g2.equals(g1, vertex_attrs=True)
+
+
+def test_pickling():
+    """Tests serialization functionality.
+    """
+    for static in [True, False]:
+        g = cg.graph(static=static, vertices=list(range(3)))
+        g.add_edges({(0, 1), (1, 2), (2, 0)})
+        with open('tmp.pickle', 'wb+') as f:
+            pickle.dump(g, f)
+        with open('tmp.pickle', 'rb') as f:
+            loaded_g = pickle.load(f)
+        os.remove('tmp.pickle')
+        assert g.equals(loaded_g)
+        assert loaded_g.equals(g)
