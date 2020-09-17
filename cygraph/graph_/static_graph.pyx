@@ -150,6 +150,11 @@ cdef class StaticGraph(Graph):
 
         return new_graph
 
+    def __reduce__(self):
+        return (rebuild_static_graph, (self._vertex_attributes,
+                self._edge_attributes, self.vertices, self.directed,
+                self._adjacency_matrix))
+
     @property
     def edges(self):
         cdef int u, v, n_vertices
@@ -419,3 +424,27 @@ cdef class StaticGraph(Graph):
                 parents.add(self.vertices[u])
 
         return parents
+
+
+def rebuild_static_graph(vertex_attributes, edge_attributes, vertices, directed,
+        adjacency_matrix):
+    """Rebuilds a StaticGraph instance from unpickled values.
+
+    Parameters
+    ----------
+    Each of the parameters corresponds to an attribute in the
+    StaticGraph class.
+
+    Returns
+    -------
+    The rebuilt StaticGraph instance.
+    """
+    static_graph = StaticGraph(directed=directed, vertices=vertices,
+        adjacency_matrix=adjacency_matrix)
+    for vertex in vertex_attributes:
+        for key, val in vertex_attributes[vertex].items():
+            static_graph.set_vertex_attribute(vertex, key, val)
+    for edge in edge_attributes:
+        for key, val in edge_attributes[edge].items():
+            static_graph.set_edge_attribute(edge, key, val)
+    return static_graph

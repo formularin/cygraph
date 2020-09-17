@@ -159,6 +159,11 @@ cdef class DynamicGraph(Graph):
 
         return new_graph
 
+    def __reduce__(self):
+        return (rebuild_dynamic_graph, (self._vertex_attributes,
+                self._edge_attributes, self.vertices, self.directed,
+                self._adjacency_matrix))
+
     @property
     def edges(self):
         cdef int u, v, n_vertices
@@ -418,3 +423,27 @@ cdef class DynamicGraph(Graph):
                 parents.add(self.vertices[u])
 
         return parents
+
+
+def rebuild_dynamic_graph(vertex_attributes, edge_attributes, vertices,
+        directed, adjacency_matrix):
+    """Rebuilds a DynamicGraph instance from unpickled values.
+
+    Parameters
+    ----------
+    Each of the parameters corresponds to an attribute in the
+    DynamicGraph class.
+
+    Returns
+    -------
+    The rebuilt DynamicGraph instance.
+    """
+    dynamic_graph = DynamicGraph(directed=directed, vertices=vertices,
+        adjacency_matrix=adjacency_matrix)
+    for vertex in vertex_attributes:
+        for key, val in vertex_attributes[vertex].items():
+            dynamic_graph.set_vertex_attribute(vertex, key, val)
+    for edge in edge_attributes:
+        for key, val in edge_attributes[edge].items():
+            dynamic_graph.set_edge_attribute(edge, key, val)
+    return dynamic_graph
