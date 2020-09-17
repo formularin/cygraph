@@ -237,7 +237,8 @@ cdef class StaticGraph(Graph):
                 self._adjacency_matrix_view[v][u] = np.nan
 
     cpdef bint has_edge(self, object v1, object v2) except *:
-        """Returns whether or not an edge exists in this graph.
+        """Returns whether or not an edge exists in this graph. If one
+        of the vertices is not in the graph, still returns False.
 
         Parameters
         ----------
@@ -303,7 +304,8 @@ cdef class StaticGraph(Graph):
             self.vertices.append(v)
 
             if vertex_number == 0:
-                self._adjacency_matrix = np.full((1, 1), np.nan, dtype=DTYPE)
+                self._adjacency_matrix = np.array([[np.nan]], dtype=DTYPE)
+                self._adjacency_matrix_view = self._adjacency_matrix
             else:
                 # Add new row.
                 new_row = np.full((1, vertex_number), np.nan, dtype=DTYPE)
