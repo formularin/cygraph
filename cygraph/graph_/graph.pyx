@@ -128,6 +128,23 @@ cdef class Graph:
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
 
+    cpdef void remove_vertex_attribute(self, object vertex, object key) except *:
+        """Removes an attribute from a vertex's attribute dictionary.
+
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        key
+            The name of the attribute.
+        """
+        if vertex not in self.vertices:
+            raise ValueError(f"{vertex} is not in graph.")
+        try:
+            del self._vertex_attributes[vertex][key]
+        except KeyError:
+            raise KeyError(f"{vertex} has no attribute {key}")
+
     cpdef object get_vertex_attribute(self, object vertex, object key):
         """Gets an attribute of a vertex.
 
@@ -214,6 +231,32 @@ cdef class Graph:
                     self._edge_attributes[(edge[1], edge[0])][key] = val
                 except KeyError:
                     raise ValueError(f"{edge} is not in graph.")
+
+    cpdef void remove_edge_attribute(self, tuple edge, object key) except *:
+        """Removes an attribute from an edge's attribute dictionary.
+
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        key:
+            A key that is in the `edge`'s attributes dictionary.
+        """
+        cdef tuple edge_
+        if edge not in self._edge_attributes:
+            if self.directed:
+                raise ValueError(f"{edge} is not in graph.")
+            else:
+                if edge[::-1] not in self._edge_attributes:
+                    raise ValueError(f"{edge} is not in graph.")
+                else:
+                    edge_ = edge
+        if self.directed:
+            edge_ = edge
+        try:
+            del self._edge_attributes[edge][key]
+        except KeyError:
+            raise KeyError(f"Edge {edge} has no attribute {key}.")
 
     cpdef object get_edge_attribute(self, tuple edge, object key):
         """Gets an attribute of an edge.
