@@ -207,7 +207,8 @@ cdef class DynamicGraph(Graph):
                             edges.add(new_edge)
         return edges
 
-    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0
+            ) except *:
         """Adds edge to graph between two vertices with a weight.
 
         Parameters
@@ -216,13 +217,39 @@ cdef class DynamicGraph(Graph):
             One of the edge's vertices.
         v2
             One of the edge's vertices.
-        weight: float, optional
+        weight: double, optional
             The weight of the edge.
         """
         cdef int u = self._get_vertex_int(v1)
         cdef int v = self._get_vertex_int(v2)
 
+        if self._adjacency_matrix[u][v] is not None:
+            raise ValueError("Edge ({v1}, {v2}) already exists.")
+
         self._edge_attributes[(v1, v2)] = {}
+
+        self._adjacency_matrix[u][v] = weight
+        if not self.directed:
+            self._adjacency_matrix[v][u] = weight
+
+    cpdef void set_edge_weight(self, object v1, object v2, double weight
+            ) except *:
+        """Changes the weight of an edge.
+
+        Parameters
+        ----------
+        v1
+            One of the edge's vertices.
+        v2
+            One of the edge's vertices.
+        weight: double
+            The weight of the edge.
+        """
+        cdef int u = self._get_vertex_int(v1)
+        cdef int v = self._get_vertex_int(v2)
+
+        if self._adjacency_matrix[u][v] is None:
+            raise ValueError("Edge ({v1}, {v2}) doesn't exist.")
 
         self._adjacency_matrix[u][v] = weight
         if not self.directed:

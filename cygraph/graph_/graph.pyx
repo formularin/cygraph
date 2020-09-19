@@ -211,6 +211,10 @@ cdef class Graph:
             ) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
 
+    cpdef void set_edge_weight(self, object v1, object v2, double weight
+            ) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "set_edge_weight")
+
     cpdef void add_edges(self, set edges) except *:
         """Adds a set of edges to the graph.
 
