@@ -242,19 +242,20 @@ cdef class Graph:
         key:
             A key that is in the `edge`'s attributes dictionary.
         """
-        cdef tuple edge_
+        cdef tuple edge_ = ()
         if edge not in self._edge_attributes:
             if self.directed:
                 raise ValueError(f"{edge} is not in graph.")
             else:
-                if edge[::-1] not in self._edge_attributes:
-                    raise ValueError(f"{edge} is not in graph.")
+                if edge[::-1] in self._edge_attributes:
+                    edge_ = edge[::-1]
                 else:
-                    edge_ = edge
-        if self.directed:
+                    raise ValueError(f"{edge} is not in graph.")
+
+        if edge_ == ():
             edge_ = edge
         try:
-            del self._edge_attributes[edge][key]
+            del self._edge_attributes[edge_][key]
         except KeyError:
             raise KeyError(f"Edge {edge} has no attribute {key}.")
 

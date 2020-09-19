@@ -318,6 +318,17 @@ def test_attributes():
         with pytest.raises(KeyError):
             g.get_edge_attribute(('a', 'b'), key="this is not a key")
 
+        # Removing attributes.
+        with pytest.raises(ValueError):
+            g.remove_edge_attribute(('a', 'c'), key='key')
+        with pytest.raises(ValueError):
+            g.remove_edge_attribute(('b', 'a'), key='key')
+        with pytest.raises(KeyError):
+            g.remove_edge_attribute(('a', 'b'), key="this is not a key")
+        g.remove_edge_attribute(('a', 'b'), key='key')
+        with pytest.raises(KeyError):
+            g.get_edge_attribute(('a', 'b'), key='key')
+
         # Undirected graph.
         g2 = cg.graph(static=static, directed=False, vertices=['a', 'b', 'c'])
         g2.add_edge('a', 'b')
@@ -340,18 +351,37 @@ def test_attributes():
         with pytest.raises(KeyError):
             g2.get_edge_attribute(('a', 'b'), key="this is not a key")
 
+        # Removing attributes.
+        with pytest.raises(ValueError):
+            g2.remove_edge_attribute(('a', 'c'), key='key')
+        with pytest.raises(KeyError):
+            g2.remove_edge_attribute(('a', 'b'), key="this is not a key")
+        g2.remove_edge_attribute(('a', 'b'), key='key')
+        with pytest.raises(KeyError):
+            g2.get_edge_attribute(('a', 'b'), key='key')
+        with pytest.raises(KeyError):
+            g2.get_edge_attribute(('b', 'a'), key='key')
+        g2.set_edge_attribute(('a', 'b'), key='key', val='val')
+        g2.remove_edge_attribute(('b', 'a'), key='key')
+        with pytest.raises(KeyError):
+            g2.get_edge_attribute(('a', 'b'), key='key')
+        with pytest.raises(KeyError):
+            g2.get_edge_attribute(('b', 'a'), key='key')
+
     # Vertex attributes.
     for static in [True, False]:
         for directed in [True, False]:
             g = cg.graph(static=static,
                     directed=directed, vertices=['a', 'b', 'c'])
 
+            # Setting attributes
             g.set_vertex_attribute('a', key='key', val='val')
             with pytest.raises(TypeError):
                 g.set_vertex_attribute('a', key=[], val='val')
             with pytest.raises(ValueError):
                 g.set_vertex_attribute('d', key='key', val='val')
 
+            # Getting attributes
             assert g.get_vertex_attribute('a', key='key') == 'val'
             with pytest.raises(TypeError):
                 g.get_vertex_attribute('a', key=[])
@@ -359,6 +389,17 @@ def test_attributes():
                 g.get_vertex_attribute('d', key='key')
             with pytest.raises(KeyError):
                 g.get_vertex_attribute('a', key='this is not a key')
+
+            # Removing attributes
+            with pytest.raises(TypeError):
+                g.remove_vertex_attribute('a', key=[])
+            with pytest.raises(ValueError):
+                g.remove_vertex_attribute('d', key='key')
+            with pytest.raises(KeyError):
+                g.remove_vertex_attribute('a', key="this is not a key")
+            g.remove_vertex_attribute('a', 'key')
+            with pytest.raises(KeyError):
+                g.get_vertex_attribute('a', key='key')
 
 
 def test_comparisons():
