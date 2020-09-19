@@ -309,8 +309,15 @@ def test_attributes():
             g.set_edge_attribute(('b', 'a'), key='key 2', val='val')
         g.set_edge_attribute(('a', 'b'), key='key', val='new val')
 
+        # set_edge_attributes
+        g.set_edge_attributes(('a', 'b'), {'key1': 'val1', 'key2': 'val2'})
+        with pytest.raises(ValueError):
+            g.set_edge_attributes(('b', 'a'), {'key1': 'val1', 'key2': 'val2'})
+
         # Getting attributes.
         assert g.get_edge_attribute(('a', 'b'), key='key') == 'new val'
+        assert g.get_edge_attribute(('a', 'b'), key='key1') == 'val1'
+        assert g.get_edge_attribute(('a', 'b'), key='key2') == 'val2'
         with pytest.raises(TypeError):
             g.get_edge_attribute(('a', 'b'), key=[])
         with pytest.raises(ValueError):
@@ -341,9 +348,14 @@ def test_attributes():
             g2.set_edge_attribute(('a', 'c'), key='key 2', val='val')
         g2.set_edge_attribute(('a', 'b'), key='key', val='new val')
 
+        # set_edge_attributes
+        g2.set_edge_attributes(('a', 'b'), {'key1': 'val1', 'key2': 'val2'})
+
         # Getting attributes.
         assert g2.get_edge_attribute(('a', 'b'), key='key') == 'new val'
         assert g2.get_edge_attribute(('b', 'a'), key='key') == 'new val'
+        assert g2.get_edge_attribute(('a', 'b'), key='key1') == 'val1'
+        assert g2.get_edge_attribute(('a', 'b'), key='key2') == 'val2'
         with pytest.raises(TypeError):
             g2.get_edge_attribute(('a', 'b'), key=[])
         with pytest.raises(ValueError):

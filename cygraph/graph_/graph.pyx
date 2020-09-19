@@ -51,7 +51,8 @@ cdef class Graph:
         return len(self.vertices)
 
     def __repr__(self):
-        return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
+        return (f"<{self.__class__.__name__}; vertices={self.vertices!r}; "
+                f"edges={self.edges!r}>")
 
     def __str__(self):
         return str(np.array(self._adjacency_matrix))
@@ -111,7 +112,8 @@ cdef class Graph:
     cpdef void remove_vertex(self, object v) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_vertex")
 
-    cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *:
+    cpdef void set_vertex_attribute(self, object vertex, object key, object val
+            ) except *:
         """Sets an attribute to a vertex.
 
         Parameters
@@ -144,6 +146,30 @@ cdef class Graph:
             del self._vertex_attributes[vertex][key]
         except KeyError:
             raise KeyError(f"{vertex} has no attribute {key}")
+
+    cpdef void set_vertex_attributes(self, object vertex, dict attributes
+            ) except *:
+        """Sets attributes to a vertex.
+
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        attributes: dict
+            Maps vertex attribute keys to their corresponding values.
+        """
+        cdef object key, key_, val
+        cdef set added_keys = set()
+        if vertex not in self.vertiices:
+            raise ValueError(f"Vertex {vertex} not in graph.")
+        for key, val in attributes.items():
+            try:
+                self.set_vertex_attribute(vertex, key, val)
+                added_keys.add(key)
+            except ValueError as ve:
+                for key_ in added_keys:
+                    self.remove_vertex_attribute(vertex, key_)
+                raise ValueError(str(ve)) from ve
 
     cpdef object get_vertex_attribute(self, object vertex, object key):
         """Gets an attribute of a vertex.
@@ -181,7 +207,8 @@ cdef class Graph:
         """
         return vertex in self.vertices
 
-    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0
+            ) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
 
     cpdef void add_edges(self, set edges) except *:
@@ -209,7 +236,8 @@ cdef class Graph:
     cpdef void remove_edge(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")
 
-    cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *:
+    cpdef void set_edge_attribute(self, tuple edge, object key, object val
+            ) except *:
         """Sets an attribute to an edge.
 
         Parameters
@@ -258,6 +286,29 @@ cdef class Graph:
             del self._edge_attributes[edge_][key]
         except KeyError:
             raise KeyError(f"Edge {edge} has no attribute {key}.")
+
+    cpdef void set_edge_attributes(self, tuple edge, dict attributes) except *:
+        """Sets attributes to an edge.
+
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        attributes: dict
+            Maps edge attribute keys to their corresponding values.
+        """
+        cdef object key, key_, val
+        cdef set added_keys = set()
+        if not self.has_edge(*edge):
+            raise ValueError(f"No edge {edge} in graph.")
+        for key, val in attributes.items():
+            try:
+                self.set_edge_attribute(edge, key, val)
+                added_keys.add(key)
+            except ValueError as ve:
+                for key_ in added_keys:
+                    self.remove_edge_attribute(edge, key_)
+                raise ValueError(str(ve)) from ve
 
     cpdef object get_edge_attribute(self, tuple edge, object key):
         """Gets an attribute of an edge.
