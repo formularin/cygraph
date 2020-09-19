@@ -107,9 +107,16 @@ def test_edges():
         g.add_edge('s', 'a', weight=0.0)  # Make sure weight zero edges are tested.
         g.add_edge('a', 's')
         g.add_edge('a', 'b')
-        g.add_edge('b', 'e')
+        g.add_edge('b', 'e', weight=0.5)
+        with pytest.raises(ValueError):
+            g.add_edge('b', 'e', weight=1.0)
         with pytest.raises(ValueError):
             g.add_edge('d', 'f')
+
+        # set_edge_weight
+        g.set_edge_weight('b', 'e', weight=1.0)
+        with pytest.raises(ValueError):
+            g.set_edge_weight('e', 'b', weight=1.0)
 
         # edges property
         g_edges = g.edges
@@ -159,9 +166,16 @@ def test_edges():
         # add_edge method
         g2.add_edge('s', 'a', weight=0.0)  # Make sure weight zero edges are tested.
         g2.add_edge('a', 'b')
-        g2.add_edge('b', 'e')
+        g2.add_edge('b', 'e', weight=0.5)
+        with pytest.raises(ValueError):
+            g2.add_edge('b', 'e', weight=1.0)
         with pytest.raises(ValueError):
             g2.add_edge('d', 'f')
+
+        # set_edge_weight
+        g2.set_edge_weight('e', 'b', weight=1.0)
+        with pytest.raises(ValueError):
+            g2.set_edge_weight('a', 'e', weight=1.0)
 
         # edges property
         g2_edges = g2.edges
@@ -201,8 +215,8 @@ def test_edges():
 
         # add_edges
         g.remove_edge('e', 'b')
-        g.add_edges({('b', 'a', 2.0), ('e', 'b')})
-        assert g.get_edge_weight('b', 'a') == 2.0
+        g.add_edges({('s', 'e', 2.0), ('e', 'b')})
+        assert g.get_edge_weight('s', 'e') == 2.0
         assert g.get_edge_weight('e', 'b') == 1.0
         with pytest.raises(ValueError):
             g.add_edges({('s', 'a'), ('sdaf', 'dsafsd')})

@@ -224,7 +224,7 @@ cdef class DynamicGraph(Graph):
         cdef int v = self._get_vertex_int(v2)
 
         if self._adjacency_matrix[u][v] is not None:
-            raise ValueError("Edge ({v1}, {v2}) already exists.")
+            raise ValueError(f"Edge ({v1}, {v2}) already exists.")
 
         self._edge_attributes[(v1, v2)] = {}
 
