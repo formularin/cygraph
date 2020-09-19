@@ -22,30 +22,30 @@ from cygraph.graph_ import Graph, DynamicGraph, StaticGraph
 __version__ = '0.1.6'
 
 
-def graph(static=False, graph_=None, directed=False, vertices=[],
-        adjacency_matrix=None, adjacency_list=[]):
+def graph(directed=False, vertices=[], graph_=None, adjacency_matrix=None,
+        adjacency_list=[], static=False):
     """Create an instance of a cygraph.Graph object.
 
     Parameters
     ----------
-    static: bint, optional
-        Whether to create a cygraph.StaticGraph or cygraph.DynamicGraph
-        instance. Setting this to True will mean algorithms will mean
-        all operations will run faster, but adding vertices after
-        initialization will be slow.
-    graph_: cygraph.Graph, optional
-        A graph to create a copy of. This overrides all of the following
-        parameters.
     directed: bint, optional
         Whether to create a directed graph (otherwise undirected).
     vertices: list, optional
         A list of the vertices in this graph.
+    graph_: cygraph.Graph, optional
+        A graph to create a copy of. This overrides all of the following
+        parameters.
     adjacency_matrix: list or np.ndarray, optional
         An adjanceny matrix for creating a graph that has edges to start
         with. If static, must be np.ndarray, if not static, must be list.
     adjacency_list: list, optional
         An adjacency list for creating a graph that has edges to start
         with.
+    static: bint, optional
+        Whether to create a cygraph.StaticGraph or cygraph.DynamicGraph
+        instance. Setting this to True will mean algorithms will mean
+        all operations will run faster, but adding vertices after
+        initialization will be slow.
 
     Returns
     -------
