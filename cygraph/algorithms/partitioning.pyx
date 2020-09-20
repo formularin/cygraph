@@ -34,12 +34,12 @@ cdef tuple partition_karger(Graph graph, bint static):
     tuple
         Two graphs that are the result of a random partition of `graph`,
         as well as the cutset of the partition.
-    
+
     Raises
     ------
     NotImplementedError
         `graph` is directed.
-    
+
     Examples
     --------
     >>> G = cg.graph(vertices=[1, 2])
@@ -113,7 +113,8 @@ cdef tuple partition_karger(Graph graph, bint static):
         for u in new_graph.vertices:
             for v in graph.get_children(u):
                 if v in new_graph.vertices:
-                    new_graph.add_edge(u, v, graph.get_edge_weight(u, v))
+                    if not new_graph.has_edge(u, v):
+                        new_graph.add_edge(u, v, graph.get_edge_weight(u, v))
                 elif i == 0:
                     # All of the cut edges will be encountered while
                     # filling in the first graph.
@@ -121,7 +122,7 @@ cdef tuple partition_karger(Graph graph, bint static):
     return (*new_graphs, cutset)
 
 
-cpdef tuple py_partition_karger(Graph graph, bint static=False):
+def py_partition_karger(graph, static=False):
     """Partitions a graph into two graphs. Does not change the inputted
     graph in any way.
 
@@ -137,12 +138,12 @@ cpdef tuple py_partition_karger(Graph graph, bint static=False):
     tuple
         Two graphs that are the result of a random partition of `graph`,
         as well as the cutset of the partition.
-    
+
     Raises
     ------
     NotImplementedError
         `graph` is directed.
-    
+
     Examples
     --------
     >>> G = cg.graph(vertices=[1, 2])

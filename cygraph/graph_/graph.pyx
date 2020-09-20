@@ -44,6 +44,47 @@ cdef class Graph:
             self.directed = bool(graph.directed)
             self.vertices = graph.vertices[:]
 
+    def __iter__(self):
+        return iter(self.vertices)
+
+    def __len__(self):
+        return len(self.vertices)
+
+    def __repr__(self):
+        return (f"<{self.__class__.__name__}; vertices={self.vertices!r}; "
+                f"edges={self.edges!r}>")
+
+    def __str__(self):
+        return str(np.array(self._adjacency_matrix))
+
+    def __eq__(self, other):
+        raise ValueError("Comparing graphs is ambiguous, use the "
+                         ".equals() method to specify whether or not "
+                         "to consider edge and vertex attributes.")
+
+    @property
+    def edge_attributes(self):
+        return self._edge_attributes
+
+    @property
+    def vertex_attributes(self):
+        return self._vertex_attributes
+
+    @property
+    def adjacency_list(self):
+        cdef object u, v
+        cdef int i, j
+        cdef list adj_list = [[] for _ in self.vertices]
+        for i, u in enumerate(self.vertices):
+            for j, v in enumerate(self.vertices):
+                if self.has_edge(u, v):
+                    adj_list[i].append(j)
+        return adj_list
+
+    @property
+    def adjacency_matrix(self):
+        return self._adjacency_matrix
+
     cdef int _get_vertex_int(self, object vertex) except -1:
         """Returns the int corresponding to a vertex.
 
@@ -65,10 +106,14 @@ cdef class Graph:
     cpdef void add_vertex(self, object v) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_vertex")
 
+    cpdef void add_vertices(self, set vertices) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "add_vertices")
+
     cpdef void remove_vertex(self, object v) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_vertex")
 
-    cpdef void set_vertex_attribute(self, object vertex, object key, object val) except *:
+    cpdef void set_vertex_attribute(self, object vertex, object key, object val
+            ) except *:
         """Sets an attribute to a vertex.
 
         Parameters
@@ -84,6 +129,47 @@ cdef class Graph:
             self._vertex_attributes[vertex][key] = val
         except KeyError:
             raise ValueError(f"{vertex} is not in graph.")
+
+    cpdef void remove_vertex_attribute(self, object vertex, object key) except *:
+        """Removes an attribute from a vertex's attribute dictionary.
+
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        key
+            The name of the attribute.
+        """
+        if vertex not in self.vertices:
+            raise ValueError(f"{vertex} is not in graph.")
+        try:
+            del self._vertex_attributes[vertex][key]
+        except KeyError:
+            raise KeyError(f"{vertex} has no attribute {key}")
+
+    cpdef void set_vertex_attributes(self, object vertex, dict attributes
+            ) except *:
+        """Sets attributes to a vertex.
+
+        Parameters
+        ----------
+        vertex
+            A vertex in the graph.
+        attributes: dict
+            Maps vertex attribute keys to their corresponding values.
+        """
+        cdef object key, key_, val
+        cdef set added_keys = set()
+        if vertex not in self.vertiices:
+            raise ValueError(f"Vertex {vertex} not in graph.")
+        for key, val in attributes.items():
+            try:
+                self.set_vertex_attribute(vertex, key, val)
+                added_keys.add(key)
+            except ValueError as ve:
+                for key_ in added_keys:
+                    self.remove_vertex_attribute(vertex, key_)
+                raise ValueError(str(ve)) from ve
 
     cpdef object get_vertex_attribute(self, object vertex, object key):
         """Gets an attribute of a vertex.
@@ -121,13 +207,41 @@ cdef class Graph:
         """
         return vertex in self.vertices
 
-    cpdef void add_edge(self, object v1, object v2, double weight=1.0) except *:
+    cpdef void add_edge(self, object v1, object v2, double weight=1.0
+            ) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "add_edge")
+
+    cpdef void set_edge_weight(self, object v1, object v2, double weight
+            ) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "set_edge_weight")
+
+    cpdef void add_edges(self, set edges) except *:
+        """Adds a set of edges to the graph.
+
+        Parameters
+        ----------
+        edges: set
+            A set of tuples, each of which represents an edge to be
+            added to the graph in a format that can be passed to
+            `add_edge`. i.e. `(vertex, vertex)` or
+            `(vertex, vertex, weight)`.
+        """
+        cdef tuple edge, edge_
+        cdef set added_edges = set()
+        for edge in edges:
+            try:
+                self.add_edge(*edge)
+                added_edges.add(edge)
+            except ValueError as ve:
+                for edge_ in added_edges:
+                    self.remove_edge(*edge_)
+                raise ValueError(str(ve)) from ve
 
     cpdef void remove_edge(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "remove_edge")
 
-    cpdef void set_edge_attribute(self, tuple edge, object key, object val) except *:
+    cpdef void set_edge_attribute(self, tuple edge, object key, object val
+            ) except *:
         """Sets an attribute to an edge.
 
         Parameters
@@ -149,6 +263,56 @@ cdef class Graph:
                     self._edge_attributes[(edge[1], edge[0])][key] = val
                 except KeyError:
                     raise ValueError(f"{edge} is not in graph.")
+
+    cpdef void remove_edge_attribute(self, tuple edge, object key) except *:
+        """Removes an attribute from an edge's attribute dictionary.
+
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        key:
+            A key that is in the `edge`'s attributes dictionary.
+        """
+        cdef tuple edge_ = ()
+        if edge not in self._edge_attributes:
+            if self.directed:
+                raise ValueError(f"{edge} is not in graph.")
+            else:
+                if edge[::-1] in self._edge_attributes:
+                    edge_ = edge[::-1]
+                else:
+                    raise ValueError(f"{edge} is not in graph.")
+
+        if edge_ == ():
+            edge_ = edge
+        try:
+            del self._edge_attributes[edge_][key]
+        except KeyError:
+            raise KeyError(f"Edge {edge} has no attribute {key}.")
+
+    cpdef void set_edge_attributes(self, tuple edge, dict attributes) except *:
+        """Sets attributes to an edge.
+
+        Parameters
+        ----------
+        edge: tuple
+            An edge in the graph in the form (v1, v2).
+        attributes: dict
+            Maps edge attribute keys to their corresponding values.
+        """
+        cdef object key, key_, val
+        cdef set added_keys = set()
+        if not self.has_edge(*edge):
+            raise ValueError(f"No edge {edge} in graph.")
+        for key, val in attributes.items():
+            try:
+                self.set_edge_attribute(edge, key, val)
+                added_keys.add(key)
+            except ValueError as ve:
+                for key_ in added_keys:
+                    self.remove_edge_attribute(edge, key_)
+                raise ValueError(str(ve)) from ve
 
     cpdef object get_edge_attribute(self, tuple edge, object key):
         """Gets an attribute of an edge.
@@ -180,32 +344,63 @@ cdef class Graph:
     cpdef double get_edge_weight(self, object v1, object v2) except *:
         raise NotImplementedError(NOT_IMPLEMENTED % "get_edge_weight")
 
+    cpdef bint has_edge(self, object v1, object v2) except *:
+        raise NotImplementedError(NOT_IMPLEMENTED % "has_edge")
+
     cpdef set get_children(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_children")
-    
+
     cpdef set get_parents(self, object vertex):
         raise NotImplementedError(NOT_IMPLEMENTED % "get_parents")
 
-    @property
-    def edges(self):
-        raise NotImplementedError(NOT_IMPLEMENTED % "edges")
+    cpdef bint equals(self, Graph other, bint vertex_attrs=False,
+            bint edge_attrs=False) except *:
+        """Determines whether two graphs are equal.
 
-    @property
-    def edge_attributes(self):
-        return self._edge_attributes
+        Parameters
+        ----------
+        other: cygraph.Graph
+            The graph to make the comparison with.
+        vertex_attrs: bint, optional
+            Whether or not to consider vertex attributes when detemining
+            equality.
+        edge_attrs: bint, optional
+            Whether or not to consider edge attributes when determining
+            equality.
 
-    @property
-    def vertex_attributes(self):
-        return self._vertex_attributes
+        Returns
+        -------
+        bint
+            Whether or not the two graphs are equal.
+        """
+        cdef bint vertices = (self.vertices == other.vertices)
+        cdef object weight, u, v
 
-    def __iter__(self):
-        return iter(self.vertices)
+        if self.directed != other.directed:
+            return False
 
-    def __len__(self):
-        return len(self.vertices)
+        if vertices:
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__}; vertices={self.vertices!r}; edges={self.edges!r}>"
+            # Check that adjacency matrices are the same.
+            for u in self.vertices:
+                for v in self.vertices:
+                    try:
+                        weight = self.get_edge_weight(u, v)
+                    except ValueError:
+                        weight = None
+                    try:
+                        if other.get_edge_weight(u, v) != weight:
+                            return False
+                    except ValueError:
+                        if weight is not None:
+                            return False
 
-    def __str__(self):
-        return str(np.array(self._adjacency_matrix))
+            # Check that edge and vertex attributes are the same.
+            if vertex_attrs:
+                return self.vertex_attributes == other.vertex_attributes
+            if edge_attrs:
+                return self.edge_attributes == other.vertex_attributes
+
+            return True
+        else:
+            return False

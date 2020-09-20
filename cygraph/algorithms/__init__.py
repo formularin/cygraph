@@ -4,8 +4,8 @@
 """
 
 from cygraph.algorithms.articulation_points import py_get_articulation_points as get_articulation_points
-from cygraph.algorithms.components import py_get_components as get_components
-from cygraph.algorithms.components import py_get_number_components as get_number_components
+from cygraph.algorithms.components import py_get_connected_components as get_connected_components
+from cygraph.algorithms.components import py_get_number_connected_components as get_number_connected_components
 from cygraph.algorithms.components import py_get_strongly_connected_components as get_strongly_connected_components
 from cygraph.algorithms.components import py_get_number_strongly_connected_components as get_number_strongly_connected_components
 from cygraph.algorithms.partitioning import py_partition_karger as partition_karger

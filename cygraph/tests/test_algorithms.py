@@ -143,29 +143,29 @@ def test_partition_karger():
             == set(input_graph.vertices)
 
 
-def test_get_components():
-    """Tests get_components and get_number_components functions.
+def test_get_connected_components():
+    """Tests get_connected_components and get_number_connected_components functions.
     """
 
     for static in [True, False]:
         g1 = cg.graph(static=static, directed=False, vertices=['a', 'b', 'c'])
-        components = alg.get_components(g1, static=True)
+        components = alg.get_connected_components(g1, static=True)
         for component in components:
             assert component.vertices in [['a'], ['b'], ['c']]
-            assert len(alg.get_components(component)) == 1
+            assert len(alg.get_connected_components(component)) == 1
 
-        dynamic_components = alg.get_components(g1, static=False)
+        dynamic_components = alg.get_connected_components(g1, static=False)
         for component in dynamic_components:
             assert component.vertices in [['a'], ['b'], ['c']]
-            assert len(alg.get_components(component)) == 1
+            assert len(alg.get_connected_components(component)) == 1
 
-        assert alg.get_number_components(g1) == 3
+        assert alg.get_number_connected_components(g1) == 3
 
         g2 = cg.graph(static=static, directed=True, vertices=['a', 'b', 'c'])
         with pytest.raises(NotImplementedError):
-            alg.get_components(g2)
+            alg.get_connected_components(g2)
         with pytest.raises(NotImplementedError):
-            alg.get_number_components(g2)
+            alg.get_number_connected_components(g2)
 
 
 def test_get_strongly_connected_components():

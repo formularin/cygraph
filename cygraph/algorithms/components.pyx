@@ -90,7 +90,7 @@ cdef set _strongconnect(Graph graph, object v):
     return comp
 
 
-cdef set _get_components(Graph graph, bint vertices):
+cdef set _get_connected_components(Graph graph, bint vertices):
     """Gets the components of a graph.
 
     Parameters
@@ -196,7 +196,7 @@ cdef set _get_strongly_connected_components(Graph graph, bint vertices):
         return {n_components}
 
 
-cdef set get_components(Graph graph, bint static):
+cdef list get_connected_components(Graph graph, bint static):
     """Gets the connected components of a graph as connected graphs.
 
     Parameters
@@ -208,8 +208,9 @@ cdef set get_components(Graph graph, bint static):
 
     Returns
     -------
-    set
-        Graphs that are the components of `graph`.
+    list
+        A list of the graphs that are the connected components of
+        `graph`, in no particular order.
 
     Raises
     ------
@@ -221,23 +222,23 @@ cdef set get_components(Graph graph, bint static):
     >>> G = cg.graph(vertices=list(range(4)))
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)
-    >>> alg.get_components(G)
+    >>> alg.get_connected_components(G)
     {<DynamicGraph; vertices=[1, 2, 3]; edges={(1, 2, 1.0), (2, 3, 1.0)}>, <DynamicGraph; vertices=[0]; edges=set()>}
 
     Notes
     -----
     To get the number of connected components in a graph,
-    cygraph.algorithms.get_number_components(G) is faster than
-    len(cygraph.algorithms.get_components(G))
+    cygraph.algorithms.get_number_connected_components(G) is faster than
+    len(cygraph.algorithms.get_connected_components(G))
     """
 
-    cdef set discovered_components = _get_components(graph,
+    cdef set discovered_components = _get_connected_components(graph,
         vertices=True)
 
     # Get the induced subgraphs that are each of the components.
     cdef frozenset component
     cdef Graph component_graph
-    cdef set component_graphs = set()
+    cdef list component_graphs = []
     for component in discovered_components:
         if static:
             component_graph = StaticGraph(
@@ -251,12 +252,12 @@ cdef set get_components(Graph graph, bint static):
                 if neighbor in component:
                     component_graph.add_edge(vertex, neighbor)
 
-        component_graphs.add(component_graph)
+        component_graphs.append(component_graph)
 
     return component_graphs
 
 
-cdef int get_number_components(Graph graph) except *:
+cdef int get_number_connected_components(Graph graph) except *:
     """Finds the number of connected components of a graph.
 
     Parameters
@@ -279,13 +280,13 @@ cdef int get_number_components(Graph graph) except *:
     >>> G = cg.graph(vertices=list(range(4)))
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)
-    >>> alg.get_number_components(G)
+    >>> alg.get_number_connected_components(G)
     2
     """
-    return _get_components(graph, False).pop()
+    return _get_connected_components(graph, False).pop()
 
 
-cdef set get_strongly_connected_components(Graph graph, bint static):
+cdef list get_strongly_connected_components(Graph graph, bint static):
     """Gets the strongly connected components of a graph
 
     Parameters
@@ -297,9 +298,9 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
 
     Returns
     -------
-    set
-        The set of graphs that are the strongly connnected components of
-        `graph`
+    list
+        A list of the graphs that are the strongly connected components
+        of `graph`, in no particular order.
 
     Raises
     ------
@@ -326,7 +327,7 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
     """
     components = _get_strongly_connected_components(graph, True)
 
-    cdef set graph_components = set()
+    cdef list graph_components = []
     cdef frozenset comp
     cdef Graph g
     for comp in components:
@@ -340,7 +341,7 @@ cdef set get_strongly_connected_components(Graph graph, bint static):
                 if u in comp:
                     g.add_edge(v, u)
         
-        graph_components.add(g)
+        graph_components.append(g)
 
     return graph_components
 
@@ -377,7 +378,7 @@ cdef int get_number_strongly_connected_components(Graph graph) except *:
     return _get_strongly_connected_components(graph, False).pop()
 
 
-cpdef set py_get_components(Graph graph, bint static=False):
+def py_get_connected_components(graph, static=False):
     """Gets the connected components of a graph as connected graphs.
 
     Parameters
@@ -389,8 +390,9 @@ cpdef set py_get_components(Graph graph, bint static=False):
 
     Returns
     -------
-    set
-        Graphs that are the components of `graph`.
+    list
+        A list of the graphs that are the connected components of
+        `graph`, in no particular order.
 
     Raises
     ------
@@ -402,13 +404,13 @@ cpdef set py_get_components(Graph graph, bint static=False):
     >>> G = cg.graph(vertices=list(range(4)))
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)
-    >>> alg.get_components(G)
+    >>> alg.get_connected_components(G)
     {<DynamicGraph; vertices=[1, 2, 3]; edges={(1, 2, 1.0), (2, 3, 1.0)}>, <DynamicGraph; vertices=[0]; edges=set()>}
     """
-    return get_components(graph, static)
+    return get_connected_components(graph, static)
 
 
-cpdef int py_get_number_components(Graph graph) except *:
+def py_get_number_connected_components(graph):
     """Finds the number of connected components of a graph.
 
     Parameters
@@ -430,13 +432,13 @@ cpdef int py_get_number_components(Graph graph) except *:
     >>> G = cg.graph(vertices=list(range(4)))
     >>> G.add_edge(1, 2)
     >>> G.add_edge(2, 3)
-    >>> alg.get_number_components(G)
+    >>> alg.get_number_connected_components(G)
     2
     """
-    return get_number_components(graph)
+    return get_number_connected_components(graph)
 
 
-cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
+def py_get_strongly_connected_components(graph, static=False):
     """Gets the strongly connected components of a graph.
 
     Parameters
@@ -448,9 +450,9 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
 
     Returns
     -------
-    set
-        The set of graphs that are the strongly connnected components of
-        `graph`
+    list
+        A list of the graphs that are the strongly connected components
+        of `graph`, in no particular order.
 
     Raises
     ------
@@ -471,7 +473,7 @@ cpdef set py_get_strongly_connected_components(Graph graph, bint static=False):
     return get_strongly_connected_components(graph, static)
 
 
-cpdef int py_get_number_strongly_connected_components(Graph graph) except *:
+def py_get_number_strongly_connected_components(graph):
     """Gets the number of strongly connected components in a graph.
 
     Parameters
