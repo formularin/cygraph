@@ -4,6 +4,7 @@
 """
 
 from cygraph.graph_ cimport DynamicGraph
+import cygraph as cg
 
 
 cdef class BayesianNetwork:
@@ -15,7 +16,7 @@ cdef class BayesianNetwork:
     cdef DynamicGraph graph
 
     def __cinit__(self):
-        self.graph = DynamicGraph(graph=None, directed=True, vertices=[])
+        self.graph = cg.graph(directed=True)
 
     cpdef void add_edge(self, str A, str B, float conditional_probability
             ) except *:
