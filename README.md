@@ -27,12 +27,10 @@ import cygraph as cg
 import cygraph.algorithms as alg
 
 G = cg.graph(vertices=list(range(4)))
-G.add_edge(1, 2)
-G.add_edge(2, 3)
-G.add_edge(3, 1)
+G.add_edges({(1, 2), (2, 3), (3, 1)})
 children = G.get_children(1)
 print(f'{children=}')
-components = alg.get_number_components(G)
+components = alg.get_number_connected_components(G)
 print(f'{components=}')
 ```
 
@@ -55,16 +53,21 @@ cimport cygraph.graph_ as gp  # StaticGraph and DynamicGraph types.
 cimport cygraph.algorithms as alg
 
 cdef gp.DynamicGraph G = cg.graph(vertices=list(range(4)))
-G.add_edge(1, 2)
-G.add_edge(2, 3)
-G.add_edge(3, 1)
+G.add_edges({(1, 2), (2, 3), (3, 1))})
 cdef set children = G.get_children(1)
 print(f'children={str(children)}')
-cdef int components = alg.get_number_components(G)
+cdef int components = alg.get_number_connected_components(G)
 print(f'components={components}')
 ```
 
 For more information on the Python and Cython APIs, see [the documentation](https://lol-cubes.github.io/cygraph)
+
+---
+**NOTE**
+
+The current documentation is not up-to-date.
+
+---
 
 ## Contribution
 
