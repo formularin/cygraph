@@ -19,7 +19,7 @@ import numpy as np
 from cygraph.graph_ import Graph, DynamicGraph, StaticGraph
 
 
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 def graph(directed=False, vertices=[], graph_=None, adjacency_matrix=None,
