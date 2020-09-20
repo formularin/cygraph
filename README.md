@@ -53,7 +53,7 @@ cimport cygraph.graph_ as gp  # StaticGraph and DynamicGraph types.
 cimport cygraph.algorithms as alg
 
 cdef gp.DynamicGraph G = cg.graph(vertices=list(range(4)))
-G.add_edges({(1, 2), (2, 3), (3, 1))})
+G.add_edges({(1, 2), (2, 3), (3, 1)})
 cdef set children = G.get_children(1)
 print(f'children={str(children)}')
 cdef int components = alg.get_number_connected_components(G)
