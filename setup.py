@@ -10,7 +10,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='cygraph',
-    version='0.1.6',
+    version='0.2.0',
     author='Arin Khare',
     author_email='arinmkhare@gmail.com',
     description='A graph theory library written in Cython',
