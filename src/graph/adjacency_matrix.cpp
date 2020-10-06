@@ -1,0 +1,3 @@
+/*
+An adjacency matrix implementation of a Graph data structure.
+*/

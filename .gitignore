@@ -7,7 +7,8 @@ clean
 TODO.md
 
 # Cython
-*.c
+cygraph/algorithms/*.c
+examples/cython/*.c
 *.cpython-38**
 build/
 
@@ -25,6 +26,7 @@ __pycache__/
 # Misc.
 setup_test.py
 test
+test.c
 test.h
 test.py
 test.pyx

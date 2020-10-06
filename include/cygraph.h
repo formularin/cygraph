@@ -1,0 +1,3 @@
+/*
+A fast and flexible Graph theory library.
+*/
