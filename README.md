@@ -1,6 +1,6 @@
 # Cygraph
 
-*A graph theory library implemented in Cython*
+*A fast and flexible Graph theory library*
 
 ## Installation
 

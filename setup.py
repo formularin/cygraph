@@ -13,7 +13,7 @@ setup(
     version='0.2.1',
     author='Arin Khare',
     author_email='arinmkhare@gmail.com',
-    description='A graph theory library written in Cython',
+    description='A fast and flexible Graph theory library.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/lol-cubes/cygraph',
