@@ -3,6 +3,10 @@ A fast and flexible Graph theory library.
 */
 
 
+#ifndef GRAPH_H
+#define GRAPH_H
+
+
 #include <any>
 #include <set>
 #include <unordered_map>
@@ -28,133 +32,156 @@ namespace cygraph {
             bool directed;
 
         public:
-            bool get_directed();
-            /*
-            Returns whether or not the graph is directed.
-            */
+            Graph(bool directed, std::vector<Vertex>* vertices) {
+                // Sets initial values of Graph private members.
+                this->directed = directed;
+                this->vertices = *vertices;
+                for ( int i = 0; i < this->vertices.size(); i++ ) {
+                    vertex_indices[this->vertices[i]] = i;
+                    vertex_attributes[this->vertices[i]] = 
+                        new std::unordered_map<any, any>();
+                }
+            }
 
-            vector<Vertex> get_vertices();
-            /*
-            Returns a vector containing the vertices in the graph.
-            */
+            bool get_directed() {
+                /*
+                Returns whether or not the graph is directed.
+                */
+                return directed;
+            }
+
+            vector<Vertex> get_vertices() {
+                /*
+                Returns a vector containing the vertices in the graph.
+                */
+                return vertices;
+            }
 
             EdgeWeight get_edge_weight(Vertex* u, Vertex* v);
-            /*
-            Returns the weight of an edge.
-            */
+                /*
+                Returns the weight of an edge.
+                */
 
-            void set_vertex_attribute(Vertex* v, char* key, any value);
-            /*
-            Stores an attribute to a vertex. Can alter existing
-            attributes.
+            void set_vertex_attribute(Vertex* v, char* key, any value) {
+                /*
+                Stores an attribute to a vertex. Can alter existing
+                attributes.
 
-            Parameters
-            ----------
-            v: Vertex*
-                The vertex to store the attribute at.
-            key: char*
-                The name (key) under which the attribute will be stored.
-            value: any
-                The value of the attribute.
-            */
+                Parameters
+                ----------
+                v: Vertex*
+                    The vertex to store the attribute at.
+                key: char*
+                    The name (key) under which the attribute will be stored.
+                value: any
+                    The value of the attribute.
+                */
+            }
 
-            void remove_vertex_attribute(Vertex* v, char* key);
-            /*
-            Removes an attribute from a vertex.
+            void remove_vertex_attribute(Vertex* v, char* key) {
+                /*
+                Removes an attribute from a vertex.
 
-            Parameters
-            ----------
-            v: Vertex*
-                The vertex containing the attribute to be removed.
-            key: char*
-                Pointer to the name (key) of the attribute to remove.
-            */
+                Parameters
+                ----------
+                v: Vertex*
+                    The vertex containing the attribute to be removed.
+                key: char*
+                    Pointer to the name (key) of the attribute to remove.
+                */
+            }
 
             void set_vertex_attributes(Vertex* v,
-                std::unordered_map<char*, any>* attributes);
-            /*
-            Sets multiple attributes to a vertex. Can alter existing
-            attributes.
+                    std::unordered_map<char*, any>* attributes) {
+                /*
+                Sets multiple attributes to a vertex. Can alter existing
+                attributes.
 
-            Parameters
-            ----------
-            v: Vertex*
-                The vertex that will receive the new attributes.
-            attributes: unordered_map<any, any>*
-                A dictionary of attributes in key-value pairs.
-            */
+                Parameters
+                ----------
+                v: Vertex*
+                    The vertex that will receive the new attributes.
+                attributes: unordered_map<any, any>*
+                    A dictionary of attributes in key-value pairs.
+                */
+            }
 
-            any get_vertex_attribute(Vertex* v, char* key);
-            /*
-            Returns an attribute of a vertex.
+            any get_vertex_attribute(Vertex* v, char* key) {
+                /*
+                Returns an attribute of a vertex.
 
-            Parameters
-            ----------
-            v: Vertex*
-                A vertex in the graph.
-            key: char*
-                The key of an attribute of the vertex.
-            */
+                Parameters
+                ----------
+                v: Vertex*
+                    A vertex in the graph.
+                key: char*
+                    The key of an attribute of the vertex.
+                */
+            }
             
             void set_edge_attribute(Vertex* u, Vertex* v, char* key,
-                any value);
-            /*
-            Sets an attribute to an edge. Can alter existing attributes.
+                    any value) {
+                /*
+                Sets an attribute to an edge. Can alter existing attributes.
 
-            Parameters
-            ----------
-            u: Vertex*
-                The first vertex of the edge.
-            v: Vertex*
-                The second vertex of the edge.
-            key: char*
-                The name under which the attribute will be stored.
-            value: any
-                The value of the attribute.
-            */
+                Parameters
+                ----------
+                u: Vertex*
+                    The first vertex of the edge.
+                v: Vertex*
+                    The second vertex of the edge.
+                key: char*
+                    The name under which the attribute will be stored.
+                value: any
+                    The value of the attribute.
+                */
+            }
 
-            void remove_edge_attribute(Vertex* u, Vertex* v, char* key);
-            /*
-            Removes an attribute from an edge.
+            void remove_edge_attribute(Vertex* u, Vertex* v, char* key) {
+                /*
+                Removes an attribute from an edge.
 
-            Parameters
-            ----------
-            u: Vertex*
-                The first vertex in the edge.
-            v: Vertex*
-                The second vertex in the edge.
-            key: char*
-                The name under which the attribute is stored.
-            */
+                Parameters
+                ----------
+                u: Vertex*
+                    The first vertex in the edge.
+                v: Vertex*
+                    The second vertex in the edge.
+                key: char*
+                    The name under which the attribute is stored.
+                */
+            }
 
             void set_edge_attributes(Vertex* u, Vertex* v,
-                std::unordered_map<any, any>* attributes);
-            /*
-            Sets multiple attributes to an edge.
+                    std::unordered_map<any, any>* attributes) {
+                /*
+                Sets multiple attributes to an edge.
 
-            Parameters
-            ----------
-            u: Vertex*
-                The first vertex in the edge.
-            v: Vertex*
-                The second vertex in the edge.
-            attributes: unordered_map<any, any>*
-                A dictionary of attributes in key-value pairs.
-            */
+                Parameters
+                ----------
+                u: Vertex*
+                    The first vertex in the edge.
+                v: Vertex*
+                    The second vertex in the edge.
+                attributes: unordered_map<any, any>*
+                    A dictionary of attributes in key-value pairs.
+                */
+            }
 
-            any get_edge_attribute(Vertex* u, Vertex* v, char* key);
-            /*
-            Returns the value of an attribute of an edge.
+            any get_edge_attribute(Vertex* u, Vertex* v, char* key) {
+                /*
+                Returns the value of an attribute of an edge.
 
-            Parameters
-            ----------
-            u: Vertex*
-                The first vertex in the edge.
-            v: Vertex*
-                The second vertex in the edge.
-            key: char*
-                The name under which the attribute is stored.
-            */
+                Parameters
+                ----------
+                u: Vertex*
+                    The first vertex in the edge.
+                v: Vertex*
+                    The second vertex in the edge.
+                key: char*
+                    The name under which the attribute is stored.
+                */
+            }
 
             void add_vertex(Vertex* v);
             /*
@@ -203,15 +230,18 @@ namespace cygraph {
             */
 
 
-            set<Vertex> get_children(Vertex* v);
+            std::set<Vertex> get_children(Vertex* v);
             /*
             Returns the children of a given vertex in the graph.
             */
 
-            set<Vertex> get_parents(Vertex* v);
+            std::set<Vertex> get_parents(Vertex* v);
             /*
             Returns the parents of a given vertex in the graph. This is
             equivalent to get_children in undirected graphs.
             */
     };
 }
+
+
+#endif

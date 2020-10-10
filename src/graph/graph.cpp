@@ -1,3 +1,0 @@
-/*
-A generic Graph class implementation.
-*/
