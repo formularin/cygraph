@@ -2,8 +2,8 @@
 An implementation of the graph data structure using an adjacency matrix.
 */
 
-#ifndef CYGRAPH_ADJACENCY_MATRIX_H
-#define CYGRAPH_ADJACENCY_MATRIX_H
+#ifndef CYGRAPH_ADJACENCY_MATRIX_HPP_
+#define CYGRAPH_ADJACENCY_MATRIX_HPP_
 
 #include <string>
 #include <unordered_map>

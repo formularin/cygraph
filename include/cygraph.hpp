@@ -2,8 +2,8 @@
 A fast and flexible Graph theory library.
 */
 
-#ifndef CYGRAPH_H
-#define CYGRAPH_H
+#ifndef CYGRAPH_HPP_
+#define CYGRAPH_HPP_
 
 #include "algorithms.hpp"
 #include "graph/adjacency_list.hpp"

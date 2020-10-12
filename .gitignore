@@ -31,11 +31,13 @@ setup_test.py
 test
 test.c
 test.h
+test.hpp
 test.py
 test.pyx
 test.pxd
 test.cpp
 test.html
+test1.cpp
 
 # Sphinx
 doc

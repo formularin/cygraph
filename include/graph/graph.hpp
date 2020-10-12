@@ -3,8 +3,8 @@ A general graph class. Meant to be inherited. No real graph theory
 functionality.
 */
 
-#ifndef CYGRAPH_GRAPH_H
-#define CYGRAPH_GRAPH_H
+#ifndef CYGRAPH_GRAPH_HPP_
+#define CYGRAPH_GRAPH_HPP_
 
 #include <set>
 #include <string>
@@ -41,9 +41,9 @@ namespace cygraph {
             }
 
             EdgeWeight get_edge_weight(Vertex& u, Vertex& v);
-                /*
-                Returns the weight of an edge.
-                */
+            /*
+            Returns the weight of an edge.
+            */
 
             void add_vertex(Vertex& v);
             /*
