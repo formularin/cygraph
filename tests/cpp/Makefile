@@ -1,19 +1,22 @@
 COMPILER := g++
-OPTIONS := -std=c++17 -I ../../include/
-OBJECTS := build/test_algorithms.o build/test_graph.o
+OPTIONS := -std=c++17
 
-all: setup $(OBJECTS)
-	$(COMPILER) $(OPTIONS) $(OBJECTS) -o bin/test_cygraph
+all: setup bin/test_algorithms bin/test_graph
 
 setup:
 	mkdir -p build bin
 
-build/test_algorithms.o: test_algorithms.cpp
-	$(COMPILER) $(OPTIONS) -c test_algorithms.cpp -o build/test_algorithms.o
+bin/test_algorithms: script/test_algorithms.cpp build/catch.o build/utils.o
+	$(COMPILER) $(OPTIONS) script/test_algorithms.cpp -L build/ -o bin/test_algorithms
 
-build/test_graph.o: test_graph.cpp
-	$(COMPILER) $(OPTIONS) -c test_graph.cpp -o build/test_graph.o
+bin/test_graph: script/test_graph.cpp build/catch.o build/utils.o
+	$(COMPILER) $(OPTIONS) script/test_graph.cpp -L build/ -o bin/test_graph
+
+build/catch.o: lib/catch.cpp
+	$(COMPILER) $(OPTIONS) -c lib/catch.cpp -o build/catch.o
+
+build/utils.o: include/utils.hpp
+	$(COMPILER) $(OPTIONS) -c include/utils.hpp -o build/utils.o
 
 clean:
-	rm -rf build/
-	rm -rf bin/
+	rm -rf build bin
