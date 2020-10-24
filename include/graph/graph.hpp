@@ -52,33 +52,33 @@ namespace cygraph {
                 return vertices;
             }
 
-            EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v);
+            virtual EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v) = 0;
             /*
             Returns the weight of an edge.
             */
 
-            void add_vertex(const Vertex& v);
+            virtual void add_vertex(const Vertex& v) = 0;
             /*
             Adds a vertex to the graph.
             */
 
-            void add_vertices(Vertex vertices[], int n_vertices);
+            virtual void add_vertices(Vertex vertices[], int n_vertices) = 0;
             /*
             Adds an array of vertices to the graph.
             */
 
-            void remove_vertex(const Vertex& v);
+            virtual void remove_vertex(const Vertex& v) = 0;
             /*
             Removes a vertex from the graph.
             */
 
-            void set_edge_weight(const Vertex& u, const Vertex& v,
-                EdgeWeight weight);
+            virtual void set_edge_weight(const Vertex& u, const Vertex& v,
+                EdgeWeight weight) = 0;
             /*
             Changes the weight of an edge.
             */
 
-            void remove_edge(const Vertex& u, const Vertex& v);
+            virtual void remove_edge(const Vertex& u, const Vertex& v) = 0;
             /*
             Removes an edge from the graph. A warning is raised if
             attempting to remove an edge that doesn't exist.
@@ -103,24 +103,24 @@ namespace cygraph {
                 }
             }
 
-            bool has_edge(const Vertex& u, const Vertex& v);
+            virtual bool has_edge(const Vertex& u, const Vertex& v) = 0;
             /*
             Returns whether or not a given edge is in the graph.
             If one or more of the vertices are not in the graph,
             false is returned.
             */
 
-            bool has_vertex(const Vertex& v);
+            virtual bool has_vertex(const Vertex& v) = 0;
             /*
             Returns whether or not a certain vertex is in the graph.
             */
 
-            std::set<Vertex> get_children(const Vertex& v);
+            virtual std::set<Vertex> get_children(const Vertex& v) = 0;
             /*
             Returns the children of a given vertex in the graph.
             */
 
-            std::set<Vertex> get_parents(const Vertex& v);
+            virtual std::set<Vertex> get_parents(const Vertex& v) = 0;
             /*
             Returns the parents of a given vertex in the graph. This is
             equivalent to get_children in undirected graphs.

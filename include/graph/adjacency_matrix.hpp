@@ -51,7 +51,7 @@ namespace cygraph {
                 }
             }
 
-            EdgeWeight get_edge_weight(const Vertex& u, const Vertex &v) {
+            EdgeWeight get_edge_weight(const Vertex& u, const Vertex &v) override {
                 /*
                 Returns the weight of an edge.
                 */
@@ -61,7 +61,7 @@ namespace cygraph {
                 return *adjacency_matrix[u_index][v_index];
             }
 
-            void add_vertex(const Vertex& v) {
+            void add_vertex(const Vertex& v) override {
                 /*
                 Adds a vertex to the graph.
                 */
@@ -84,7 +84,7 @@ namespace cygraph {
                     vector<EdgeWeight*>(this->n_vertices, nullptr));
             }
 
-            void add_vertices(Vertex vertices[], int n_vertices) {
+            void add_vertices(Vertex vertices[], int n_vertices) override {
                 /*
                 Adds an array of vertices to the graph.
                 */
@@ -119,7 +119,7 @@ namespace cygraph {
                     new_rows + n_vertices);
             }
 
-            void remove_vertex(const Vertex& v) {
+            void remove_vertex(const Vertex& v) override {
                 /*
                 Removes a vertex from the graph.
                 */
@@ -144,7 +144,7 @@ namespace cygraph {
             }
 
             void set_edge_weight(const Vertex& u, const Vertex& v,
-                    EdgeWeight weight) {
+                    EdgeWeight weight) override {
                 /*
                 Adds an edge to the graph.
                 */
@@ -158,7 +158,7 @@ namespace cygraph {
                 }
             }
 
-            void remove_edge(const Vertex &u, const Vertex &v) {
+            void remove_edge(const Vertex &u, const Vertex &v) override {
                 /*
                 Removes an edge from the graph. A warning is raised if
                 attempting to remove an edge that doesn't exist.
@@ -177,7 +177,7 @@ namespace cygraph {
                 }
             }
 
-            bool has_edge(const Vertex& u, const Vertex& v) {
+            bool has_edge(const Vertex& u, const Vertex& v) override {
                 /*
                 Returns whether or not a given edge is in the graph.
                 If one or more of the vertices are not in the graph,
@@ -192,7 +192,7 @@ namespace cygraph {
                 }
             }
 
-            bool has_vertex(const Vertex& v) {
+            bool has_vertex(const Vertex& v) override {
                 /*
                 Returns whether or not a certain vertex is in the graph.
                 */
@@ -200,7 +200,7 @@ namespace cygraph {
                     v) != this->vertices.end();
             }
 
-            std::set<Vertex> get_children(const Vertex& v) {
+            std::set<Vertex> get_children(const Vertex& v) override {
                 /*
                 Returns the children of a given vertex in the graph.
                 In an undirected graph, this is equivalent to finding
@@ -221,7 +221,7 @@ namespace cygraph {
                 return children;               
             }
 
-            std::set<Vertex> get_parents(const Vertex &v) {
+            std::set<Vertex> get_parents(const Vertex &v) override {
                 /*
                 Returns the parents of a given vertex in the graph. This
                 is equivalent to get_children in undirected graphs.
