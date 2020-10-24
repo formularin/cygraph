@@ -3,8 +3,8 @@ A general graph class. Meant to be inherited. No real graph theory
 functionality.
 */
 
-#ifndef CYGRAPH_GRAPH_HPP_
-#define CYGRAPH_GRAPH_HPP_
+#ifndef CYGRAPH_GRAPH_HPP
+#define CYGRAPH_GRAPH_HPP
 
 #include <algorithm>
 #include <any>
@@ -28,12 +28,12 @@ namespace cygraph {
             bool directed;
             int n_vertices;
 
-            int get_vertex_int(Vertex& v) {
+            int get_vertex_int(const Vertex& v) {
                 if ( std::find(vertices.begin(), vertices.end(), v)
                      != vertices.begin() ) {
                     return vertex_indices[v];
                 } else {
-                    throw std::invalid_argument("Vertex not in graph.")
+                    throw std::invalid_argument("Vertex not in graph.");
                 }
             }
 
@@ -52,12 +52,12 @@ namespace cygraph {
                 return vertices;
             }
 
-            EdgeWeight get_edge_weight(Vertex& u, Vertex& v);
+            EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v);
             /*
             Returns the weight of an edge.
             */
 
-            void add_vertex(Vertex& v);
+            void add_vertex(const Vertex& v);
             /*
             Adds a vertex to the graph.
             */
@@ -67,17 +67,18 @@ namespace cygraph {
             Adds an array of vertices to the graph.
             */
 
-            void remove_vertex(Vertex& v);
+            void remove_vertex(const Vertex& v);
             /*
             Removes a vertex from the graph.
             */
 
-            void set_edge_weight(Vertex& u, Vertex& v, EdgeWeight weight);
+            void set_edge_weight(const Vertex& u, const Vertex& v,
+                EdgeWeight weight);
             /*
             Changes the weight of an edge.
             */
 
-            void remove_edge(Vertex& u, Vertex& v);
+            void remove_edge(const Vertex& u, const Vertex& v);
             /*
             Removes an edge from the graph. A warning is raised if
             attempting to remove an edge that doesn't exist.
@@ -89,13 +90,12 @@ namespace cygraph {
                 Sets the weights of an array of edges in the graph.
                 */
                 std::set<Vertex[2]> set_edges;
-                Vertex edge[2];
-                for ( edge : edges ) {
+                for ( Vertex edge[2] : edges ) {
                     try {
                         set_edge_weight(edge[0], edge[1]);
                         set_edges.insert(edge);
                     } catch ( std::invalid_argument e ) {
-                        for ( edge : set_edges ) {
+                        for ( Vertex edge[2] : set_edges ) {
                             remove_edge(edge[0], edge[1]);
                             throw e;
                         }
@@ -103,24 +103,24 @@ namespace cygraph {
                 }
             }
 
-            bool has_edge(Vertex& u, Vertex& v);
+            bool has_edge(const Vertex& u, const Vertex& v);
             /*
             Returns whether or not a given edge is in the graph.
             If one or more of the vertices are not in the graph,
             false is returned.
             */
 
-            bool has_vertex(Vertex& v);
+            bool has_vertex(const Vertex& v);
             /*
             Returns whether or not a certain vertex is in the graph.
             */
 
-            std::set<Vertex> get_children(Vertex& v);
+            std::set<Vertex> get_children(const Vertex& v);
             /*
             Returns the children of a given vertex in the graph.
             */
 
-            std::set<Vertex> get_parents(Vertex& v);
+            std::set<Vertex> get_parents(const Vertex& v);
             /*
             Returns the parents of a given vertex in the graph. This is
             equivalent to get_children in undirected graphs.

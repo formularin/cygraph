@@ -2,8 +2,8 @@
 An implementation of the graph data structure using an adjacency matrix.
 */
 
-#ifndef CYGRAPH_ADJACENCY_MATRIX_HPP_
-#define CYGRAPH_ADJACENCY_MATRIX_HPP_
+#ifndef CYGRAPH_ADJACENCY_MATRIX_HPP
+#define CYGRAPH_ADJACENCY_MATRIX_HPP
 
 #include <stdexcept>
 #include <string>
@@ -25,6 +25,12 @@ namespace cygraph {
             vector<vector<EdgeWeight*>> adjacency_matrix;
 
         public:
+            AdjacencyMatrixGraph() {
+                /*
+                Default constructor.
+                */
+            }
+
             AdjacencyMatrixGraph(bool directed,
                     vector<Vertex>& vertices) {
                 /*
@@ -41,11 +47,11 @@ namespace cygraph {
                 for ( int i = 0; i < this->n_vertices; i++ ) {
                     this->vertex_indices[this->vertices[i]] = i;
                     adjacency_matrix.emplace_back(
-                        vector<Vertex>(this->n_vertices, nullptr));
+                        vector<EdgeWeight*>(this->n_vertices, nullptr));
                 }
             }
 
-            EdgeWeight get_edge_weight(Vertex& u, Vertex &v) {
+            EdgeWeight get_edge_weight(const Vertex& u, const Vertex &v) {
                 /*
                 Returns the weight of an edge.
                 */
@@ -55,14 +61,14 @@ namespace cygraph {
                 return *adjacency_matrix[u_index][v_index];
             }
 
-            void add_vertex(Vertex& v) {
+            void add_vertex(const Vertex& v) {
                 /*
                 Adds a vertex to the graph.
                 */
 
                 if ( std::find(this->vertices.begin(), this->vertices.end(), v)
                         != this->vertices.end() ) {
-                    throw std::invalid_argument("Vertex is already in graph.")
+                    throw std::invalid_argument("Vertex is already in graph.");
                 }
 
                 this->vertices.push_back(v);
@@ -75,7 +81,7 @@ namespace cygraph {
                 }
                 // Add new row to adjacency matrix.
                 adjacency_matrix.emplace_back(
-                    vector<Vertex>(this->n_vertices, nullptr));
+                    vector<EdgeWeight*>(this->n_vertices, nullptr));
             }
 
             void add_vertices(Vertex vertices[], int n_vertices) {
@@ -113,38 +119,38 @@ namespace cygraph {
                     new_rows + n_vertices);
             }
 
-            void remove_vertex(Vertex& v) {
+            void remove_vertex(const Vertex& v) {
                 /*
                 Removes a vertex from the graph.
                 */
 
-                int v_index = get_vertex_int(v);
+                int v_index = this->get_vertex_int(v);
 
                 // Remove row from adjacency matrix.
                 auto v_iter_row = adjacency_matrix.begin() + v_index;
                 adjacency_matrix.erase(v_iter_row, v_iter_row + 1);
 
                 // Remove column from adjacency matrix.
-                auto v_iter_col;
                 for ( int i = 0; i < this->n_vertices; i++ ) {
-                    v_iter_col = adjacency_matrix[i].begin() + v_index;
+                    auto v_iter_col = adjacency_matrix[i].begin() + v_index;
                     adjacency_matrix[i].erase(v_iter_col, v_iter_col + 1);
                 }
 
                 auto v_iter_vertices = std::find(this->vertices.begin(),
-                    this->vertices.end(), v)
+                    this->vertices.end(), v);
                 this->vertices.erase(v_iter_vertices, v_iter_vertices + 1);
                 this->vertex_indices.erase(v);
                 this->n_vertices--;
             }
 
-            void set_edge_weight(Vertex& u, Vertex& v, EdgeWeight weight) {
+            void set_edge_weight(const Vertex& u, const Vertex& v,
+                    EdgeWeight weight) {
                 /*
                 Adds an edge to the graph.
                 */
 
-                int u_index = get_vertex_int(u);
-                int v_index = get_vertex_int(v);
+                int u_index = this->get_vertex_int(u);
+                int v_index = this->get_vertex_int(v);
 
                 adjacency_matrix[u_index][v_index] = &weight;
                 if ( !this->directed ) {
@@ -152,14 +158,14 @@ namespace cygraph {
                 }
             }
 
-            void remove_edge(Vertex &u, Vertex &v) {
+            void remove_edge(const Vertex &u, const Vertex &v) {
                 /*
                 Removes an edge from the graph. A warning is raised if
                 attempting to remove an edge that doesn't exist.
                 */
 
-                int u_index = get_vertex_int(u);
-                int v_index = get_vertex_int(v);
+                int u_index = this->get_vertex_int(u);
+                int v_index = this->get_vertex_int(v);
 
                 if ( adjacency_matrix[u_index][v_index] == nullptr ) {
                     std::cerr << "Attempting to remove edge that does not exist." << std::endl;
@@ -171,24 +177,22 @@ namespace cygraph {
                 }
             }
 
-            bool has_edge(Vertex& u, Vertex& v) {
+            bool has_edge(const Vertex& u, const Vertex& v) {
                 /*
                 Returns whether or not a given edge is in the graph.
                 If one or more of the vertices are not in the graph,
                 false is returned.
                 */
-
                 try {
-                    int u_index = get_vertex_int(u);
-                    int v_index = get_vertex_int(v);
+                    int u_index = this->get_vertex_int(u);
+                    int v_index = this->get_vertex_int(v);
+                    return adjacency_matrix[u_index][v_index] != nullptr;
                 } catch ( std::invalid_argument e ) {
                     return false;
                 }
-
-                return adjacency_matrix[u_index][v_index] != nullptr;
             }
 
-            bool has_vertex(Vertex& v) {
+            bool has_vertex(const Vertex& v) {
                 /*
                 Returns whether or not a certain vertex is in the graph.
                 */
@@ -196,7 +200,7 @@ namespace cygraph {
                     v) != this->vertices.end();
             }
 
-            std::set<Vertex> get_children(Vertex& v) {
+            std::set<Vertex> get_children(const Vertex& v) {
                 /*
                 Returns the children of a given vertex in the graph.
                 In an undirected graph, this is equivalent to finding
@@ -204,7 +208,7 @@ namespace cygraph {
                 */
 
                 std::set<Vertex> children;
-                int v_index = get_vertex_int(v);
+                int v_index = this->get_vertex_int(v);
 
                 for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
                     if ( u_index != v_index ) {
@@ -217,14 +221,14 @@ namespace cygraph {
                 return children;               
             }
 
-            std::set<Vertex> get_parents(Vertex &v) {
+            std::set<Vertex> get_parents(const Vertex &v) {
                 /*
                 Returns the parents of a given vertex in the graph. This
                 is equivalent to get_children in undirected graphs.
                 */
 
                 std::set<Vertex> parents;
-                int v_index = get_vertex_int(u);
+                int v_index = this->get_vertex_int(v);
 
                 for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
                     if ( u_index != v_index ) {
