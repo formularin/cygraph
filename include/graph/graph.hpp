@@ -7,7 +7,6 @@ functionality.
 #define CYGRAPH_GRAPH_HPP
 
 #include <algorithm>
-#include <any>
 #include <set>
 #include <stdexcept>
 #include <string>

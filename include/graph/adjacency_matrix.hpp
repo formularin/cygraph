@@ -32,7 +32,7 @@ namespace cygraph {
             }
 
             AdjacencyMatrixGraph(bool directed,
-                    vector<Vertex>& vertices) {
+                    const vector<Vertex>& vertices) {
                 /*
                 Class constructor.
                 */
@@ -76,7 +76,7 @@ namespace cygraph {
                 this->n_vertices++;
 
                 // Add new column to adjacency matrix.
-                for ( vector<Vertex>& row : adjacency_matrix ) {
+                for ( vector<EdgeWeight*>& row : adjacency_matrix ) {
                     row.push_back(nullptr);
                 }
                 // Add new row to adjacency matrix.
@@ -89,9 +89,11 @@ namespace cygraph {
                 Adds an array of vertices to the graph.
                 */
 
-                for ( Vertex& v : vertices ) {
-                    if (    std::find(this->vertices.begin(),
-                                this->vertices.end(), v)
+                Vertex v;
+                for ( int i = 0; i < n_vertices; i++ ) {
+                    v = vertices[i];
+                    if ( std::find(this->vertices.begin(),
+                                   this->vertices.end(), v)
                             != this->vertices.end() ) {
 
                         throw std::invalid_argument("Vertex is already in graph.");
@@ -108,7 +110,7 @@ namespace cygraph {
 
                 // Add new columns to adjacency matrix.
                 EdgeWeight* new_edge_weights[n_vertices] = { nullptr };
-                for ( vector<Vertex>& row : adjacency_matrix ) {
+                for ( vector<EdgeWeight*>& row : adjacency_matrix ) {
                     row.insert(row.end(), new_edge_weights,
                         new_edge_weights + n_vertices);
                 }
