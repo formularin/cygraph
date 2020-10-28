@@ -1,5 +1,5 @@
 /*
-Tests the Graph classes.
+Test suites required for testing the graph classes.
 */
 
 #include <iostream>

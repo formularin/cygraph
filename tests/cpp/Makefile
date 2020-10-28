@@ -1,19 +1,22 @@
-COMPILER := g++
-OPTIONS := -std=c++14
+CC := g++
+STD := -std=c++14
 
-all: setup bin/test_algorithms bin/test_graph
+all: setup bin/test_cygraph
 
 setup:
 	mkdir -p build bin
 
-bin/test_algorithms: script/test_algorithms.cpp build/utils.o
-	$(COMPILER) $(OPTIONS) script/test_algorithms.cpp build/*.o -o bin/test_algorithms
+bin/test_cygraph: build/utils.o build/test_algorithms.o build/test_graph.o script/test_cygraph.cpp
+	$(CC) $(STD) script/test_cygraph.cpp build/*.o -o bin/test_cygraph
 
-bin/test_graph: script/test_graph.cpp build/catch.o build/utils.o
-	$(COMPILER) $(OPTIONS) script/test_graph.cpp build/*.o -o bin/test_graph
+build/test_algorithms.o: src/test_algorithms.cpp build/utils.o
+	$(CC) $(STD) -c src/test_algorithms.cpp build/utils.o -o build/test_algorithms.o
+
+build/test_graph.o: src/test_graph.cpp build/catch.o build/utils.o
+	$(CC) $(STD) -c src/test_graph.cpp build/utils.o -o build/test_graph.o
 
 build/utils.o: include/utils.hpp
-	$(COMPILER) $(OPTIONS) -c include/utils.hpp -o build/utils.o
+	$(CC) $(STD) -c include/utils.hpp -o build/utils.o
 
 clean:
 	rm -rf build bin
