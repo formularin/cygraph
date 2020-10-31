@@ -2,6 +2,9 @@
 Test suites required for testing the graph classes.
 */
 
+#ifndef TEST_GRAPH_HPP
+#define TEST_GRAPH_HPP
+
 #include <iostream>
 #include <string>
 #include <tuple>
@@ -13,3 +16,5 @@ Test suites required for testing the graph classes.
 
 using namespace cygraph;
 using cygraph_utils::UserDefinedObject;
+
+#endif

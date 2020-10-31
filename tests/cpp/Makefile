@@ -1,22 +1,23 @@
-CC := g++
-STD := -std=c++14
+COMPILER := g++
+STD := -std=c++11
+CPPUNIT := -Wl,--no-as-needed -lcppunit
 
 all: setup bin/test_cygraph
 
 setup:
 	mkdir -p build bin
 
-bin/test_cygraph: build/utils.o build/test_algorithms.o build/test_graph.o script/test_cygraph.cpp
-	$(CC) $(STD) script/test_cygraph.cpp build/*.o -o bin/test_cygraph
+bin/test_cygraph: build/test_algorithms.o build/test_graph.o script/test_cygraph.cpp
+	$(COMPILER) $(STD) $(CPPUNIT) script/test_cygraph.cpp build/test_*.o -o bin/test_cygraph
 
-build/test_algorithms.o: src/test_algorithms.cpp build/utils.o
-	$(CC) $(STD) -c src/test_algorithms.cpp build/utils.o -o build/test_algorithms.o
+build/test_algorithms.o: src/test_algorithms.cpp
+	$(COMPILER) $(STD) $(CPPUNIT) -c src/test_algorithms.cpp -o build/test_algorithms.o
 
-build/test_graph.o: src/test_graph.cpp build/catch.o build/utils.o
-	$(CC) $(STD) -c src/test_graph.cpp build/utils.o -o build/test_graph.o
+build/test_graph.o: src/test_graph.cpp
+	$(COMPILER) $(STD) $(CPPUNIT) -c src/test_graph.cpp -o build/test_graph.o
 
-build/utils.o: include/utils.hpp
-	$(CC) $(STD) -c include/utils.hpp -o build/utils.o
+build/utils.o: src/utils.cpp
+	$(COMPILER) $(STD) $(CPPUNIT) -c src/utils.cpp -o build/utils.o
 
 clean:
 	rm -rf build bin

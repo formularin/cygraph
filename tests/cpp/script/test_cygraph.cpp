@@ -3,7 +3,6 @@ Runs all C++ Cygraph unit tests.
 */
 
 #include <cppunit/ui/text/TestRunner.h>
-#include <cppunit/extensions/TestFactoryRegistry.h>
 
 #include "../include/test_algorithms.hpp"
 #include "../include/test_graph.hpp"
@@ -11,8 +10,6 @@ Runs all C++ Cygraph unit tests.
 
 int main( int argc, char** argv ) {
     CppUnit::TextUi::TestRunner runner;
-    CppUnit::TestFactoryRegistry &registry = 
-        CppUnit::TestFactoryRegistry::getRegistry();
-    runner.addTest(registry.makeTest());
+    runner.addTest( TestArticulationPoints::suite() );
     runner.run();
 }
