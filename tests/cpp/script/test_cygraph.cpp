@@ -10,6 +10,16 @@ Runs all C++ Cygraph unit tests.
 
 int main( int argc, char** argv ) {
     CppUnit::TextUi::TestRunner runner;
+
+    // Algorithms
     runner.addTest( TestArticulationPoints::suite() );
+    runner.addTest( TestComponents::suite() );
+    runner.addTest( TestPartitioning::suite() );
+    runner.addTest( TestShortestPath::suite() );
+
+    // Graph classes
+    runner.addTest( TestAdjacencyMatrixGraph::suite() );
+    runner.addTest( TestAdjacencyListGraph::suite() );
+
     runner.run();
 }

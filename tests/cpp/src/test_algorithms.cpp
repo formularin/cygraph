@@ -2,6 +2,8 @@
 Implementation of algorithm test fixtures.
 */
 
+#include <cppunit/TestCaller.h>
+
 #include "../include/test_algorithms.hpp"
 #include "../include/test_graph.hpp"
 #include "../../../include/algorithms.hpp"

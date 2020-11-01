@@ -5,6 +5,7 @@ An implementation of the graph data structure using an adjacency matrix.
 #ifndef CYGRAPH_ADJACENCY_MATRIX_HPP
 #define CYGRAPH_ADJACENCY_MATRIX_HPP
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -148,7 +149,7 @@ namespace cygraph {
             void set_edge_weight(const Vertex& u, const Vertex& v,
                     EdgeWeight weight) override {
                 /*
-                Adds an edge to the graph.
+                Changes the weight of an edge.
                 */
 
                 int u_index = this->get_vertex_int(u);
