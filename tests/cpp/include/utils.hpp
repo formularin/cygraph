@@ -32,7 +32,7 @@ namespace cygraph_utils {
 // Override std::hash for UserDefinedObject
 namespace std {
     template <> struct hash<cygraph_utils::UserDefinedObject> {
-        std::size_t operator()(const cygraph_utils::UserDefinedObject& object) const;
+        size_t operator()(const cygraph_utils::UserDefinedObject& object) const;
     };
 }
 

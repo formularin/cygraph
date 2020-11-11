@@ -79,17 +79,14 @@ void TestAdjacencyMatrixGraph::test_edges() {
     // Adding boolean edges one at a time.
 
     directed_string.set_edge_weight("", "Mumbai", false);
-    directed_string.set_edge_weight("New York", "Beijing", true);
+    directed_string.set_edge_weight("New York", "Tokyo", true);
     directed_string.set_edge_weight("Mumbai", "", true);
-    // In the case of boolean graphs, edges with weight `false` should
-    // be considered non-existent just as they are with values of
-    // `nullptr`.
-    CPPUNIT_ASSERT( !directed_string.has_edge("", "Mumbai") );
-    CPPUNIT_ASSERT( directed_string.has_edge("New York", "Mumbai") );
+    // Edges with weight `false` should still exist.
+    CPPUNIT_ASSERT( directed_string.has_edge("", "Mumbai") );
     CPPUNIT_ASSERT( directed_string.has_edge("Mumbai", "") );
     // has_edge should return false and not raise an error when one of
     // the vertices is not in the graph.
-    CPPUNIT_ASSERT( !directed_string.has_edge("Beijing", "") );
+    CPPUNIT_ASSERT( !directed_string.has_edge("Tokyo", "") );
 
     // Adding float edges several at a time.
 
@@ -111,7 +108,7 @@ void TestAdjacencyMatrixGraph::test_edges() {
                                       {object_vals[0], object_vals[2]},
                                       {object_vals[1], object_vals[0]} };
     float edge_weights[3] = { 0.0f, -0.1f, 1.0f };
-    // directed_object.set_edge_weights(edges, edge_weights, 3);
+    directed_object.set_edge_weights(edges, edge_weights, 3);
     // All edges were added.
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[2]) );
