@@ -77,10 +77,14 @@ namespace cygraph {
             Removes a vertex from the graph.
             */
 
-            virtual void remove_vertices(Vertex vertices[], int n_vertices) = 0;
-            /*
-            Removes an array of vertices from the graph.
-            */
+            virtual void remove_vertices(Vertex vertices[], int n_vertices) {
+                /*
+                Removes an array of vertices from the graph.
+                */
+                for ( int i = 0; i < n_vertices; i++ ) {
+                    remove_vertex(vertices[i]);
+                }
+            }
 
             virtual void set_edge_weight(const Vertex& u, const Vertex& v,
                 EdgeWeight weight) = 0;

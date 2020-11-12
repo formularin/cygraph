@@ -153,15 +153,25 @@ namespace cygraph {
 
                 // Remove weights from edge_weights.
                 int neighbor_index;
-                for ( const Vertex& child : get_children(v) ) {
-                    neighbor_index = this->get_vertex_int(child);
-                    edge_weights.erase(
-                        std::pair<int, int>(v_index, neighbor_index));
-                }
-                for ( const Vertex& parent : get_parents(v) ) {
-                    neighbor_index = this->get_vertex_int(parent);
-                    edge_weights.erase(
-                        std::pair<int, int>(neighbor_index, v_index));
+                if ( this->directed ) {
+                    for ( const Vertex& child : get_children(v) ) {
+                        neighbor_index = this->get_vertex_int(child);
+                        edge_weights.erase(
+                            std::pair<int, int>(v_index, neighbor_index));
+                    }
+                    for ( const Vertex& parent : get_parents(v) ) {
+                        neighbor_index = this->get_vertex_int(parent);
+                        edge_weights.erase(
+                            std::pair<int, int>(neighbor_index, v_index));
+                    }
+                } else {
+                    for ( const Vertex& child : get_children(v) ) {
+                        neighbor_index = this->get_vertex_int(child);
+                        edge_weights.erase(
+                            std::pair<int, int>(v_index, neighbor_index));
+                        edge_weights.erase(
+                            std::pair<int, int>(neighbor_index, v_index));
+                    }
                 }
 
                 // Remove row from adjacency matrix.
@@ -180,12 +190,6 @@ namespace cygraph {
                 this->vertices.erase(v_iter_vertices, v_iter_vertices + 1);
                 this->vertex_indices.erase(v);
                 this->n_vertices--;
-            }
-
-            void remove_vertices(Vertex vertices[], int n_vertices) override {
-                /*
-                Removes an array of vertices from the graph.
-                */
             }
 
             void set_edge_weight(const Vertex& u, const Vertex& v,
