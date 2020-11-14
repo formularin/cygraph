@@ -22,8 +22,7 @@ using cygraph_utils::UserDefinedObject;
 // Sample values.
 const std::vector<int> int_vals = {-1, 0, 1, 7};
 const std::vector<float> float_vals = {-1.0f, -0.5f, 0.0f, 0.5f};
-const std::vector<std::string> string_vals = {"", "Mumbai", "New York",
-                                              "Tokyo"};
+const std::vector<std::string> string_vals = {"", "Mumbai", "New York", "Tokyo"};
 const std::vector<bool> bool_vals = {true, false, true, false};
 const std::vector<UserDefinedObject> object_vals = {
     UserDefinedObject(), UserDefinedObject(-2, 0),

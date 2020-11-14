@@ -6,6 +6,7 @@ Implementation of graph class test fixtures.
 #include <string>
 #include <stdexcept>
 #include <tuple>
+#include <unordered_set>
 #include <vector>
 #include <cppunit/TestCaller.h>
 
@@ -95,7 +96,10 @@ void TestAdjacencyMatrixGraph::test_edges() {
           {object_vals[1], object_vals[0]},
           {non_vertex, object_vals[0]} };
     float non_vertex_edge_weights[4] = { 0.0f, 0.1f, -1.0f, -1.0f };
-    CPPUNIT_ASSERT_THROW( directed_object.set_edge_weights(non_vertex_edges, non_vertex_edge_weights, 4), std::invalid_argument );
+    CPPUNIT_ASSERT_THROW(
+        directed_object.set_edge_weights(non_vertex_edges, non_vertex_edge_weights, 4),
+        std::invalid_argument
+    );
     // No edges were added.
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
@@ -180,6 +184,42 @@ void TestAdjacencyMatrixGraph::test_family() {
         - AdjacencyMatrixGraph::get_children
         - AdjacencyMatrixGraph::get_parents
     */
+
+    // DIRECTED GRAPHS
+
+    directed_int.set_edge_weight(-1, 0, 1);
+    directed_int.set_edge_weight(-1, 1, 1);
+    directed_int.set_edge_weight(-1, 7, 1);
+
+    // get_children
+
+    CPPUNIT_ASSERT( (directed_int.get_children(-1) == (std::unordered_set<int>) {0, 1, 7}) );
+    CPPUNIT_ASSERT( directed_int.get_children(0) == std::unordered_set<int>() );
+    CPPUNIT_ASSERT_THROW( directed_int.get_children(10), std::invalid_argument );
+
+    // get_parents
+
+    CPPUNIT_ASSERT( (directed_int.get_parents(0) == std::unordered_set<int> {-1}) );
+    CPPUNIT_ASSERT( directed_int.get_parents(-1) == std::unordered_set<int>() );
+
+    // UNDIRECTED GRAPHS
+
+    undirected_string.set_edge_weight("Mumbai", "New York", true);
+    undirected_string.set_edge_weight("Mumbai", "Tokyo", true);
+    undirected_string.set_edge_weight("Mumbai", "Mumbai", true);
+
+    std::unordered_set<std::string> mumbai_neighbors = {"Mumbai", "New York", "Tokyo"};
+    std::unordered_set<std::string> new_york_neighbors = {"Mumbai"};
+
+    // get_children
+
+    CPPUNIT_ASSERT( (undirected_string.get_children("Mumbai") == mumbai_neighbors) );
+    CPPUNIT_ASSERT( (undirected_string.get_children("New York") == new_york_neighbors) );
+
+    // get_parents
+
+    CPPUNIT_ASSERT( (undirected_string.get_parents("Mumbai") == mumbai_neighbors) );
+    CPPUNIT_ASSERT( (undirected_string.get_parents("New York") == new_york_neighbors) );
 }
 
 

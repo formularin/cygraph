@@ -268,10 +268,8 @@ namespace cygraph {
                 int v_index = this->get_vertex_int(v);
 
                 for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
-                    if ( u_index != v_index ) {
-                        if ( adjacency_matrix[u_index][v_index] != nullptr ) {
-                            children.insert(this->vertices[u_index]);
-                        }
+                    if ( adjacency_matrix[v_index][u_index] != nullptr ) {
+                        children.insert(this->vertices[u_index]);
                     }
                 }
 
@@ -288,10 +286,8 @@ namespace cygraph {
                 int v_index = this->get_vertex_int(v);
 
                 for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
-                    if ( u_index != v_index ) {
-                        if ( adjacency_matrix[v_index][u_index] != nullptr ) {
-                            parents.insert(this->vertices[u_index]);
-                        }
+                    if ( adjacency_matrix[u_index][v_index] != nullptr ) {
+                        parents.insert(this->vertices[u_index]);
                     }
                 }
 
