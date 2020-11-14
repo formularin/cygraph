@@ -84,9 +84,6 @@ void TestAdjacencyMatrixGraph::test_edges() {
     // Edges with weight `false` should still exist.
     CPPUNIT_ASSERT( directed_string.has_edge("", "Mumbai") );
     CPPUNIT_ASSERT( directed_string.has_edge("Mumbai", "") );
-    // has_edge should return false and not raise an error when one of
-    // the vertices is not in the graph.
-    CPPUNIT_ASSERT( !directed_string.has_edge("Tokyo", "") );
 
     // Adding float edges several at a time.
 
@@ -135,6 +132,45 @@ void TestAdjacencyMatrixGraph::test_edges() {
     // All edges were removed.
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
+
+    // UNDIRECTED GRAPHS
+
+    // Adding int edges one at a time.
+
+    undirected_int.set_edge_weight(-1, 0, 1);
+    undirected_int.set_edge_weight(-1, 7, 0);
+    CPPUNIT_ASSERT( undirected_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(0, -1) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(-1, 7) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(-1, 0) == 1 );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, -1) == 1 );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(-1, 7) == 0 );
+
+    // Removing int edges one at a time.
+
+    undirected_int.remove_edge(-1, 0);
+    CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT( !undirected_int.has_edge(0, -1) );
+    CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(-1, 0), std::invalid_argument );
+    // Removing an edge that doesn't exist should raise a warning, not throw an error.
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
+
+    // Adding float edges several at a time.
+    UserDefinedObject undirected_edges[3][2] = { {object_vals[0], object_vals[1]},
+                                                 {object_vals[0], object_vals[2]},
+                                                 {object_vals[1], object_vals[2]} };
+    float undirected_edge_weights[3] = {0.0f, -1.0f, 0.5f};
+    undirected_object.set_edge_weights(undirected_edges, undirected_edge_weights, 3);
+    // All edges were added.
+    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[0]) );
+    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[2]) );
+    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[2]) );
+
+    // Changing edge weight values.
+    undirected_object.set_edge_weight(object_vals[0], object_vals[1], 3.0f);
+    CPPUNIT_ASSERT( undirected_object.get_edge_weight(object_vals[0], object_vals[1]) == 3.0f );
+    CPPUNIT_ASSERT( undirected_object.get_edge_weight(object_vals[1], object_vals[0]) == 3.0f );
 }
 
 

@@ -243,15 +243,10 @@ namespace cygraph {
                 If one or more of the vertices are not in the graph,
                 false is returned.
                 */
-                try {
-                    int u_index = this->get_vertex_int(u);
-                    int v_index = this->get_vertex_int(v);
-                    EdgeWeight* weight_ptr = adjacency_matrix[u_index][v_index];
-                    return weight_ptr != nullptr;
-                } catch ( std::invalid_argument e ) {
-                    std::cerr << "Vertex not in graph" << std::endl;
-                    return false;
-                }
+                int u_index = this->get_vertex_int(u);
+                int v_index = this->get_vertex_int(v);
+                EdgeWeight* weight_ptr = adjacency_matrix[u_index][v_index];
+                return weight_ptr != nullptr;
             }
 
             bool has_vertex(const Vertex& v) override {
