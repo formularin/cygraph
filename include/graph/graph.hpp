@@ -6,10 +6,7 @@ functionality.
 #ifndef CYGRAPH_GRAPH_HPP
 #define CYGRAPH_GRAPH_HPP
 
-#include <iostream>
-
 #include <algorithm>
-#include <array>
 #include <unordered_set>
 #include <stdexcept>
 #include <string>
@@ -17,6 +14,9 @@ functionality.
 #include <vector>
 
 
+using std::pair;
+using std::unordered_map;
+using std::unordered_set;
 using std::vector;
 
 
@@ -28,9 +28,7 @@ namespace cygraph {
         A generic Graph class. Not to be instantiated.
         */
         protected:
-            vector<Vertex> vertices;
             bool directed;
-            int n_vertices;
 
         public:
             bool get_directed() {
@@ -38,13 +36,6 @@ namespace cygraph {
                 Returns whether or not the graph is directed.
                 */
                 return directed;
-            }
-
-            vector<Vertex> get_vertices() {
-                /*
-                Returns a vector containing the vertices in the graph.
-                */
-                return vertices;
             }
 
             virtual EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v) = 0;
@@ -57,7 +48,7 @@ namespace cygraph {
             Adds a vertex to the graph.
             */
 
-            virtual void add_vertices(Vertex vertices[], int n_vertices) = 0;
+            virtual void add_vertices(unordered_set<Vertex> vertices) = 0;
             /*
             Adds an array of vertices to the graph.
             */
@@ -67,7 +58,7 @@ namespace cygraph {
             Removes a vertex from the graph.
             */
 
-            virtual void remove_vertices(Vertex vertices[], int n_vertices) {
+            virtual void remove_vertices(unordered_set<Vertex> vertices) {
                 /*
                 Removes an array of vertices from the graph.
                 */
@@ -76,27 +67,27 @@ namespace cygraph {
                 }
             }
 
-            virtual void set_edge_weight(const Vertex& u, const Vertex& v,
-                EdgeWeight weight) = 0;
+            virtual void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) = 0;
             /*
             Changes the weight of an edge.
             */
 
-            void set_edge_weights(Vertex edges[][2], EdgeWeight weights[],
-                    int n_edges) {
+            void set_edge_weights(unordered_set<pair<pair<Vertex, Vertex>, EdgeWeight>> edges) {
                 /*
                 Sets the weights of an array of edges in the graph.
                 */
-                vector<std::array<Vertex, 2>> set_edges;
-                std::array<Vertex, 2> edge;
-                for ( int i = 0; i < n_edges; i++ ) {
+                unordered_set<pair<Vertex, Vertex>> set_edges;
+                pair<Vertex, Vertex> edge_vertices;
+                EdgeWeight weight;
+                for ( pair<pair<Vertex, Vertex>, EdgeWeight> edge : edges ) {
+                    edge_vertices = pair.first;
+                    weight = pair.second;
                     try {
-                        set_edge_weight(edges[i][0], edges[i][1], weights[i]);
-                        std::copy(std::begin(edges[i]), std::end(edges[i]), edge.begin());
-                        set_edges.push_back(edge);
+                        set_edge_weight(edge_vertices.first, edge_vertices.second, weight);
+                        set_edges.insert(edge_vertices);
                     } catch ( std::invalid_argument e ) {
-                        for ( std::array<Vertex, 2> removal_edge : set_edges ) {
-                            remove_edge(removal_edge[0], removal_edge[1]);
+                        for ( pair<Vertex, Vertex> removal_edge : set_edges ) {
+                            remove_edge(removal_edge);
                         }
                         throw e;
                     }
@@ -109,26 +100,19 @@ namespace cygraph {
             attempting to remove an edge that doesn't exist.
             */
 
-            void remove_edges(Vertex edges[][2], int n_edges) {
+            void remove_edges(unordered_set<pair<Vertex, Vertex>> edges) {
                 /*
                 Removes an array of edges from the graph. A warning is
                 raised if attempting to remove an edge that doesn't exist.
                 */
-                vector<std::array<Vertex, 2>> removed_edges;
-                std::array<Vertex, 2> edge;
-                vector<EdgeWeight> removed_edge_weights;
-                EdgeWeight edge_weight;
-                for ( int i = 0; i < n_edges; i++ ) {
+                unordered_set<pair<pair<Vertex, Vertex>, EdgeWeight>> removed_edges;
+                for ( pair<Vertex, Vertex> edge : edges ) {
                     try {
-                        edge_weight = get_edge_weight(edges[i][0], edges[i][1]);
-                        remove_edge(edges[i][0], edges[i][1]);
-                        std::copy(std::begin(edges[i]), std::end(edges[i]), edge.begin());
-                        removed_edges.push_back(edge);
-                        removed_edge_weights.push_back(edge_weight);
+                        remove_edge(edge.first, edge.second, weight);
                     } catch ( std::invalid_argument e ) {
-                        for ( int i = 0; i < removed_edges.size(); i++ ) {
-                            set_edge_weight(removed_edges[i][0],
-                                removed_edges[i][1], removed_edge_weights[i]);
+                        for ( pair<pair<Vertex, Vertex>, Edge> readdition_edge : removed_edges ) {
+                            set_edge_weight(readdition_edge.first.first,
+                                readdition_edge.first.second, readdition_edge.second);
                         }
                         throw e;
                     }
