@@ -29,18 +29,8 @@ namespace cygraph {
         */
         protected:
             vector<Vertex> vertices;
-            std::unordered_map<Vertex, int> vertex_indices;
             bool directed;
             int n_vertices;
-
-            int get_vertex_int(const Vertex& v) {
-                if ( std::find(vertices.begin(), vertices.end(), v)
-                     != vertices.end() ) {
-                    return vertex_indices[v];
-                } else {
-                    throw std::invalid_argument("Vertex not in graph.");
-                }
-            }
 
         public:
             bool get_directed() {
