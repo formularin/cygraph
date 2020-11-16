@@ -5,6 +5,7 @@ An implementation of the graph data structure using an adjacency matrix.
 #ifndef CYGRAPH_ADJACENCY_MATRIX_HPP
 #define CYGRAPH_ADJACENCY_MATRIX_HPP
 
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -36,13 +37,17 @@ namespace cygraph {
 
     template <class Vertex, class EdgeWeight>
     class AdjacencyMatrixGraph: public cygraph::Graph<Vertex, EdgeWeight> {
+        /*
+        A graph class implemented using an adjacency matrix. Vertex and EdgeWeight types must have
+        std::hash overriden for them.
+        */
 
         protected:
             vector<vector<EdgeWeight*>> adjacency_matrix;
             // Exists so that temporary memory addresses are not saved in adjacency matrix. All 
             // adjacency matrix values are pointing to this vector.
-            std::unordered_map<pair<int, int>, EdgeWeight> edge_weights;
-            std::unordered_map<Vertex, int> vertex_indices;
+            unordered_map<pair<int, int>, EdgeWeight> edge_weights;
+            unordered_map<Vertex, int> vertex_indices;
             vector<Vertex> vertices;
 
             int get_vertex_int(const Vertex& v) {
@@ -67,9 +72,9 @@ namespace cygraph {
                 */
 
                 this->directed = directed;
-                vertices = vertices;
+                this->vertices = vertices;
 
-                n_vertices = vertices.size();
+                int n_vertices = vertices.size();
 
                 // Initialize adjacency matrix and vertex indices
                 // dictionary.
@@ -140,8 +145,9 @@ namespace cygraph {
                 this->vertices.insert(this->vertices.end(), vertices.begin(), vertices.end());
                 // Update vertex indices map.
                 int n_vertices = this->vertices.size();
-                for ( int i = 0; i < n_vertices; i++ ) {
-                    vertex_indices[vertices[i]] = n_vertices + i;
+                for ( Vertex v : vertices ) {
+                    vertex_indices[v] = n_vertices;
+                    n_vertices++;
                 }
 
                 // Add new columns to adjacency matrix.
@@ -152,7 +158,7 @@ namespace cygraph {
                 }
                 // Add new rows to adjacency matrix.
                 vector<EdgeWeight*> new_rows[n_vertices] = 
-                    { vector<EdgeWeight*>(this->n_vertices, nullptr) };
+                    { vector<EdgeWeight*>(n_vertices, nullptr) };
                 adjacency_matrix.insert(adjacency_matrix.end(), new_rows,
                     new_rows + n_vertices);
             }
@@ -188,7 +194,7 @@ namespace cygraph {
                 adjacency_matrix.erase(v_iter_row, v_iter_row + 1);
 
                 // Remove column from adjacency matrix.
-                for ( int i = 0; i < this->n_vertices; i++ ) {
+                for ( int i = 0; i < vertices.size(); i++ ) {
                     auto v_iter_col = adjacency_matrix[i].begin() + v_index;
                     adjacency_matrix[i].erase(v_iter_col, v_iter_col + 1);
                 }
@@ -198,7 +204,6 @@ namespace cygraph {
                     vertices.end(), v);
                 vertices.erase(v_iter_vertices, v_iter_vertices + 1);
                 vertex_indices.erase(v);
-                this->n_vertices--;
             }
 
             void set_edge_weight(const Vertex& u, const Vertex& v,
@@ -263,17 +268,17 @@ namespace cygraph {
                     v) != vertices.end();
             }
 
-            std::unordered_set<Vertex> get_children(const Vertex& v) override {
+            unordered_set<Vertex> get_children(const Vertex& v) override {
                 /*
                 Returns the children of a given vertex in the graph.
                 In an undirected graph, this is equivalent to finding
                 the "neighbors" of a vertex.
                 */
 
-                std::unordered_set<Vertex> children;
+                unordered_set<Vertex> children;
                 int v_index = get_vertex_int(v);
 
-                for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
+                for ( int u_index = 0; u_index < this->vertices.size(); u_index++ ) {
                     if ( adjacency_matrix[v_index][u_index] != nullptr ) {
                         children.insert(vertices[u_index]);
                     }
@@ -282,16 +287,16 @@ namespace cygraph {
                 return children;               
             }
 
-            std::unordered_set<Vertex> get_parents(const Vertex& v) override {
+            unordered_set<Vertex> get_parents(const Vertex& v) override {
                 /*
                 Returns the parents of a given vertex in the graph. This
                 is equivalent to get_children in undirected graphs.
                 */
 
-                std::unordered_set<Vertex> parents;
+                unordered_set<Vertex> parents;
                 int v_index = get_vertex_int(v);
 
-                for ( int u_index = 0; u_index < this->n_vertices; u_index++ ) {
+                for ( int u_index = 0; u_index < this->vertices.size(); u_index++ ) {
                     if ( adjacency_matrix[u_index][v_index] != nullptr ) {
                         parents.insert(vertices[u_index]);
                     }

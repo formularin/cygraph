@@ -16,6 +16,10 @@ Implementation of graph class test fixtures.
 #include "../../../include/graph/adjacency_matrix.hpp"
 
 
+using std::pair;
+using std::tuple;
+using std::unordered_set;
+
 using namespace cygraph;
 using cygraph_utils::UserDefinedObject;
 
@@ -58,9 +62,9 @@ void TestAdjacencyMatrixGraph::test_edges() {
 
     // Adding int edges one at a time.
 
-    directed_int.set_edge_weight(-1, 0, 1);
-    directed_int.set_edge_weight(-1, 7, -1);
-    directed_int.set_edge_weight(0, -1, 0);
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 0, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, -1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(0, -1, 0) );
     CPPUNIT_ASSERT( directed_int.has_edge(-1, 0) );
     CPPUNIT_ASSERT( directed_int.has_edge(-1, 7) );
     CPPUNIT_ASSERT( directed_int.has_edge(0, -1) );
@@ -72,16 +76,16 @@ void TestAdjacencyMatrixGraph::test_edges() {
 
     // Removing int edges one at a time.
 
-    directed_int.remove_edge(-1, 0);
+    CPPUNIT_ASSERT_NO_THROW( directed_int.remove_edge(-1, 0) );
     CPPUNIT_ASSERT( !directed_int.has_edge(-1, 0) );
     // Only one edge is removed with directed graphs.
     CPPUNIT_ASSERT( directed_int.has_edge(0, -1) );
 
     // Adding boolean edges one at a time.
 
-    directed_string.set_edge_weight("", "Mumbai", false);
-    directed_string.set_edge_weight("New York", "Tokyo", true);
-    directed_string.set_edge_weight("Mumbai", "", true);
+    CPPUNIT_ASSERT_NO_THROW( directed_string.set_edge_weight("", "Mumbai", false) );
+    CPPUNIT_ASSERT_NO_THROW( directed_string.set_edge_weight("New York", "Tokyo", true) );
+    CPPUNIT_ASSERT_NO_THROW( directed_string.set_edge_weight("Mumbai", "", true) );
     // Edges with weight `false` should still exist.
     CPPUNIT_ASSERT( directed_string.has_edge("", "Mumbai") );
     CPPUNIT_ASSERT( directed_string.has_edge("Mumbai", "") );
@@ -90,26 +94,24 @@ void TestAdjacencyMatrixGraph::test_edges() {
 
     // Invalid call: one of the vertices doesn't exist.
     UserDefinedObject non_vertex = UserDefinedObject(100, 100);
-    UserDefinedObject non_vertex_edges[4][2] =
-        { {object_vals[0], object_vals[1]},
-          {object_vals[0], object_vals[2]},
-          {object_vals[1], object_vals[0]},
-          {non_vertex, object_vals[0]} };
-    float non_vertex_edge_weights[4] = { 0.0f, 0.1f, -1.0f, -1.0f };
-    CPPUNIT_ASSERT_THROW(
-        directed_object.set_edge_weights(non_vertex_edges, non_vertex_edge_weights, 4),
-        std::invalid_argument
-    );
+    vector<tuple<UserDefinedObject, UserDefinedObject, float>> edges = {
+        { object_vals[0], object_vals[1], 0.0f },
+        { object_vals[0], object_vals[2], 0.1f },
+        { object_vals[1], object_vals[0], -1.0f },
+        { non_vertex, object_vals[0], -1.0f }
+    };
+    CPPUNIT_ASSERT_THROW( directed_object.set_edge_weights(edges), std::invalid_argument );
     // No edges were added.
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[1], object_vals[0]) );
 
-    UserDefinedObject edges[3][2] = { {object_vals[0], object_vals[1]},
-                                      {object_vals[0], object_vals[2]},
-                                      {object_vals[1], object_vals[0]} };
-    float edge_weights[3] = { 0.0f, -0.1f, 1.0f };
-    directed_object.set_edge_weights(edges, edge_weights, 3);
+    edges = {
+        { object_vals[0], object_vals[1], 0.0f },
+        { object_vals[0], object_vals[2], -1.0f },
+        { object_vals[1], object_vals[0], 1.0f }
+    };
+    CPPUNIT_ASSERT_NO_THROW( directed_object.set_edge_weights(edges) );
     // All edges were added.
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[2]) );
@@ -122,17 +124,20 @@ void TestAdjacencyMatrixGraph::test_edges() {
     // Removing float edges several at a time.
 
     // Invalid call: one of the vertices doesn't exist.
-    UserDefinedObject invalid_removal_edges[2][2] =
-        { {object_vals[0], object_vals[1]},
-          {object_vals[0], non_vertex} };
-    CPPUNIT_ASSERT_THROW( directed_object.remove_edges(invalid_removal_edges, 2),
-        std::invalid_argument );
+    vector<pair<UserDefinedObject, UserDefinedObject>> invalid_removal_edges = {
+        {object_vals[0], object_vals[1]},
+        {object_vals[0], non_vertex}
+    };
+    CPPUNIT_ASSERT_THROW( directed_object.remove_edges(invalid_removal_edges),
+                          std::invalid_argument );
     // No edges were removed.
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[1]) );
 
-    UserDefinedObject removal_edges[2][2] = { {object_vals[0], object_vals[1]},
-                                              {object_vals[0], object_vals[2]} };
-    directed_object.remove_edges(removal_edges, 2);
+    vector<pair<UserDefinedObject, UserDefinedObject>> removal_edges = {
+        {object_vals[0], object_vals[1]},
+        {object_vals[0], object_vals[2]}
+    };
+    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_edges(removal_edges) );
     // All edges were removed.
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
@@ -141,8 +146,8 @@ void TestAdjacencyMatrixGraph::test_edges() {
 
     // Adding int edges one at a time.
 
-    undirected_int.set_edge_weight(-1, 0, 1);
-    undirected_int.set_edge_weight(-1, 7, 0);
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 0, 1) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 7, 0) );
     CPPUNIT_ASSERT( undirected_int.has_edge(-1, 0) );
     CPPUNIT_ASSERT( undirected_int.has_edge(0, -1) );
     CPPUNIT_ASSERT( undirected_int.has_edge(-1, 7) );
@@ -152,7 +157,7 @@ void TestAdjacencyMatrixGraph::test_edges() {
 
     // Removing int edges one at a time.
 
-    undirected_int.remove_edge(-1, 0);
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(0, -1) );
     CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(-1, 0), std::invalid_argument );
@@ -160,11 +165,12 @@ void TestAdjacencyMatrixGraph::test_edges() {
     CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
 
     // Adding float edges several at a time.
-    UserDefinedObject undirected_edges[3][2] = { {object_vals[0], object_vals[1]},
-                                                 {object_vals[0], object_vals[2]},
-                                                 {object_vals[1], object_vals[2]} };
-    float undirected_edge_weights[3] = {0.0f, -1.0f, 0.5f};
-    undirected_object.set_edge_weights(undirected_edges, undirected_edge_weights, 3);
+    vector<tuple<UserDefinedObject, UserDefinedObject, float>> undirected_edges = {
+        { object_vals[0], object_vals[1], 0.0f },
+        { object_vals[0], object_vals[2], -1.0f },
+        { object_vals[1], object_vals[2], 0.5f }
+    };
+    CPPUNIT_ASSERT_NO_THROW( undirected_object.set_edge_weights(undirected_edges) );
     // All edges were added.
     CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[0]) );
