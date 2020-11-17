@@ -66,23 +66,24 @@ namespace cygraph {
                 */
             }
 
-            AdjacencyMatrixGraph(bool directed, const vector<Vertex>& vertices) {
+            AdjacencyMatrixGraph(bool directed, const unordered_set<Vertex>& vertices) {
                 /*
                 Class constructor.
                 */
 
                 this->directed = directed;
-                this->vertices = vertices;
+                this->vertices.insert(this->vertices.begin(), vertices.begin(), vertices.end());
 
                 int n_vertices = vertices.size();
 
-                // Initialize adjacency matrix and vertex indices
-                // dictionary.
+                // Initialize adjacency matrix and vertex indices dictionary.
                 adjacency_matrix.reserve(n_vertices);
-                for ( int i = 0; i < n_vertices; i++ ) {
-                    vertex_indices[vertices[i]] = i;
+                int i = 0;
+                for ( Vertex v : vertices ) {
+                    vertex_indices[v] = i;
                     adjacency_matrix.emplace_back(
                         vector<EdgeWeight*>(n_vertices, nullptr));
+                    i++;
                 }
             }
 

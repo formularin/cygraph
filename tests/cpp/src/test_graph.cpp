@@ -34,13 +34,19 @@ void TestAdjacencyMatrixGraph::setUp() {
     weight types.
     */
 
-    directed_int = AdjacencyMatrixGraph<int, int>(true, int_vals);
-    directed_string = AdjacencyMatrixGraph<std::string, bool>(true, string_vals);
-    directed_object = AdjacencyMatrixGraph<UserDefinedObject, float>(true, object_vals);
+    directed_int = AdjacencyMatrixGraph<int, int>(
+        true, unordered_set<int>(int_vals.begin(), int_vals.end()));
+    directed_string = AdjacencyMatrixGraph<std::string, bool>(
+        true, unordered_set<std::string>(string_vals.begin(), string_vals.end()));
+    directed_object = AdjacencyMatrixGraph<UserDefinedObject, float>(
+        true, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end()));
 
-    undirected_int = AdjacencyMatrixGraph<int, int>(false, int_vals);
-    undirected_string = AdjacencyMatrixGraph<std::string, bool>(false, string_vals);
-    undirected_object = AdjacencyMatrixGraph<UserDefinedObject, float>(false, object_vals);
+    undirected_int = AdjacencyMatrixGraph<int, int>(
+        false, unordered_set<int>(int_vals.begin(), int_vals.end()));
+    undirected_string = AdjacencyMatrixGraph<std::string, bool>(
+        false, unordered_set<std::string>(string_vals.begin(), string_vals.end()));
+    undirected_object = AdjacencyMatrixGraph<UserDefinedObject, float>(
+        false, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end()));
 }
 
 
