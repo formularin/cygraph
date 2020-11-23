@@ -207,10 +207,9 @@ namespace cygraph {
                 vertex_indices.erase(v);
             }
 
-            void set_edge_weight(const Vertex& u, const Vertex& v,
-                    EdgeWeight weight) override {
+            void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) override {
                 /*
-                Changes the weight of an edge.
+                Sets the weight of an edge.
                 */
 
                 int u_index = get_vertex_int(u);
@@ -229,8 +228,8 @@ namespace cygraph {
 
             void remove_edge(const Vertex& u, const Vertex& v) override {
                 /*
-                Removes an edge from the graph. A warning is raised if
-                attempting to remove an edge that doesn't exist.
+                Removes an edge from the graph. A warning is raised if attempting to remove an edge
+                that doesn't exist.
                 */
 
                 int u_index = get_vertex_int(u);
@@ -251,9 +250,8 @@ namespace cygraph {
 
             bool has_edge(const Vertex& u, const Vertex& v) override {
                 /*
-                Returns whether or not a given edge is in the graph.
-                If one or more of the vertices are not in the graph,
-                false is returned.
+                Returns whether or not a given edge is in the graph. If one or more of the vertices
+                are not in the graph, false is returned.
                 */
                 int u_index = get_vertex_int(u);
                 int v_index = get_vertex_int(v);
@@ -265,15 +263,14 @@ namespace cygraph {
                 /*
                 Returns whether or not a certain vertex is in the graph.
                 */
-                return std::find(vertices.begin(), vertices.end(),
-                    v) != vertices.end();
+                return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
             }
 
             unordered_set<Vertex> get_children(const Vertex& v) override {
                 /*
-                Returns the children of a given vertex in the graph.
-                In an undirected graph, this is equivalent to finding
-                the "neighbors" of a vertex.
+                Returns the children of a given vertex in the graph. In an undirected graph, this is
+                equivalent to finding the "neighbors" of a vertex, and is the same as the method
+                get_parents.
                 */
 
                 unordered_set<Vertex> children;
@@ -290,8 +287,9 @@ namespace cygraph {
 
             unordered_set<Vertex> get_parents(const Vertex& v) override {
                 /*
-                Returns the parents of a given vertex in the graph. This
-                is equivalent to get_children in undirected graphs.
+                Returns the parents of a given vertex in the graph. In an undirected graph, this is
+                equivalent to finding the "neighbors" of a vertex, and is the same as the method
+                get_children.
                 */
 
                 unordered_set<Vertex> parents;

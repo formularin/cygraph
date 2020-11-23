@@ -62,23 +62,24 @@ namespace cygraph {
             Removes a vertex from the graph.
             */
 
-            void remove_vertices(unordered_set<Vertex> vertices) {
+            void remove_vertices(const unordered_set<Vertex>& vertices) {
                 /*
-                Removes an array of vertices from the graph.
+                Removes a set of vertices from the graph.
                 */
                 for ( Vertex& v : vertices ) {
                     remove_vertex(v);
                 }
             }
 
-            virtual void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) = 0;
+            virtual void set_edge_weight(const Vertex& u, const Vertex& v,
+                const EdgeWeight weight) = 0;
             /*
-            Changes the weight of an edge.
+            Sets the weight of an edge.
             */
 
-            void set_edge_weights(vector<tuple<Vertex, Vertex, EdgeWeight>> edges) {
+            void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges) {
                 /*
-                Sets the weights of an array of edges in the graph.
+                Sets the weights of a vector of edges in the graph.
                 */
                 vector<pair<Vertex, Vertex>> set_edges;
                 pair<Vertex, Vertex> edge_;
@@ -105,10 +106,10 @@ namespace cygraph {
             attempting to remove an edge that doesn't exist.
             */
 
-            void remove_edges(vector<pair<Vertex, Vertex>> edges) {
+            void remove_edges(const vector<pair<Vertex, Vertex>>& edges) {
                 /*
-                Removes an array of edges from the graph. A warning is
-                raised if attempting to remove an edge that doesn't exist.
+                Removes a set of edges from the graph. A warning is raised if attempting to remove
+                an edge that doesn't exist.
                 */
                 vector<tuple<Vertex, Vertex, EdgeWeight>> removed_edges;
                 EdgeWeight weight;
