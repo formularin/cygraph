@@ -13,7 +13,6 @@ Test fixtures required for testing algorithm functions.
 
 
 using namespace cygraph;
-using cygraph_utils::UserDefinedObject;
 
 
 class TestArticulationPoints: public CppUnit::TestFixture {

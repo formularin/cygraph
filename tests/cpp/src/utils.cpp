@@ -8,9 +8,6 @@ Common functions and classes for unit tests.
 #include "../include/utils.hpp"
 
 
-using namespace cygraph_utils;
-
-
 // Overriding std::hash for UserDefinedObject.
 std::size_t std::hash<UserDefinedObject>::operator()(const UserDefinedObject& object) const {
     std::size_t a_hash = std::hash<int>()(object.get_a());
