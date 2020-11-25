@@ -237,7 +237,7 @@ namespace cygraph {
             int v_index = get_vertex_int(v);
 
             if ( adjacency_matrix[u_index][v_index] == nullptr ) {
-                std::cerr << "Attempting to remove edge that does not exist." << std::endl;
+                throw std::invalid_argument("Attempting to remove edge that does not exist.");
             } else {
                 edge_weights.erase(pair<int, int>(u_index, v_index));
 

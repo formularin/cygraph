@@ -181,8 +181,7 @@ namespace cygraph {
             */
             if ( std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
                     == adjacency_list[u].end()) {
-                std::cerr << "Attempting to remove edge that doesn't exist." << std::endl;
-                return;
+                throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
             }
 
             adjacency_list[u].erase(v);
@@ -411,7 +410,7 @@ namespace cygraph {
             if ( exists ) {
                 adjacency_list[u].erase(to_remove);
             } else {
-                std::cerr << "Attempting to remove edge that doesn't exist." << std::endl;
+                throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
                 return;
             }
 
