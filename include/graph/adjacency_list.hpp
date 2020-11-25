@@ -25,11 +25,72 @@ namespace cygraph {
 
     template <class Vertex, class EdgeWeight>
     class AdjacencyListGraph: public cygraph::Graph<Vertex, EdgeWeight> {
-        // An empty base adjaceny list class.
+        /*
+        A base adjacency list graph class with minimal functionality. Mainly exists to contain bits
+        of code that would be repeated in both of the child adjacency list graph classes.
+        */
+
+        protected:
+
+        unordered_set<Vertex> vertices;
+
+        public:
+
+        void add_vertex(const Vertex& v) override {
+            /*
+            Checks if the vertex is already in the graph and adds if not.
+            */
+            if ( has_vertex(v) ) {
+                throw std::invalid_argument("Vertex is already in graph.");
+            }
+            vertices.insert(v);
+        }
+
+        void add_vertices(const unordered_set<Vertex>& vertices) override {
+            /*
+            Checks if any of the vertices are already in the graph and adds them all if not.
+            */
+            for ( Vertex v : vertices ) {
+                if ( has_vertex(v) ) {
+                    throw std::invalid_argument("Vertex is already in graph.");
+                }
+            }
+            this->vertices.insert(this->vertices.end(), vertices, vertices + vertices.size());
+        }
+
+        void remove_vertex(const Vertex& v) override {
+            /*
+            Checks if vertex is already in graph and removes it if it is.
+            */
+            if ( has_vertex(v) ) {
+                vertices.erase(v);
+            } else {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+        }
+
+        void remove_vertices(const unordered_set<Vertex>& vertices) override {
+            /*
+            Checks if all the vertices are already in graph and removes them all if true.
+            */
+            for ( Vertex v : vertices ) {
+                if ( !has_vertex(v) ) {
+                    throw std::invalid_argument("Vertex not in graph.");
+                }
+                this->vertices.erase(v);
+            }
+        }
+
+        bool has_vertex(const Vertex& v) override {
+            /*
+            Returns whether or not a certain vertex is in the graph.
+            */
+            return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
+        }
     };
 
     template <class Vertex>
-    class AdjacencyListGraph: public cygraph::Graph<Vertex, bool> {
+    class UnweightedAdjacencyListGraph: public AdjacencyListGraph<Vertex> {
         /*
         A graph class implemented using an adjacency list, without edge weight functionality.
         Vertex type must have std::hash overriden.
@@ -41,13 +102,13 @@ namespace cygraph {
         unordered_set<Vertex> vertices;
 
         public:
-        AdjacencyListGraph() {
+        UnweightedAdjacencyListGraph() {
             /*
             Default constructor.
             */
         }
 
-        AdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
+        UnweightedAdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
             /*
             Class constructor.
             */
@@ -74,10 +135,7 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            if ( std::find(vertex.begin(), vertices.end(), v) !+ vertices.end() ) {
-                throw std::invalid_argument("Vertex is already in graph.");
-            }
-            vertices.insert(v);
+            AdjacencyListGraph::add_vertex();
             // Add new list to adjacency list.
             adjacency_list[v] = unordered_set<Vertex>();
         }
@@ -86,16 +144,7 @@ namespace cygraph {
             /*
             Adds an array of vertices to the graph.
             */
-
-            // Check if vertices are already in graph.
-            for ( Vertex v : vertices ) {
-                if ( std::find(this->vertices.begin(), this->vertices.end(), v)
-                        != this->vertices.end() ) {
-                    throw std::invalid_argument("Vertex is already in graph.");
-                }
-            }
-            this->vertices.insert(this->vertices.end(), vertices, vertices + vertices.size());
-
+            AdjacencyListGraph::add_vertices();
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = unordered_set<Vertex>();
@@ -106,15 +155,10 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
+            AdjacencyListGraph::remove_vertex();
 
-            // Check that the vertex exists.
-            if ( std::find(vertices.begin(), vertices.end(), v) == vertices.end() ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-
-            // Remove neighbor set from adjacency list and vertex from vertices set.
+            // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
-            vertices.erase(v);
 
             // Remove from each neighbor list of other vertices.
             unordered_set<Vertex> children;
@@ -127,19 +171,10 @@ namespace cygraph {
             /*
             Removes a set of vertices from the graph.
             */
+            AdjacencyListGraph::remove_vertices();
 
-            // Check that all of the vertices exist.
+            // Remove the neighbor sets from the adjacency list.
             for ( Vertex v : vertices ) {
-                if ( std::find(this->vertices.begin(), this->vertices.end(), v)
-                        == this->vertices.end()) {
-                    throw std::invalid_argument("Vertex not in graph.");
-                }
-            }
-
-            // Remove the neighbor sets from the adjacency list and the vertices from the
-            // vertices set.
-            for ( Vertex v : vertices ) {
-                this->vertices.erase(v);
                 this->adjacency_list.erase(v);
             }
 
@@ -170,6 +205,9 @@ namespace cygraph {
             /*
             Adds an edge between two vertices in the graph.
             */
+            if ( has_edge(u, v) ) {
+                throw std::invalid_argument("Edge already exists.");
+            }
             adjacency_list[u].insert(v);
             if ( !this->directed ) adjacency_list[v].insert(u);
         }
@@ -179,8 +217,7 @@ namespace cygraph {
             Removes an edge from the graph. A warning is raised if attempting to remove an edge
             that doesn't exist.
             */
-            if ( std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
-                    == adjacency_list[u].end()) {
+            if ( !has_edge(u, v) ) {
                 throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
             }
 
@@ -195,13 +232,6 @@ namespace cygraph {
             */
             return std::find(std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
                    == adjacency_list[u].end())
-        }
-
-        bool has_vertex(const Vertex& v) override {
-            /*
-            Returns whether or not a certain vertex is in the graph.
-            */
-            return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
         }
 
         unordered_set<Vertex> get_children(const Vertex& v) override {
@@ -234,7 +264,7 @@ namespace cygraph {
     };
 
     template <class Vertex, class EdgeWeight>
-    class WeightedAdjacencyListGraph: public cygraph::Graph<Vertex, EdgeWeight> {
+    class WeightedAdjacencyListGraph: public AdjacencyListGraph<Vertex> {
         /*
         A graph class implemented using an adjacency list. Vertex type must have std::hash overriden.
         */
@@ -285,10 +315,7 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            if ( std::find(vertices.begin(), vertices.end(), v) != vertices.end() ) {
-                throw std::invalid_argument("Vertex is already in graph.");
-            }
-            vertices.insert(v);
+            AdjacencyListGraph::add_vertex();
             // Add new list to adjacency list.
             adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
         }
@@ -297,16 +324,7 @@ namespace cygraph {
             /*
             Adds an array of vertices to the graph.
             */
-
-            // Check if vertices are already in graph.
-            for ( Vertex v : vertices ) {
-                if ( std::find(this->vertices.begin(), this->vertices.end(), v)
-                        != this->vertices.end() ) {
-                    throw std::invalid_argument("Vertex is already in graph.");
-                }
-            }
-            this->vertices.insert(this->vertices.end(), vertices, vertices + vertices.size());
-
+            AdjacencyListGraph::add_vertices();
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
@@ -317,15 +335,10 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
+            AdjacencyListGraph::remove_vertex();
 
-            // Check that the vertex exists.
-            if ( std::find(vertices.begin(), vertices.end(), v) == vertices.end() ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-
-            // Remove neighbor set from adjacency list and vertex from vertices set.
+            // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
-            vertices.erase(v);
 
             // Remove from each neighbor list of other vertices.
             unordered_set<pair<Vertex, EdgeWeight>>& children;
@@ -350,19 +363,10 @@ namespace cygraph {
             /*
             Removes a set of vertices from the graph.
             */
+            AdjacencyListGraph::remove_vertices();
 
-            // Check that all of the vertices exist.
+            // Remove the neighbor sets from the adjacency list.
             for ( Vertex v : vertices ) {
-                if ( std::find(this->vertices.begin(), this->vertices.end(), v)
-                        == this->vertices.end()) {
-                    throw std::invalid_argument("Vertex not in graph.");
-                }
-            }
-
-            // Remove the neighbor sets from the adjacency list and the vertices from the
-            // vertices set.
-            for ( Vertex v : vertices ) {
-                this->vertices.erase(v);
                 this->adjacency_list.erase(v);
             }
 
@@ -387,10 +391,35 @@ namespace cygraph {
             /*
             Sets the weight of an edge.
             */
+            if ( has_edge(u, v) ) {
+                // Changing edge weight.
+                pair<Vertex, EdgeWeight> to_remove;
+                for( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
+                    if ( child.first == u ) {
+                        to_remove = child;
+                        break;
+                    }
+                }
+                adjacency_list[u].erase(to_remove);
+                adjacency_list[u].insert(pair<Vertex, EdgeWeight>(v, weight));
 
-            adjacency_list[u].insert(pair<Vertex, EdgeWeight>(v, weight));
-            if ( !this->directed ) {
+                if ( !this->directed ) {
+                    for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
+                        if ( child.first == u ) {
+                            to_remove = child;
+                            break;
+                        }
+                    }
+                }
+                adjacency_list[v].erase(to_remove);
                 adjacency_list[v].insert(pair<Vertex, EdgeWeight>(u, weight));
+
+            } else {
+                // Adding new edge.
+                adjacency_list[u].insert(pair<Vertex, EdgeWeight>(v, weight));
+                if ( !this->directed ) {
+                    adjacency_list[v].insert(pair<Vertex, EdgeWeight>(u, weight));
+                }
             }
         }
 
@@ -435,13 +464,6 @@ namespace cygraph {
                 }
             }
             return false;
-        }
-
-        bool has_vertex(const Vertex& v) override {
-            /*
-            Returns whether or not a certain vertex is in the graph.
-            */
-            return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
         }
 
         unordered_set<Vertex> get_children(const Vertex& v) override {
