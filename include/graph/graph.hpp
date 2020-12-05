@@ -63,11 +63,16 @@ namespace cygraph {
         Removes a vertex from the graph.
         */
 
-        void remove_vertices(const unordered_set<Vertex>& vertices) {
+        virtual void remove_vertices(const unordered_set<Vertex>& vertices) {
             /*
             Removes a set of vertices from the graph.
             */
-            for ( Vertex& v : vertices ) {
+            for ( Vertex v : vertices ) {
+                if ( !has_vertex(v) ) {
+                    throw std::invalid_argument("Attempting to remove vertex that does not exist");
+                }
+            }
+            for ( Vertex v : vertices ) {
                 remove_vertex(v);
             }
         }
@@ -78,7 +83,7 @@ namespace cygraph {
         Sets the weight of an edge.
         */
 
-        void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges) {
+        virtual void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges) {
             /*
             Sets the weights of a vector of edges in the graph.
             */
@@ -107,7 +112,7 @@ namespace cygraph {
         attempting to remove an edge that doesn't exist.
         */
 
-        void remove_edges(const vector<pair<Vertex, Vertex>>& edges) {
+        virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges) {
             /*
             Removes a set of edges from the graph. A warning is raised if attempting to remove
             an edge that doesn't exist.

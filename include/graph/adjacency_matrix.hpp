@@ -61,6 +61,7 @@ namespace cygraph {
         }
 
         public:
+
         AdjacencyMatrixGraph() {
             /*
             Default constructor.
@@ -73,8 +74,6 @@ namespace cygraph {
             */
 
             this->directed = directed;
-            this->vertices.insert(this->vertices.begin(), vertices.begin(), vertices.end());
-
             int n_vertices = vertices.size();
 
             // Initialize adjacency matrix and vertex indices dictionary.
@@ -84,11 +83,12 @@ namespace cygraph {
                 vertex_indices[v] = i;
                 adjacency_matrix.emplace_back(
                     vector<EdgeWeight*>(n_vertices, nullptr));
+                this->vertices.push_back(v);
                 i++;
             }
         }
 
-        unordered_set<Vertex> get_vertices() {
+        vector<Vertex> get_vertices() {
             /*
             Returns the vertices in the graph.
             */
@@ -136,6 +136,8 @@ namespace cygraph {
             Adds an array of vertices to the graph.
             */
 
+            int n_new_vertices = vertices.size();
+
             // Check if vertices are already in graph.
             for ( Vertex v : vertices ) {
                 if ( std::find(this->vertices.begin(), this->vertices.end(), v)
@@ -144,25 +146,25 @@ namespace cygraph {
                 }
             }
 
-            this->vertices.insert(this->vertices.end(), vertices.begin(), vertices.end());
             // Update vertex indices map.
             int n_vertices = this->vertices.size();
             for ( Vertex v : vertices ) {
+                this->vertices.push_back(v);
                 vertex_indices[v] = n_vertices;
                 n_vertices++;
             }
 
             // Add new columns to adjacency matrix.
-            EdgeWeight* new_edge_weights[n_vertices] = { nullptr };
+            EdgeWeight* new_edge_weights[n_new_vertices] = { nullptr };
             for ( vector<EdgeWeight*>& row : adjacency_matrix ) {
                 row.insert(row.end(), new_edge_weights,
-                    new_edge_weights + n_vertices);
+                    new_edge_weights + n_new_vertices);
             }
             // Add new rows to adjacency matrix.
-            vector<EdgeWeight*> new_rows[n_vertices] = 
-                { vector<EdgeWeight*>(n_vertices, nullptr) };
-            adjacency_matrix.insert(adjacency_matrix.end(), new_rows,
-                new_rows + n_vertices);
+            vector<EdgeWeight*> new_row(n_vertices, nullptr);
+            for ( int i = 0; i < n_new_vertices; i++ ) {
+                adjacency_matrix.push_back(new_row);
+            }
         }
 
         void remove_vertex(const Vertex& v) override {
@@ -192,20 +194,20 @@ namespace cygraph {
             }
 
             // Remove row from adjacency matrix.
-            auto v_iter_row = adjacency_matrix.begin() + v_index;
-            adjacency_matrix.erase(v_iter_row, v_iter_row + 1);
+            adjacency_matrix.erase(adjacency_matrix.begin() + v_index);
 
             // Remove column from adjacency matrix.
-            for ( int i = 0; i < vertices.size(); i++ ) {
-                auto v_iter_col = adjacency_matrix[i].begin() + v_index;
-                adjacency_matrix[i].erase(v_iter_col, v_iter_col + 1);
+            for ( int i = 0; i < vertices.size() - 1; i++ ) {
+                adjacency_matrix[i].erase(adjacency_matrix[i].begin() + v_index);
             }
 
             // Remove from vertices and vertex_indices.
-            auto v_iter_vertices = std::find(vertices.begin(),
-                vertices.end(), v);
-            vertices.erase(v_iter_vertices, v_iter_vertices + 1);
+            vertices.erase(vertices.begin() + v_index);
             vertex_indices.erase(v);
+            // Change vertex indices to account for loss.
+            for ( int i = v_index; i < vertices.size(); i++ ) {
+                vertex_indices[vertices[i]] = i;
+            }
         }
 
         void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) override {
@@ -237,7 +239,7 @@ namespace cygraph {
             int v_index = get_vertex_int(v);
 
             if ( adjacency_matrix[u_index][v_index] == nullptr ) {
-                throw std::invalid_argument("Attempting to remove edge that does not exist.");
+                throw std::invalid_argument("Edge does not exist.");
             } else {
                 edge_weights.erase(pair<int, int>(u_index, v_index));
 

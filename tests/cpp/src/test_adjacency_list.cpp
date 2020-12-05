@@ -2,6 +2,7 @@
 Implementation of adjacency list class test fixtures.
 */
 
+#include <cppunit/TestCaller.h>
 
 #include "../include/test_adjacency_list.hpp"
 #include "../../../include/graph/adjacency_list.hpp"

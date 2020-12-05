@@ -36,6 +36,13 @@ namespace cygraph {
 
         public:
 
+        unordered_set<Vertex> get_vertices() {
+            /*
+            Returns the vertices in the graph.
+            */
+            return vertices;
+        }
+
         void add_vertex(const Vertex& v) override {
             /*
             Checks if the vertex is already in the graph and adds if not.
@@ -69,18 +76,6 @@ namespace cygraph {
             }
         }
 
-        void remove_vertices(const unordered_set<Vertex>& vertices) override {
-            /*
-            Checks if all the vertices are already in graph and removes them all if true.
-            */
-            for ( Vertex v : vertices ) {
-                if ( !has_vertex(v) ) {
-                    throw std::invalid_argument("Vertex not in graph.");
-                }
-                this->vertices.erase(v);
-            }
-        }
-
         bool has_vertex(const Vertex& v) override {
             /*
             Returns whether or not a certain vertex is in the graph.
@@ -90,7 +85,7 @@ namespace cygraph {
     };
 
     template <class Vertex>
-    class UnweightedAdjacencyListGraph: public AdjacencyListGraph<Vertex> {
+    class UnweightedAdjacencyListGraph: public AdjacencyListGraph<Vertex, bool> {
         /*
         A graph class implemented using an adjacency list, without edge weight functionality.
         Vertex type must have std::hash overriden.
@@ -135,7 +130,7 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            AdjacencyListGraph::add_vertex();
+            AdjacencyListGraph<Vertex, bool>::add_vertex();
             // Add new list to adjacency list.
             adjacency_list[v] = unordered_set<Vertex>();
         }
@@ -144,7 +139,7 @@ namespace cygraph {
             /*
             Adds an array of vertices to the graph.
             */
-            AdjacencyListGraph::add_vertices();
+            AdjacencyListGraph<Vertex, bool>::add_vertices();
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = unordered_set<Vertex>();
@@ -155,7 +150,7 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
-            AdjacencyListGraph::remove_vertex();
+            AdjacencyListGraph<Vertex, bool>::remove_vertex();
 
             // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
@@ -167,34 +162,7 @@ namespace cygraph {
             }
         }
 
-        void remove_vertices(const unordered_set<Vertex>& vertices) override {
-            /*
-            Removes a set of vertices from the graph.
-            */
-            AdjacencyListGraph::remove_vertices();
-
-            // Remove the neighbor sets from the adjacency list.
-            for ( Vertex v : vertices ) {
-                this->adjacency_list.erase(v);
-            }
-
-            // Remove from child lists in adjacency list.
-            unordered_set<Vertex> chlidren, removal_set;
-            for ( auto& it : adjacency_list ) {
-                children = it.second;
-                removal_set = {};
-                for ( Vertex child : children ) {
-                    if ( std::Find(vertices.begin(), vertices.end(), child) != vertices.end() ) {
-                        removal_set.insert(child);
-                    }
-                }
-                for ( Vertex to_remove : removal_set ) {
-                    it.second.erase(to_remove);
-                }
-            }
-        }
-
-        void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) override {
+        void set_edge_weight(const Vertex& u, const Vertex& v, bool weight) override {
             /*
             Raises an exception because this is an unweighted graph class.
             */
@@ -231,7 +199,7 @@ namespace cygraph {
             not in the graph, false is returned.
             */
             return std::find(std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
-                   == adjacency_list[u].end())
+                   == adjacency_list[u].end());
         }
 
         unordered_set<Vertex> get_children(const Vertex& v) override {
@@ -264,7 +232,7 @@ namespace cygraph {
     };
 
     template <class Vertex, class EdgeWeight>
-    class WeightedAdjacencyListGraph: public AdjacencyListGraph<Vertex> {
+    class WeightedAdjacencyListGraph: public AdjacencyListGraph<Vertex, EdgeWeight> {
         /*
         A graph class implemented using an adjacency list. Vertex type must have std::hash overriden.
         */
@@ -315,7 +283,7 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            AdjacencyListGraph::add_vertex();
+            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertex();
             // Add new list to adjacency list.
             adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
         }
@@ -324,7 +292,7 @@ namespace cygraph {
             /*
             Adds an array of vertices to the graph.
             */
-            AdjacencyListGraph::add_vertices();
+            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertices();
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
@@ -335,7 +303,7 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
-            AdjacencyListGraph::remove_vertex();
+            AdjacencyListGraph<Vertex, EdgeWeight>::remove_vertex();
 
             // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
@@ -355,34 +323,6 @@ namespace cygraph {
                 if ( remove ) {
                     children.erase(to_remove);
                     remove = false;
-                }
-            }
-        }
-
-        void remove_vertices(const unordered_set<Vertex>& vertices) override {
-            /*
-            Removes a set of vertices from the graph.
-            */
-            AdjacencyListGraph::remove_vertices();
-
-            // Remove the neighbor sets from the adjacency list.
-            for ( Vertex v : vertices ) {
-                this->adjacency_list.erase(v);
-            }
-
-            // Remove from child lists in adjacency list.
-            unordered_set<pair<Vertex, EdgeWeight>> children, removal_set;
-            for ( auto& it : adjacency_list ) {
-                children = it.second;
-                removal_set = {};
-                for ( pair<Vertex, EdgeWeight> child : children ) {
-                    if ( std::find(vertices.begin(), vertices.end(), child.first)
-                            != vertices.end() ) {
-                        removal_set.insert(child);
-                    }
-                }
-                for ( pair<Vertex, EdgeWeight> to_remove : removal_set ) {
-                    it.second.erase(to_remove);
                 }
             }
         }
@@ -501,6 +441,5 @@ namespace cygraph {
         }
     };
 }
-
 
 #endif
