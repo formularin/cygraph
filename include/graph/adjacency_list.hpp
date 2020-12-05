@@ -121,9 +121,9 @@ namespace cygraph {
 
         bool get_edge_weight(const Vertex& u, const Vertex& v) override {
             /*
-            Raises an exception because this is an unweighted graph class.
+            Returns whether or not an edge exists.
             */
-            throw std::logic_error("get_edge_weight not implemented for unweighted graph.");
+            return has_edgE(u, v);
         }
 
         void add_vertex(const Vertex& v) override {
@@ -164,9 +164,16 @@ namespace cygraph {
 
         void set_edge_weight(const Vertex& u, const Vertex& v, bool weight) override {
             /*
-            Raises an exception because this is an unweighted graph class.
+            Adds or removes an edge based on its weight.
             */
-            throw std::logic_error("set_edge_weight not implemented for unweighted graph.");
+            if ( weight ) {
+                adjacency_list[u].insert(v);
+                if ( !this->directed ) adjacency_list[v].insert(u);
+            } else {
+                try {
+                    remove_edge(u, v);
+                } catch ( std::invalid_argument e ) {}
+            }
         }
 
         void add_edge(const Vertex& u, const Vertex& v) {
