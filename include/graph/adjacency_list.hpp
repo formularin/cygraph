@@ -187,10 +187,27 @@ namespace cygraph {
             if ( !this->directed ) adjacency_list[v].insert(u);
         }
 
+        void add_edges(const vector<pair<Vertex, Vertex>>& edges) {
+            /*
+            Adds multiple edges to the graph.
+            */
+            vector<pair<Vertex, Vertex>> added_edges;
+            try {
+                for ( const pair<Vertex, Vertex>& edge : edges ) {
+                    add_edge(edge.first, edge.second);
+                    added_edges.push_back(edge);
+                }
+            } catch ( std::invalid_argument e ) {
+                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
+                    remove_edge(edge.first, edge.second);
+                }
+                throw e;
+            }
+        }
+
         void remove_edge(const Vertex& u, const Vertex& v) override {
             /*
-            Removes an edge from the graph. A warning is raised if attempting to remove an edge
-            that doesn't exist.
+            Removes an edge from the graph.
             */
             if ( !has_edge(u, v) ) {
                 throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
@@ -198,6 +215,24 @@ namespace cygraph {
 
             adjacency_list[u].erase(v);
             if ( !this->directed ) adjacency_list[v].erase(u);
+        }
+
+        void remove_edges(const vector<pair<Vertex, Vertex>>& edges) override {
+            /*
+            Removes multiple edges from the graph.
+            */
+            vector<pair<Vertex, Vertex>> removed_edges;
+            try {
+                for ( const pair<Vertex, Vertex>& edge : edges ) {
+                    remove_edge(edge.first, edge.second);
+                    removed_edges.push_back(edge);
+                }
+            } catch ( std::invalid_argument e ) {
+                for ( const pair<Vertex, Vertex>>& edge : removed_edges ) {
+                    add_edge(edge.first, edge.second);
+                }
+                throw e;
+            }
         }
 
         bool has_edge(const Vertex& u, const Vertex& v) override {

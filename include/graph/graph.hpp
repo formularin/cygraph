@@ -114,8 +114,7 @@ namespace cygraph {
 
         virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges) {
             /*
-            Removes a set of edges from the graph. A warning is raised if attempting to remove
-            an edge that doesn't exist.
+            Removes a set of edges from the graph.
             */
             vector<tuple<Vertex, Vertex, EdgeWeight>> removed_edges;
             EdgeWeight weight;
