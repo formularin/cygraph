@@ -131,7 +131,7 @@ namespace cygraph {
             adjacency_matrix.emplace_back(vector<EdgeWeight*>(n_vertices, nullptr));
         }
 
-        void add_vertices(unordered_set<Vertex>& vertices) override {
+        void add_vertices(const unordered_set<Vertex>& vertices) override {
             /*
             Adds an array of vertices to the graph.
             */
@@ -256,8 +256,13 @@ namespace cygraph {
             Returns whether or not a given edge is in the graph. If one or more of the vertices
             are not in the graph, false is returned.
             */
-            int u_index = get_vertex_int(u);
-            int v_index = get_vertex_int(v);
+            int u_index, v_index;
+            try {
+                u_index = get_vertex_int(u);
+                v_index = get_vertex_int(v);
+            } catch ( std::invalid_argument ) {
+                return false;
+            }
             EdgeWeight* weight_ptr = adjacency_matrix[u_index][v_index];
             return weight_ptr != nullptr;
         }

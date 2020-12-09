@@ -53,7 +53,7 @@ namespace cygraph {
         Adds a vertex to the graph.
         */
 
-        virtual void add_vertices(unordered_set<Vertex>& vertices) = 0;
+        virtual void add_vertices(const unordered_set<Vertex>& vertices) = 0;
         /*
         Adds an array of vertices to the graph.
         */

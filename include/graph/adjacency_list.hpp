@@ -62,7 +62,7 @@ namespace cygraph {
                     throw std::invalid_argument("Vertex is already in graph.");
                 }
             }
-            this->vertices.insert(this->vertices.end(), vertices, vertices + vertices.size());
+            this->vertices.insert(vertices.begin(), vertices.end());
         }
 
         void remove_vertex(const Vertex& v) override {
@@ -123,23 +123,26 @@ namespace cygraph {
             /*
             Returns whether or not an edge exists.
             */
-            return has_edgE(u, v);
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+            return has_edge(u, v);
         }
 
         void add_vertex(const Vertex& v) override {
             /*
             Adds a vertex to the graph.
             */
-            AdjacencyListGraph<Vertex, bool>::add_vertex();
+            AdjacencyListGraph<Vertex, bool>::add_vertex(v);
             // Add new list to adjacency list.
             adjacency_list[v] = unordered_set<Vertex>();
         }
 
-        void add_vertices(unordered_set<Vertex>& vertices) override {
+        void add_vertices(const unordered_set<Vertex>& vertices) override {
             /*
             Adds an array of vertices to the graph.
             */
-            AdjacencyListGraph<Vertex, bool>::add_vertices();
+            AdjacencyListGraph<Vertex, bool>::add_vertices(vertices);
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = unordered_set<Vertex>();
@@ -150,7 +153,7 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
-            AdjacencyListGraph<Vertex, bool>::remove_vertex();
+            AdjacencyListGraph<Vertex, bool>::remove_vertex(v);
 
             // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
@@ -198,7 +201,7 @@ namespace cygraph {
                     added_edges.push_back(edge);
                 }
             } catch ( std::invalid_argument e ) {
-                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
+                for ( const pair<Vertex, Vertex>& edge : added_edges ) {
                     remove_edge(edge.first, edge.second);
                 }
                 throw e;
@@ -228,7 +231,7 @@ namespace cygraph {
                     removed_edges.push_back(edge);
                 }
             } catch ( std::invalid_argument e ) {
-                for ( const pair<Vertex, Vertex>>& edge : removed_edges ) {
+                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
                     add_edge(edge.first, edge.second);
                 }
                 throw e;
@@ -240,8 +243,8 @@ namespace cygraph {
             Returns whether or not a given edge is in the graph. If one or more of the vertices are
             not in the graph, false is returned.
             */
-            return std::find(std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
-                   == adjacency_list[u].end());
+            return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
+                   == adjacency_list[u].end();
         }
 
         unordered_set<Vertex> get_children(const Vertex& v) override {
@@ -281,7 +284,7 @@ namespace cygraph {
 
         protected:
 
-        unordered_map<Vertex, unordered_set<pair<Vertex, EdgeWeight>>> adjacency_list;
+        unordered_map<Vertex, vector<pair<Vertex, EdgeWeight>>> adjacency_list;
         unordered_set<Vertex> vertices;
 
         public:
@@ -304,7 +307,7 @@ namespace cygraph {
 
             // Initialize adjacency list.
             for ( Vertex v : vertices ) {
-                adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
+                adjacency_list[v] = vector<pair<Vertex, EdgeWeight>>();
             }
         }
 
@@ -325,19 +328,19 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertex();
+            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertex(v);
             // Add new list to adjacency list.
-            adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
+            adjacency_list[v] = vector<pair<Vertex, EdgeWeight>>();
         }
 
-        void add_vertices(unordered_set<Vertex>& vertices) override {
+        void add_vertices(const unordered_set<Vertex>& vertices) override {
             /*
             Adds an array of vertices to the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertices();
+            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertices(vertices);
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
-                adjacency_list[v] = unordered_set<pair<Vertex, EdgeWeight>>();
+                adjacency_list[v] = vector<pair<Vertex, EdgeWeight>>();
             }
         }
 
@@ -345,26 +348,22 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::remove_vertex();
+            AdjacencyListGraph<Vertex, EdgeWeight>::remove_vertex(v);
 
             // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
 
             // Remove from each neighbor list of other vertices.
-            unordered_set<pair<Vertex, EdgeWeight>>& children;
-            pair<Vertex, EdgeWeight> to_remove;
-            bool remove = false;
+            vector<pair<Vertex, EdgeWeight>> children;
+            int to_remove = 0;
             for ( auto& it : adjacency_list ) {
                 children = it.second;
                 for ( pair<Vertex, EdgeWeight> child : children ) {
-                    if ( child.first == v ) {
-                        to_remove = child;
-                        remove = true;
-                    }
+                    if ( child.first == v ) break;
+                    to_remove++;
                 }
-                if ( remove ) {
-                    children.erase(to_remove);
-                    remove = false;
+                if ( to_remove < children.size() ) {
+                    children.erase(children.begin() + to_remove);
                 }
             }
         }
@@ -373,35 +372,32 @@ namespace cygraph {
             /*
             Sets the weight of an edge.
             */
-            if ( has_edge(u, v) ) {
-                // Changing edge weight.
-                pair<Vertex, EdgeWeight> to_remove;
-                for( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
-                    if ( child.first == u ) {
-                        to_remove = child;
-                        break;
-                    }
-                }
-                adjacency_list[u].erase(to_remove);
-                adjacency_list[u].insert(pair<Vertex, EdgeWeight>(v, weight));
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
 
-                if ( !this->directed ) {
-                    for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
-                        if ( child.first == u ) {
-                            to_remove = child;
-                            break;
-                        }
-                    }
-                }
-                adjacency_list[v].erase(to_remove);
-                adjacency_list[v].insert(pair<Vertex, EdgeWeight>(u, weight));
+            int to_remove = 0;
+            for( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
+                if ( child.first == v ) break;
+                to_remove++;
+            }
+            if ( to_remove < adjacency_list[v].size() ) {
+                // (u, v) already exists.
+                adjacency_list[u].erase(adjacency_list[u].begin() + to_remove);
+            }
+            adjacency_list[u].push_back(pair<Vertex, EdgeWeight>(v, weight));
 
-            } else {
-                // Adding new edge.
-                adjacency_list[u].insert(pair<Vertex, EdgeWeight>(v, weight));
-                if ( !this->directed ) {
-                    adjacency_list[v].insert(pair<Vertex, EdgeWeight>(u, weight));
+            if ( this->directed ) {
+                to_remove = 0;
+                for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
+                    if ( child.first == u ) break;
+                    to_remove++;
                 }
+                if ( to_remove < adjacency_list[v].size() ) {
+                    // (v, u) already exists.
+                    adjacency_list[v].erase(adjacency_list[v].begin() + to_remove);
+                }
+                adjacency_list[v].push_back(pair<Vertex, EdgeWeight>(u, weight));
             }
         }
 
@@ -410,28 +406,25 @@ namespace cygraph {
             Removes an edge from the graph. A warning is raised if attempting to remove an edge
             that doesn't exist.
             */
-            pair<Vertex, EdgeWeight> to_remove;
-            bool exists = false;
+            int to_remove = 0;
             for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
-                if ( child.first == v ) {
-                    to_remove = child;
-                    exists = true;
-                }
+                if ( child.first == v ) break;
+                to_remove++;
             }
-            if ( exists ) {
-                adjacency_list[u].erase(to_remove);
+            if ( to_remove < adjacency_list[u].size() ) {
+                adjacency_list[u].erase(adjacency_list[u].begin() + to_remove);
             } else {
                 throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
                 return;
             }
 
             if ( !this->directed ) {
+                to_remove = 0;
                 for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
-                    if ( child.first == u ) {
-                        to_remove = child;
-                    }
+                    if ( child.first == u ) break;
+                    to_remove++;
                 }
-                adjacency_list[v].erase(to_remove);
+                adjacency_list[v].erase(adjacency_list[v].begin() + to_remove);
             }
         }
 
@@ -440,6 +433,9 @@ namespace cygraph {
             Returns whether or not a given edge is in the graph. If one or more of the vertices are
             not in the graph, false is returned.
             */
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                return false;
+            }
             for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
                 if ( child.first == v ) {
                     return true;

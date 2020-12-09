@@ -20,7 +20,7 @@ int main( int argc, char** argv ) {
 
     // Graph classes
     runner.addTest( TestAdjacencyMatrixGraph::suite() );
-    runner.addTest( TestAdjacencyListGraph::suite() );
+    runner.addTest( TestUnweightedAdjacencyListGraph::suite() );
     runner.addTest( TestWeightedAdjacencyListGraph::suite() );
 
     runner.run();

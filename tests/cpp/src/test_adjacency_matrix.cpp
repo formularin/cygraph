@@ -181,6 +181,9 @@ void TestAdjacencyMatrixGraph::test_edges() {
     undirected_object.set_edge_weight(object_vals[0], object_vals[1], 3.0f);
     CPPUNIT_ASSERT( undirected_object.get_edge_weight(object_vals[0], object_vals[1]) == 3.0f );
     CPPUNIT_ASSERT( undirected_object.get_edge_weight(object_vals[1], object_vals[0]) == 3.0f );
+
+    // has_edge returns false when one of the vertices is not in the graph.
+    CPPUNIT_ASSERT( undirected_int.has_edge(420, 69) );
 }
 
 

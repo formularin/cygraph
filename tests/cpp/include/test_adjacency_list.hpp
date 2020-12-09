@@ -17,7 +17,15 @@ Tests suites for testing WeightedAdajcencyListGraph and AdjacencyListGraph.
 using namespace cygraph;
 
 
-class TestAdjacencyListGraph: public CppUnit::TestFixture {
+class TestUnweightedAdjacencyListGraph: public CppUnit::TestFixture {
+
+    private:
+        UnweightedAdjacencyListGraph<int> directed_int;
+        UnweightedAdjacencyListGraph<std::string> directed_string;
+
+        UnweightedAdjacencyListGraph<int> undirected_int;
+        UnweightedAdjacencyListGraph<std::string> undirected_string;
+
     public:
         void setUp();
         void tearDown();
@@ -31,6 +39,14 @@ class TestAdjacencyListGraph: public CppUnit::TestFixture {
 
 
 class TestWeightedAdjacencyListGraph: public CppUnit::TestFixture {
+
+    private:
+        WeightedAdjacencyListGraph<int, int> directed_int;
+        WeightedAdjacencyListGraph<UserDefinedObject, float> directed_object;
+
+        WeightedAdjacencyListGraph<int, int> undirected_int;
+        WeightedAdjacencyListGraph<UserDefinedObject, float> undirected_object;
+
     public:
         void setUp();
         void tearDown();
