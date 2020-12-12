@@ -14,7 +14,6 @@ An implementation of the graph data structure using an adjacency list.
 
 #include "graph.hpp"
 
-
 using std::pair;
 using std::unordered_map;
 using std::unordered_set;
@@ -94,7 +93,6 @@ namespace cygraph {
         protected:
 
         unordered_map<Vertex, unordered_set<Vertex>> adjacency_list;
-        unordered_set<Vertex> vertices;
 
         public:
         UnweightedAdjacencyListGraph() {
@@ -186,6 +184,9 @@ namespace cygraph {
             if ( has_edge(u, v) ) {
                 throw std::invalid_argument("Edge already exists.");
             }
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
             adjacency_list[u].insert(v);
             if ( !this->directed ) adjacency_list[v].insert(u);
         }
@@ -244,7 +245,7 @@ namespace cygraph {
             not in the graph, false is returned.
             */
             return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
-                   == adjacency_list[u].end();
+                   != adjacency_list[u].end();
         }
 
         unordered_set<Vertex> get_children(const Vertex& v) override {
@@ -285,7 +286,6 @@ namespace cygraph {
         protected:
 
         unordered_map<Vertex, vector<pair<Vertex, EdgeWeight>>> adjacency_list;
-        unordered_set<Vertex> vertices;
 
         public:
 

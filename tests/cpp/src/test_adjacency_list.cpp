@@ -94,8 +94,7 @@ void TestUnweightedAdjacencyListGraph::test_edges() {
     CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[2]) );
     CPPUNIT_ASSERT( directed_string.get_edge_weight(string_vals[1], string_vals[0]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[2], string_vals[0]) );
-    CPPUNIT_ASSERT_THROW( directed_string.get_edge_weight(string_vals[2], string_vals[0]),
-        std::invalid_argument );
+    CPPUNIT_ASSERT( !directed_string.get_edge_weight(string_vals[2], string_vals[0]) );
 
     // Removing edges several at a time.
 
@@ -116,6 +115,9 @@ void TestUnweightedAdjacencyListGraph::test_edges() {
     // All edges were removed.
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[1]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[2]) );
+
+    // has_edge returns false when one of the vertices doesn't exist.
+    CPPUNIT_ASSERT( !directed_int.has_edge(420, 69) );
 }
 
 
