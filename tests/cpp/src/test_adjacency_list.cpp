@@ -164,6 +164,43 @@ void TestUnweightedAdjacencyListGraph::test_family() {
         - UnweightedAdjacencyListGraph::get_children
         - UnweightedAdjacencyListGraph::get_parents
     */
+
+    // DIRECTED GRAPHS
+
+    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 0) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 7) );
+
+    // get_children
+
+    CPPUNIT_ASSERT( (directed_int.get_children(-1) == (std::unordered_set<int>) {0, 1, 7}) );
+    CPPUNIT_ASSERT( directed_int.get_children(0) == std::unordered_set<int>() );
+    CPPUNIT_ASSERT_THROW( directed_int.get_children(10), std::invalid_argument );
+
+
+    // get_parents
+
+    CPPUNIT_ASSERT( (directed_int.get_parents(0) == std::unordered_set<int> {-1}) );
+    CPPUNIT_ASSERT( directed_int.get_parents(-1) == std::unordered_set<int>() );
+
+    // UNDIRECTED GRAPHS
+
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.add_edge("Mumbai", "New York") );
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.add_edge("Mumbai", "Tokyo") );
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.add_edge("Mumbai", "Mumbai") );
+
+    std::unordered_set<std::string> mumbai_neighbors = {"Mumbai", "New York", "Tokyo"};
+    std::unordered_set<std::string> new_york_neighbors = {"Mumbai"};
+
+    // get_children
+
+    CPPUNIT_ASSERT( (undirected_string.get_children("Mumbai") == mumbai_neighbors) );
+    CPPUNIT_ASSERT( (undirected_string.get_children("New York") == new_york_neighbors) );
+
+    // get_parents
+
+    CPPUNIT_ASSERT( (undirected_string.get_parents("Mumbai") == mumbai_neighbors) );
+    CPPUNIT_ASSERT( (undirected_string.get_parents("New York") == new_york_neighbors) );
 }
 
 

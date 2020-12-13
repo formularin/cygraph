@@ -255,6 +255,9 @@ namespace cygraph {
             equivalent to finding the "neighbors" of a vertex, and is the same as the method
             get_parents.
             */
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
             return adjacency_list[v];
         }
 
@@ -264,9 +267,11 @@ namespace cygraph {
             equivalent to finding the "neighbors" of a vertex, and is the same as the method
             get_children.
             */
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
             unordered_set<Vertex> parents;
             for ( auto& it : adjacency_list ) {
-                if ( it.first == v ) continue;
                 for ( Vertex child : it.second ) {
                     if ( child == v ) {
                         parents.insert(it.first);

@@ -196,9 +196,9 @@ void TestAdjacencyMatrixGraph::test_family() {
 
     // DIRECTED GRAPHS
 
-    directed_int.set_edge_weight(-1, 0, 1);
-    directed_int.set_edge_weight(-1, 1, 1);
-    directed_int.set_edge_weight(-1, 7, 1);
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 0, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 1, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, 1) );
 
     // get_children
 
@@ -213,9 +213,9 @@ void TestAdjacencyMatrixGraph::test_family() {
 
     // UNDIRECTED GRAPHS
 
-    undirected_string.set_edge_weight("Mumbai", "New York", true);
-    undirected_string.set_edge_weight("Mumbai", "Tokyo", true);
-    undirected_string.set_edge_weight("Mumbai", "Mumbai", true);
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.set_edge_weight("Mumbai", "New York", true) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.set_edge_weight("Mumbai", "Tokyo", true) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.set_edge_weight("Mumbai", "Mumbai", true) );
 
     std::unordered_set<std::string> mumbai_neighbors = {"Mumbai", "New York", "Tokyo"};
     std::unordered_set<std::string> new_york_neighbors = {"Mumbai"};
