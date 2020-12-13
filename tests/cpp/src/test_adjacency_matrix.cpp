@@ -161,16 +161,16 @@ void TestAdjacencyMatrixGraph::test_edges() {
     CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(0, -1) );
     CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(-1, 0), std::invalid_argument );
-    // Removing an edge that doesn't exist should raise a warning, not throw an error.
+    // Removing an edge that doesn't exist.
     CPPUNIT_ASSERT_THROW( undirected_int.remove_edge(-1, 0), std::invalid_argument );
 
     // Adding float edges several at a time.
-    vector<tuple<UserDefinedObject, UserDefinedObject, float>> undirected_edges = {
+    edges = {
         { object_vals[0], object_vals[1], 0.0f },
         { object_vals[0], object_vals[2], -1.0f },
         { object_vals[1], object_vals[2], 0.5f }
     };
-    CPPUNIT_ASSERT_NO_THROW( undirected_object.set_edge_weights(undirected_edges) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_object.set_edge_weights(edges) );
     // All edges were added.
     CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[1]) );
     CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[0]) );

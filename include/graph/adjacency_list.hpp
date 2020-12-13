@@ -119,7 +119,8 @@ namespace cygraph {
 
         bool get_edge_weight(const Vertex& u, const Vertex& v) override {
             /*
-            Returns whether or not an edge exists.
+            Returns whether or not an edge exists. An alias to has_edge except throws an error if
+            one of the vertices is not in the graph.
             */
             if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
                 throw std::invalid_argument("Vertex not in graph.");

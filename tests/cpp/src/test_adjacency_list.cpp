@@ -116,6 +116,43 @@ void TestUnweightedAdjacencyListGraph::test_edges() {
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[1]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[2]) );
 
+    // UNDIRECTED GRAPHS
+
+    // Adding edges one at a time.
+
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.add_edge(-1, 0) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 7, true) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(0, -1) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, -1) );
+
+    // Removing edges one at a time.
+
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
+    CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT( !undirected_int.get_edge_weight(0, -1) );
+    // Removing an edge that doesn't exist.
+    CPPUNIT_ASSERT_THROW( undirected_int.remove_edge(-1, 0), std::invalid_argument );
+
+    // Adding edges several at a time.
+    vector<tuple<int, int, bool>> edges_with_weights = {
+        { -1, 7, false },
+        { 1, 0, true },
+        { 1, 7, true }
+    };
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weights(edges_with_weights) );
+    CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 7) );
+    CPPUNIT_ASSERT( !undirected_int.has_edge(7, -1) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(1, 0) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, 1) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
+
+    // Changing edge weights.
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.set_edge_weight("Mumbai", "New York", true) );
+    CPPUNIT_ASSERT( undirected_string.has_edge("Mumbai", "New York") );
+    CPPUNIT_ASSERT( undirected_string.has_edge("New York", "Mumbai") );
+
     // has_edge returns false when one of the vertices doesn't exist.
     CPPUNIT_ASSERT( !directed_int.has_edge(420, 69) );
 }
