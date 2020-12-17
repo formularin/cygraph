@@ -23,10 +23,9 @@ using std::vector;
 namespace cygraph {
 
     template <class Vertex, class EdgeWeight>
-    class AdjacencyListGraph: public cygraph::Graph<Vertex, EdgeWeight> {
+    class AdjacencyListGraphCommon: public cygraph::Graph<Vertex, EdgeWeight> {
         /*
-        A base adjacency list graph class with minimal functionality. Mainly exists to contain bits
-        of code that would be repeated in both of the child adjacency list graph classes.
+        Contains common functionality between weighted and unweighted adjacency list graphs.
         */
 
         protected:
@@ -83,225 +82,25 @@ namespace cygraph {
         }
     };
 
-    template <class Vertex>
-    class UnweightedAdjacencyListGraph: public AdjacencyListGraph<Vertex, bool> {
-        /*
-        A graph class implemented using an adjacency list, without edge weight functionality.
-        Vertex type must have std::hash overriden.
-        */
-
-        protected:
-
-        unordered_map<Vertex, unordered_set<Vertex>> adjacency_list;
-
-        public:
-        UnweightedAdjacencyListGraph() {
-            /*
-            Default constructor.
-            */
-        }
-
-        UnweightedAdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
-            /*
-            Class constructor.
-            */
-
-            this->directed = directed;
-            this->vertices = vertices;
-
-            int n_vertices = vertices.size();
-
-            // Initialize adjacency list.
-            for ( Vertex v : vertices ) {
-                adjacency_list[v] = unordered_set<Vertex>();
-            }
-        }
-
-        bool get_edge_weight(const Vertex& u, const Vertex& v) override {
-            /*
-            Returns whether or not an edge exists. An alias to has_edge except throws an error if
-            one of the vertices is not in the graph.
-            */
-            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-            return has_edge(u, v);
-        }
-
-        void add_vertex(const Vertex& v) override {
-            /*
-            Adds a vertex to the graph.
-            */
-            AdjacencyListGraph<Vertex, bool>::add_vertex(v);
-            // Add new list to adjacency list.
-            adjacency_list[v] = unordered_set<Vertex>();
-        }
-
-        void add_vertices(const unordered_set<Vertex>& vertices) override {
-            /*
-            Adds an array of vertices to the graph.
-            */
-            AdjacencyListGraph<Vertex, bool>::add_vertices(vertices);
-            // Add new lists to adjacency list.
-            for ( Vertex v : vertices ) {
-                adjacency_list[v] = unordered_set<Vertex>();
-            }
-        }
-
-        void remove_vertex(const Vertex& v) override {
-            /*
-            Removes a vertex from the graph.
-            */
-            AdjacencyListGraph<Vertex, bool>::remove_vertex(v);
-
-            // Remove neighbor set from adjacency list.
-            adjacency_list.erase(v);
-
-            // Remove from each neighbor list of other vertices.
-            unordered_set<Vertex> children;
-            for ( auto& it : adjacency_list ) {
-                it.second.erase(v);
-            }
-        }
-
-        void set_edge_weight(const Vertex& u, const Vertex& v, bool weight) override {
-            /*
-            Adds or removes an edge based on its weight.
-            */
-            if ( weight ) {
-                adjacency_list[u].insert(v);
-                if ( !this->directed ) adjacency_list[v].insert(u);
-            } else {
-                try {
-                    remove_edge(u, v);
-                } catch ( std::invalid_argument e ) {}
-            }
-        }
-
-        void add_edge(const Vertex& u, const Vertex& v) {
-            /*
-            Adds an edge between two vertices in the graph.
-            */
-            if ( has_edge(u, v) ) {
-                throw std::invalid_argument("Edge already exists.");
-            }
-            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-            adjacency_list[u].insert(v);
-            if ( !this->directed ) adjacency_list[v].insert(u);
-        }
-
-        void add_edges(const vector<pair<Vertex, Vertex>>& edges) {
-            /*
-            Adds multiple edges to the graph.
-            */
-            vector<pair<Vertex, Vertex>> added_edges;
-            try {
-                for ( const pair<Vertex, Vertex>& edge : edges ) {
-                    add_edge(edge.first, edge.second);
-                    added_edges.push_back(edge);
-                }
-            } catch ( std::invalid_argument e ) {
-                for ( const pair<Vertex, Vertex>& edge : added_edges ) {
-                    remove_edge(edge.first, edge.second);
-                }
-                throw e;
-            }
-        }
-
-        void remove_edge(const Vertex& u, const Vertex& v) override {
-            /*
-            Removes an edge from the graph.
-            */
-            if ( !has_edge(u, v) ) {
-                throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
-            }
-
-            adjacency_list[u].erase(v);
-            if ( !this->directed ) adjacency_list[v].erase(u);
-        }
-
-        void remove_edges(const vector<pair<Vertex, Vertex>>& edges) override {
-            /*
-            Removes multiple edges from the graph.
-            */
-            vector<pair<Vertex, Vertex>> removed_edges;
-            try {
-                for ( const pair<Vertex, Vertex>& edge : edges ) {
-                    remove_edge(edge.first, edge.second);
-                    removed_edges.push_back(edge);
-                }
-            } catch ( std::invalid_argument e ) {
-                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
-                    add_edge(edge.first, edge.second);
-                }
-                throw e;
-            }
-        }
-
-        bool has_edge(const Vertex& u, const Vertex& v) override {
-            /*
-            Returns whether or not a given edge is in the graph. If one or more of the vertices are
-            not in the graph, false is returned.
-            */
-            return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
-                   != adjacency_list[u].end();
-        }
-
-        unordered_set<Vertex> get_children(const Vertex& v) override {
-            /*
-            Returns the children of a given vertex in the graph. In an undirected graph, this is
-            equivalent to finding the "neighbors" of a vertex, and is the same as the method
-            get_parents.
-            */
-            if ( !this->has_vertex(v) ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-            return adjacency_list[v];
-        }
-
-        unordered_set<Vertex> get_parents(const Vertex& v) override {
-            /*
-            Returns the parents of a given vertex in the graph. In an undirected graph, this is
-            equivalent to finding the "neighbors" of a vertex, and is the same as the method
-            get_children.
-            */
-            if ( !this->has_vertex(v) ) {
-                throw std::invalid_argument("Vertex not in graph.");
-            }
-            unordered_set<Vertex> parents;
-            for ( auto& it : adjacency_list ) {
-                for ( Vertex child : it.second ) {
-                    if ( child == v ) {
-                        parents.insert(it.first);
-                        break;
-                    }
-                }
-            }
-            return parents;
-        }
-    };
-
     template <class Vertex, class EdgeWeight>
-    class WeightedAdjacencyListGraph: public AdjacencyListGraph<Vertex, EdgeWeight> {
+    class AdjacencyListGraph: public AdjacencyListGraphCommon<Vertex, EdgeWeight> {
         /*
         A graph class implemented using an adjacency list. Vertex type must have std::hash overriden.
         */
 
-        protected:
+        private:
 
         unordered_map<Vertex, vector<pair<Vertex, EdgeWeight>>> adjacency_list;
 
         public:
 
-        WeightedAdjacencyListGraph() {
+        AdjacencyListGraph() {
             /*
             Default constructor.
             */
         }
 
-        WeightedAdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
+        AdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
             /*
             Class constructor.
             */
@@ -334,7 +133,7 @@ namespace cygraph {
             /*
             Adds a vertex to the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertex(v);
+            AdjacencyListGraphCommon<Vertex, EdgeWeight>::add_vertex(v);
             // Add new list to adjacency list.
             adjacency_list[v] = vector<pair<Vertex, EdgeWeight>>();
         }
@@ -343,7 +142,7 @@ namespace cygraph {
             /*
             Adds an array of vertices to the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::add_vertices(vertices);
+            AdjacencyListGraphCommon<Vertex, EdgeWeight>::add_vertices(vertices);
             // Add new lists to adjacency list.
             for ( Vertex v : vertices ) {
                 adjacency_list[v] = vector<pair<Vertex, EdgeWeight>>();
@@ -354,7 +153,7 @@ namespace cygraph {
             /*
             Removes a vertex from the graph.
             */
-            AdjacencyListGraph<Vertex, EdgeWeight>::remove_vertex(v);
+            AdjacencyListGraphCommon<Vertex, EdgeWeight>::remove_vertex(v);
 
             // Remove neighbor set from adjacency list.
             adjacency_list.erase(v);
@@ -476,6 +275,206 @@ namespace cygraph {
                 if ( it.first == v ) continue;
                 for ( pair<Vertex, EdgeWeight> child : it.second ) {
                     if ( child.first == v ) {
+                        parents.insert(it.first);
+                        break;
+                    }
+                }
+            }
+            return parents;
+        }
+    };
+
+    template <class Vertex>
+    class AdjacencyListGraph<Vertex, bool> {
+        /*
+        A graph class implemented using an adjacency list, without edge weight functionality.
+        Vertex type must have std::hash overriden.
+        */
+
+        protected:
+
+        unordered_map<Vertex, unordered_set<Vertex>> adjacency_list;
+
+        public:
+        AdjacencyListGraph() {
+            /*
+            Default constructor.
+            */
+        }
+
+        AdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices) {
+            /*
+            Class constructor.
+            */
+
+            this->directed = directed;
+            this->vertices = vertices;
+
+            int n_vertices = vertices.size();
+
+            // Initialize adjacency list.
+            for ( Vertex v : vertices ) {
+                adjacency_list[v] = unordered_set<Vertex>();
+            }
+        }
+
+        bool get_edge_weight(const Vertex& u, const Vertex& v) override {
+            /*
+            Returns whether or not an edge exists. An alias to has_edge except throws an error if
+            one of the vertices is not in the graph.
+            */
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+            return has_edge(u, v);
+        }
+
+        void add_vertex(const Vertex& v) override {
+            /*
+            Adds a vertex to the graph.
+            */
+            AdjacencyListGraphCommon<Vertex, bool>::add_vertex(v);
+            // Add new list to adjacency list.
+            adjacency_list[v] = unordered_set<Vertex>();
+        }
+
+        void add_vertices(const unordered_set<Vertex>& vertices) override {
+            /*
+            Adds an array of vertices to the graph.
+            */
+            AdjacencyListGraphCommon<Vertex, bool>::add_vertices(vertices);
+            // Add new lists to adjacency list.
+            for ( Vertex v : vertices ) {
+                adjacency_list[v] = unordered_set<Vertex>();
+            }
+        }
+
+        void remove_vertex(const Vertex& v) override {
+            /*
+            Removes a vertex from the graph.
+            */
+            AdjacencyListGraphCommon<Vertex, bool>::remove_vertex(v);
+
+            // Remove neighbor set from adjacency list.
+            adjacency_list.erase(v);
+
+            // Remove from each neighbor list of other vertices.
+            unordered_set<Vertex> children;
+            for ( auto& it : adjacency_list ) {
+                it.second.erase(v);
+            }
+        }
+
+        void set_edge_weight(const Vertex& u, const Vertex& v, bool weight) override {
+            /*
+            Adds or removes an edge based on its weight.
+            */
+            if ( weight ) {
+                adjacency_list[u].insert(v);
+                if ( !this->directed ) adjacency_list[v].insert(u);
+            } else {
+                try {
+                    remove_edge(u, v);
+                } catch ( std::invalid_argument e ) {}
+            }
+        }
+
+        void add_edge(const Vertex& u, const Vertex& v) {
+            /*
+            Adds an edge between two vertices in the graph.
+            */
+            if ( has_edge(u, v) ) {
+                throw std::invalid_argument("Edge already exists.");
+            }
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+            adjacency_list[u].insert(v);
+            if ( !this->directed ) adjacency_list[v].insert(u);
+        }
+
+        void add_edges(const vector<pair<Vertex, Vertex>>& edges) {
+            /*
+            Adds multiple edges to the graph.
+            */
+            vector<pair<Vertex, Vertex>> added_edges;
+            try {
+                for ( const pair<Vertex, Vertex>& edge : edges ) {
+                    add_edge(edge.first, edge.second);
+                    added_edges.push_back(edge);
+                }
+            } catch ( std::invalid_argument e ) {
+                for ( const pair<Vertex, Vertex>& edge : added_edges ) {
+                    remove_edge(edge.first, edge.second);
+                }
+                throw e;
+            }
+        }
+
+        void remove_edge(const Vertex& u, const Vertex& v) override {
+            /*
+            Removes an edge from the graph.
+            */
+            if ( !has_edge(u, v) ) {
+                throw std::invalid_argument("Attempting to remove edge that doesn't exist.");
+            }
+
+            adjacency_list[u].erase(v);
+            if ( !this->directed ) adjacency_list[v].erase(u);
+        }
+
+        void remove_edges(const vector<pair<Vertex, Vertex>>& edges) override {
+            /*
+            Removes multiple edges from the graph.
+            */
+            vector<pair<Vertex, Vertex>> removed_edges;
+            try {
+                for ( const pair<Vertex, Vertex>& edge : edges ) {
+                    remove_edge(edge.first, edge.second);
+                    removed_edges.push_back(edge);
+                }
+            } catch ( std::invalid_argument e ) {
+                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
+                    add_edge(edge.first, edge.second);
+                }
+                throw e;
+            }
+        }
+
+        bool has_edge(const Vertex& u, const Vertex& v) override {
+            /*
+            Returns whether or not a given edge is in the graph. If one or more of the vertices are
+            not in the graph, false is returned.
+            */
+            return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
+                   != adjacency_list[u].end();
+        }
+
+        unordered_set<Vertex> get_children(const Vertex& v) override {
+            /*
+            Returns the children of a given vertex in the graph. In an undirected graph, this is
+            equivalent to finding the "neighbors" of a vertex, and is the same as the method
+            get_parents.
+            */
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+            return adjacency_list[v];
+        }
+
+        unordered_set<Vertex> get_parents(const Vertex& v) override {
+            /*
+            Returns the parents of a given vertex in the graph. In an undirected graph, this is
+            equivalent to finding the "neighbors" of a vertex, and is the same as the method
+            get_children.
+            */
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+            unordered_set<Vertex> parents;
+            for ( auto& it : adjacency_list ) {
+                for ( Vertex child : it.second ) {
+                    if ( child == v ) {
                         parents.insert(it.first);
                         break;
                     }
