@@ -8,87 +8,110 @@ Implementation of adjacency list class test fixtures.
 #include "../../../include/graph/adjacency_list.hpp"
 
 
-// --------- UNWEIGHTED ---------
-
-
-void TestUnweightedAdjacencyListGraph::setUp() {
+void TestAdjacencyListGraph::setUp() {
     /*
-    Creates UnweightedAdjacencyListGraph objects with varying vertex and edge
+    Creates AdjacencyListGraph objects with varying vertex and edge
     weight types.
     */
 
-    directed_int = UnweightedAdjacencyListGraph<int>(
+    directed_int = AdjacencyListGraph<int, int>(
         true, unordered_set<int>(int_vals.begin(), int_vals.end()));
-    directed_string = UnweightedAdjacencyListGraph<std::string>(
+    directed_string = AdjacencyListGraph<std::string, float>(
         true, unordered_set<std::string>(string_vals.begin(), string_vals.end()));
+    directed_object = AdjacencyListGraph<UserDefinedObject, bool>(
+        true, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end());
 
-    undirected_int = UnweightedAdjacencyListGraph<int>(
+    undirected_int = AdjacencyListGraph<int, int>(
         false, unordered_set<int>(int_vals.begin(), int_vals.end()));
-    undirected_string = UnweightedAdjacencyListGraph<std::string>(
+    undirected_string = AdjacencyListGraph<std::string, bool>(
         false, unordered_set<std::string>(string_vals.begin(), string_vals.end()));
+    undirected_object = AdjacencyListGraph<UserDefinedObject, float>(
+        false, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end()));
 }
 
 
-void TestUnweightedAdjacencyListGraph::tearDown() {}
+void TestAdjacencyListGraph::tearDown() {}
 
 
-void TestUnweightedAdjacencyListGraph::test_edges() {
+void TestAdjacencyListGraph::test_edges() {
     /*
     Tests the following methods:
-        - UnweightedAdjacencyListGraph::set_edge_weight
-        - UnweightedAdjacencyListGraph::set_edge_weights
-        - UnweightedAdjacencyListGraph::remove_edge
-        - UnweightedAdjacencyListGraph::remove_edges
-        - UnweightedAdjacencyListGraph::has_edge
-        - UnweightedAdjacencyListGraph::get_edge_weight
+        - AdjacencyListGraph::set_edge_weight
+        - AdjacencyListGraph::set_edge_weights
+        - AdjacencyListGraph::remove_edge
+        - AdjacencyListGraph::remove_edges
+        - AdjacencyListGraph::has_edge
+        - AdjacencyListGraph::get_edge_weight
     */
 
     // DIRECTED GRAPHS
 
-    // Adding edges one at a time.
+    // Setting edge weights one at a time.
 
-    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 0) );
-    // Add edge using set_edge_weight
-    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, true) );
-    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(0, -1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 0, 0) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, 200) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(0, -1, -100) );
+
     CPPUNIT_ASSERT( directed_int.has_edge(-1, 0) );
-    // Check edge existence with get_edge_weight
-    CPPUNIT_ASSERT( directed_int.get_edge_weight(-1, 7) );
-    CPPUNIT_ASSERT( directed_int.has_edge(0, -1) );
+    CPPUNIT_ASSERT( directed_int.get_edge_weight(-1, 7) == 200 );
+    CPPUNIT_ASSERT( directed_int.get_edge_weight(0, -1) == -100 );
     // Only one edge is added with directed graphs.
     CPPUNIT_ASSERT( !directed_int.has_edge(7, -1) );
+
+    // Adding edges one at a time (unweighted).
+
+    CPPUNIT_ASSERT_NO_THROW( directed_object.add_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT_NO_THROW( directed_object.add_edge(object_vals[3], object_vals[2]) );
+
+    CPPUNIT_ASSERT_NO_THROW( directed_object.has_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT_NO_THROW( directed_object.has_edge(object_vals[3], object_vals[2]) );
+    CPPUNIT_ASSERT_NO_THROW( directed_object.get_edge_weight(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT_NO_THROW( directed_object.get_edge_weight(object_vals[3], object_vals[2]) );
+    CPPUNIT_ASSERT_NO_THROW( !directed_object.has_edge(object_vals[1], object_vals[0]) );
+    CPPUNIT_ASSERT_NO_THROW( !directed_object.has_edge(object_vals[2], object_vals[3]) );
+    CPPUNIT_ASSERT_NO_THROW( !directed_object.get_edge_weight(object_vals[1], object_vals[0]) );
+    CPPUNIT_ASSERT_NO_THROW( !directed_object.get_edge_weight(object_vals[2], object_vals[3]) );
 
     // Removing edges one at a time.
 
     CPPUNIT_ASSERT_NO_THROW( directed_int.remove_edge(-1, 0) );
-    // Remove edge using set_edge_weight
-    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, false) );
     CPPUNIT_ASSERT( !directed_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT_THROW( directed_int.get_edge_weight(-1, 0), std::invalid_argument );
     // Only one edge is removed with directed graphs.
-    CPPUNIT_ASSERT( directed_int.get_edge_weight(0, -1) );
+    CPPUNIT_ASSERT( directed_int.get_edge_weight(0, -1) == -100 );
+    CPPUNIT_ASSERT( directed_int.has_edge(0, -1) );
 
-    // Adding edges several at a time.
+    // Removing edges one at a time (unweighted).
+
+    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT( !directed_object.get_edge_weight(object_vals[0], object_vals[1]) );
+    // Only one edge is removed with directed graphs.
+    CPPUNIT_ASSERT( directed_object.has_edge(object_vals[1], object_vals[0]) );
+    CPPUNIT_ASSERT( directed_object.get_edge_weight(object_vals[1], object_vals[0]) );
+
+    // Setting edge weights several at a time.
 
     // Invalid call: one of the vertices doesn't exist.
     std::string non_vertex = "Beijing";
-    vector<pair<std::string, std::string>> edges = {
-        { string_vals[0], string_vals[1] },
-        { string_vals[0], string_vals[2] },
-        { string_vals[1], string_vals[0] },
-        { non_vertex, string_vals[0] }
+    vector<tuple<std::string, std::string, float>> edges = {
+        { string_vals[0], string_vals[1], 0.0f },
+        { string_vals[0], string_vals[2], 1.0f },
+        { string_vals[1], string_vals[0], -1.0f },
+        { non_vertex, string_vals[0], 100.0f }
     };
-    CPPUNIT_ASSERT_THROW( directed_string.add_edges(edges), std::invalid_argument );
+    CPPUNIT_ASSERT_THROW( directed_string.set_edge_weights(edges), std::invalid_argument );
     // No edges were added.
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[1]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[2]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[1], string_vals[0]) );
 
     edges = {
-        { string_vals[0], string_vals[1] },
-        { string_vals[0], string_vals[2] },
-        { string_vals[1], string_vals[0] },
+        { string_vals[0], string_vals[1], 0.0f },
+        { string_vals[0], string_vals[2], 1.0f },
+        { string_vals[1], string_vals[0], -1.0f },
     };
-    CPPUNIT_ASSERT_NO_THROW( directed_string.add_edges(edges) );
+    CPPUNIT_ASSERT_NO_THROW( directed_string.set_edge_weights(edges) );
     // All edges were added.
     CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[1]) );
     CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[2]) );
@@ -118,58 +141,84 @@ void TestUnweightedAdjacencyListGraph::test_edges() {
 
     // UNDIRECTED GRAPHS
 
-    // Adding edges one at a time.
+    // Setting edge weights one at a time.
 
-    CPPUNIT_ASSERT_NO_THROW( undirected_int.add_edge(-1, 0) );
-    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 7, true) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 0, 0) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weight(-1, 7, -200) );
+    CPPUNIT_ASSERT_THROW( undirected_int.set_edge_weight(-200, 7, 1), std::invalid_argument );
     CPPUNIT_ASSERT( undirected_int.has_edge(-1, 0) );
     CPPUNIT_ASSERT( undirected_int.has_edge(0, -1) );
-    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, -1) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, -1) == 0 );
+
+    // Adding edges one at a time (unweighted).
+
+    CPPUNIT_ASSERT_NO_THROW(
+        undirected_string.set_edge_weight(string_vals[0], string_vals[1], true) );
+    CPPUNIT_ASSERT_NO_THROW(
+        undirected_string.add_edge(string_vals[2], string_vals[3]));
+    CPPUNIT_ASSERT_THROW(
+        undirected_string.add_edge("Beijing", "New York"), std::invalid_argument );
+    CPPUNIT_ASSERT( undirected_string.has_edge(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( undirected_string.has_edge(string_vals[1], string_vals[0]) );
+    CPPUNIT_ASSERT( undirected_string.get_edge_weight(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( undirected_string.get_edge_weight(string_vals[1], string_vals[0]) );
 
     // Removing edges one at a time.
 
     CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
-    CPPUNIT_ASSERT( !undirected_int.get_edge_weight(0, -1) );
+    CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(0, -1), std::invalid_argument );
     // Removing an edge that doesn't exist.
     CPPUNIT_ASSERT_THROW( undirected_int.remove_edge(-1, 0), std::invalid_argument );
 
-    // Adding edges several at a time.
-    vector<tuple<int, int, bool>> edges_with_weights = {
-        { -1, 7, false },
-        { 1, 0, true },
-        { 1, 7, true }
+    // Removing edges one at a time (unweighted)
+
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.remove_edge(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( !undirected_string.has_edge(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( !undirected_string.has_edge(string_vals[1], string_vals[0]) );
+    CPPUNIT_ASSERT( !undirected_string.get_edge_weight(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( !undirected_string.get_edge_weight(string_vals[1], string_vals[0]) );
+    // Removing an edge that doesn't exist.
+    CPPUNIT_ASSERT_THROW(
+        undirected_string.remove_edge(string_vals[0], string_vals[3]), std::invalid_argument );
+
+    // Setting edge weights several at a time.
+    vector<tuple<int, int, int>> undirected_edges = {
+        { -1, 7, 100 },
+        { 1, 0, -100 },
+        { 1, 7, 0 }
     };
-    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weights(edges_with_weights) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weights(undirected_edges) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 7) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(7, -1) );
-    CPPUNIT_ASSERT( undirected_int.get_edge_weight(1, 0) );
-    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, 1) );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(1, 0) == -100 );
+    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, 1) == -100 );
     CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
     CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
 
     // Changing edge weights.
-    CPPUNIT_ASSERT_NO_THROW( undirected_string.set_edge_weight("Mumbai", "New York", true) );
-    CPPUNIT_ASSERT( undirected_string.has_edge("Mumbai", "New York") );
-    CPPUNIT_ASSERT( undirected_string.has_edge("New York", "Mumbai") );
+    CPPUNIT_ASSERT_NO_THROW(
+        undirected_string.set_edge_weight(string_vals[0], string_vals[1], false) );
+    CPPUNIT_ASSERT( !undirected_string.get_edge_weight(string_vals[0], string_vals[1]) );
+    CPPUNIT_ASSERT( !undirected_string.get_edge_weight(string_vals[1], string_vals[0]) );
 
     // has_edge returns false when one of the vertices doesn't exist.
     CPPUNIT_ASSERT( !directed_int.has_edge(420, 69) );
 }
 
 
-void TestUnweightedAdjacencyListGraph::test_family() {
+void TestAdjacencyListGraph::test_family() {
     /*
     Tests the following methods:
-        - UnweightedAdjacencyListGraph::get_children
-        - UnweightedAdjacencyListGraph::get_parents
+        - AdjacencyListGraph::get_children
+        - AdjacencyListGraph::get_parents
     */
 
     // DIRECTED GRAPHS
 
-    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 0) );
-    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 1) );
-    CPPUNIT_ASSERT_NO_THROW( directed_int.add_edge(-1, 7) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 0, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 1, 1) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(-1, 7, 1) );
 
     // get_children
 
@@ -204,115 +253,39 @@ void TestUnweightedAdjacencyListGraph::test_family() {
 }
 
 
-void TestUnweightedAdjacencyListGraph::test_vertices() {
+void TestAdjacencyListGraph::test_vertices() {
     /*
     Tests the following methods:
-        - UnweightedAdjacencyListGraph::add_vertex
-        - UnweightedAdjacencyListGraph::add_vertices
-        - UnweightedAdjacencyListGraph::remove_vertex
-        - UnweightedAdjacencyListGraph::remove_vertices
-        - UnweightedAdjacencyListGraph::has_vertex
-        - UnweightedAdjacencyListGraph::get_vertices
+        - AdjacencyListGraph::add_vertex
+        - AdjacencyListGraph::add_vertices
+        - AdjacencyListGraph::remove_vertex
+        - AdjacencyListGraph::remove_vertices
+        - AdjacencyListGraph::has_vertex
+        - AdjacencyListGraph::get_vertices
     */
 }
 
 
-CppUnit::Test* TestUnweightedAdjacencyListGraph::suite() {
-
-    CppUnit::TestSuite* test_suite =
-        new CppUnit::TestSuite("TestUnweightedAdjacencyListGraph");
-    test_suite->addTest(
-        new CppUnit::TestCaller<TestUnweightedAdjacencyListGraph>(
-            "test_edges",
-            &TestUnweightedAdjacencyListGraph::test_edges
-        )
-    );
-    test_suite->addTest(
-        new CppUnit::TestCaller<TestUnweightedAdjacencyListGraph>(
-            "test_vertices",
-            &TestUnweightedAdjacencyListGraph::test_vertices
-        )
-    );
-    test_suite->addTest(
-        new CppUnit::TestCaller<TestUnweightedAdjacencyListGraph>(
-            "test_family",
-            &TestUnweightedAdjacencyListGraph::test_family
-        )
-    );
-    return test_suite;
-}
-
-
-
-// --------- WEIGHTED ---------
-
-
-void TestWeightedAdjacencyListGraph::setUp() {
-    /*
-    Creates WeightedAdjacencyListGraph objects with varying vertex and edge
-    weight types.
-    */
-}
-
-
-void TestWeightedAdjacencyListGraph::tearDown() {}
-
-
-void TestWeightedAdjacencyListGraph::test_edges() {
-    /*
-    Tests the following methods:
-        - WeightedAdjacencyListGraph::set_edge_weight
-        - WeightedAdjacencyListGraph::set_edge_weights
-        - WeightedAdjacencyListGraph::remove_edge
-        - WeightedAdjacencyListGraph::remove_edges
-        - WeightedAdjacencyListGraph::has_edge
-        - WeightedAdjacencyListGraph::get_edge_weight
-    */
-}
-
-
-void TestWeightedAdjacencyListGraph::test_family() {
-    /*
-    Tests the following methods:
-        - WeightedAdjacencyListGraph::get_children
-        - WeightedAdjacencyListGraph::get_parents
-    */
-}
-
-
-void TestWeightedAdjacencyListGraph::test_vertices() {
-    /*
-    Tests the following methods:
-        - WeightedAdjacencyListGraph::add_vertex
-        - WeightedAdjacencyListGraph::add_vertices
-        - WeightedAdjacencyListGraph::remove_vertex
-        - WeightedAdjacencyListGraph::remove_vertices
-        - WeightedAdjacencyListGraph::has_vertex
-        - WeightedAdjacencyListGraph::get_vertices
-    */
-}
-
-
-CppUnit::Test* TestWeightedAdjacencyListGraph::suite() {
+CppUnit::Test* TestAdjacencyListGraph::suite() {
 
     CppUnit::TestSuite* test_suite =
         new CppUnit::TestSuite("TestAdjacencyListGraph");
     test_suite->addTest(
-        new CppUnit::TestCaller<TestWeightedAdjacencyListGraph>(
+        new CppUnit::TestCaller<TestAdjacencyListGraph>(
             "test_edges",
-            &TestWeightedAdjacencyListGraph::test_edges
+            &TestAdjacencyListGraph::test_edges
         )
     );
     test_suite->addTest(
-        new CppUnit::TestCaller<TestWeightedAdjacencyListGraph>(
+        new CppUnit::TestCaller<TestAdjacencyListGraph>(
             "test_vertices",
-            &TestWeightedAdjacencyListGraph::test_vertices
+            &TestAdjacencyListGraph::test_vertices
         )
     );
     test_suite->addTest(
-        new CppUnit::TestCaller<TestWeightedAdjacencyListGraph>(
+        new CppUnit::TestCaller<TestAdjacencyListGraph>(
             "test_family",
-            &TestWeightedAdjacencyListGraph::test_family
+            &TestAdjacencyListGraph::test_family
         )
     );
     return test_suite;
