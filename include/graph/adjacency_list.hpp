@@ -12,6 +12,8 @@ An implementation of the graph data structure using an adjacency list.
 #include <utility>
 #include <vector>
 
+#include <iostream>
+
 #include "graph.hpp"
 
 using std::pair;
@@ -173,7 +175,7 @@ namespace cygraph {
             }
         }
 
-        void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) override {
+        void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) override {
             /*
             Sets the weight of an edge.
             */
@@ -182,17 +184,18 @@ namespace cygraph {
             }
 
             int to_remove = 0;
-            for( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
+            for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
                 if ( child.first == v ) break;
                 to_remove++;
             }
-            if ( to_remove < adjacency_list[v].size() ) {
+            if ( to_remove < adjacency_list[u].size() ) {
                 // (u, v) already exists.
                 adjacency_list[u].erase(adjacency_list[u].begin() + to_remove);
             }
-            adjacency_list[u].push_back(pair<Vertex, EdgeWeight>(v, weight));
+            pair<Vertex, EdgeWeight> neighbor_pair = {v, weight};
+            adjacency_list[u].push_back(neighbor_pair);
 
-            if ( this->directed ) {
+            if ( !this->directed ) {
                 to_remove = 0;
                 for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
                     if ( child.first == u ) break;
@@ -211,6 +214,10 @@ namespace cygraph {
             Removes an edge from the graph. A warning is raised if attempting to remove an edge
             that doesn't exist.
             */
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+
             int to_remove = 0;
             for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
                 if ( child.first == v ) break;
@@ -242,9 +249,7 @@ namespace cygraph {
                 return false;
             }
             for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
-                if ( child.first == v ) {
-                    return true;
-                }
+                if ( child.first == v ) return true;
             }
             return false;
         }
@@ -255,6 +260,10 @@ namespace cygraph {
             equivalent to finding the "neighbors" of a vertex, and is the same as the method
             get_parents.
             */
+
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
 
             unordered_set<Vertex> children;
             for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
@@ -269,6 +278,10 @@ namespace cygraph {
             equivalent to finding the "neighbors" of a vertex, and is the same as the method
             get_children.
             */
+
+            if ( !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
 
             unordered_set<Vertex> parents;
             for ( auto& it : adjacency_list ) {
@@ -285,13 +298,13 @@ namespace cygraph {
     };
 
     template <class Vertex>
-    class AdjacencyListGraph<Vertex, bool> {
+    class AdjacencyListGraph<Vertex, bool>: public AdjacencyListGraphCommon<Vertex, bool> {
         /*
         A graph class implemented using an adjacency list, without edge weight functionality.
         Vertex type must have std::hash overriden.
         */
 
-        protected:
+        private:
 
         unordered_map<Vertex, unordered_set<Vertex>> adjacency_list;
 
@@ -365,7 +378,7 @@ namespace cygraph {
             }
         }
 
-        void set_edge_weight(const Vertex& u, const Vertex& v, bool weight) override {
+        void set_edge_weight(const Vertex& u, const Vertex& v, const bool& weight) override {
             /*
             Adds or removes an edge based on its weight.
             */

@@ -78,7 +78,7 @@ namespace cygraph {
         }
 
         virtual void set_edge_weight(const Vertex& u, const Vertex& v,
-            const EdgeWeight weight) = 0;
+            const EdgeWeight& weight) = 0;
         /*
         Sets the weight of an edge.
         */

@@ -210,7 +210,7 @@ namespace cygraph {
             }
         }
 
-        void set_edge_weight(const Vertex& u, const Vertex& v, EdgeWeight weight) override {
+        void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) override {
             /*
             Sets the weight of an edge.
             */

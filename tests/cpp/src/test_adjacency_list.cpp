@@ -19,7 +19,7 @@ void TestAdjacencyListGraph::setUp() {
     directed_string = AdjacencyListGraph<std::string, float>(
         true, unordered_set<std::string>(string_vals.begin(), string_vals.end()));
     directed_object = AdjacencyListGraph<UserDefinedObject, bool>(
-        true, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end());
+        true, unordered_set<UserDefinedObject>(object_vals.begin(), object_vals.end()));
 
     undirected_int = AdjacencyListGraph<int, int>(
         false, unordered_set<int>(int_vals.begin(), int_vals.end()));
@@ -61,6 +61,7 @@ void TestAdjacencyListGraph::test_edges() {
     // Adding edges one at a time (unweighted).
 
     CPPUNIT_ASSERT_NO_THROW( directed_object.add_edge(object_vals[0], object_vals[1]) );
+    CPPUNIT_ASSERT_NO_THROW( directed_object.add_edge(object_vals[1], object_vals[0]) );
     CPPUNIT_ASSERT_NO_THROW( directed_object.add_edge(object_vals[3], object_vals[2]) );
 
     CPPUNIT_ASSERT_NO_THROW( directed_object.has_edge(object_vals[0], object_vals[1]) );
@@ -117,7 +118,8 @@ void TestAdjacencyListGraph::test_edges() {
     CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[2]) );
     CPPUNIT_ASSERT( directed_string.get_edge_weight(string_vals[1], string_vals[0]) );
     CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[2], string_vals[0]) );
-    CPPUNIT_ASSERT( !directed_string.get_edge_weight(string_vals[2], string_vals[0]) );
+    CPPUNIT_ASSERT_THROW( directed_string.get_edge_weight(string_vals[2], string_vals[0]),
+        std::invalid_argument );
 
     // Removing edges several at a time.
 
@@ -166,8 +168,11 @@ void TestAdjacencyListGraph::test_edges() {
     // Removing edges one at a time.
 
     CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 0) );
+    CPPUNIT_ASSERT_NO_THROW( undirected_int.remove_edge(-1, 7) );
     CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 0) );
+    CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 7) );
     CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(0, -1), std::invalid_argument );
+    CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(7, -1), std::invalid_argument );
     // Removing an edge that doesn't exist.
     CPPUNIT_ASSERT_THROW( undirected_int.remove_edge(-1, 0), std::invalid_argument );
 
@@ -189,8 +194,8 @@ void TestAdjacencyListGraph::test_edges() {
         { 1, 7, 0 }
     };
     CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weights(undirected_edges) );
-    CPPUNIT_ASSERT( !undirected_int.has_edge(-1, 7) );
-    CPPUNIT_ASSERT( !undirected_int.has_edge(7, -1) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(-1, 7) );
+    CPPUNIT_ASSERT( undirected_int.has_edge(7, -1) );
     CPPUNIT_ASSERT( undirected_int.get_edge_weight(1, 0) == -100 );
     CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, 1) == -100 );
     CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
