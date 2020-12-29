@@ -172,6 +172,7 @@ namespace cygraph {
                 if ( to_remove < children.size() ) {
                     children.erase(children.begin() + to_remove);
                 }
+                to_remove = 0;
             }
         }
 
@@ -380,8 +381,13 @@ namespace cygraph {
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const bool& weight) override {
             /*
-            Adds or removes an edge based on its weight.
+            Adds or removes an edge.
             */
+
+            if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+                throw std::invalid_argument("Vertex not in graph.");
+            }
+
             if ( weight ) {
                 adjacency_list[u].insert(v);
                 if ( !this->directed ) adjacency_list[v].insert(u);

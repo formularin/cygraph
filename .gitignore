@@ -1,6 +1,7 @@
 # Dev
 .pytest_cache/
 .vscode/
+.token
 venv/
 maintenance.py
 clean

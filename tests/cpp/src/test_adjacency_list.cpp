@@ -268,6 +268,67 @@ void TestAdjacencyListGraph::test_vertices() {
         - AdjacencyListGraph::has_vertex
         - AdjacencyListGraph::get_vertices
     */
+
+    // Adding vertices one at a time.
+
+    // Adding vertices one at a time.
+
+    CPPUNIT_ASSERT_NO_THROW( directed_int.add_vertex(100) );
+    CPPUNIT_ASSERT_NO_THROW( directed_int.add_vertex(1000) );
+    CPPUNIT_ASSERT( directed_int.has_vertex(100) );
+    CPPUNIT_ASSERT( directed_int.has_vertex(1000) );
+    // The vertices can be used to make edges.
+    CPPUNIT_ASSERT_NO_THROW( directed_int.set_edge_weight(100, 1000, 1) );
+    // Adding vertex that already exists.
+    CPPUNIT_ASSERT_THROW( directed_int.add_vertex(100), std::invalid_argument );
+
+    // Removing vertices one at a time.
+
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.remove_vertex("") );
+    CPPUNIT_ASSERT_NO_THROW( undirected_string.remove_vertex("New York") );
+    CPPUNIT_ASSERT( !undirected_string.has_vertex("") );
+    CPPUNIT_ASSERT( !undirected_string.has_vertex("New York") );
+    // The vertices can no longer be used to make edges.
+    CPPUNIT_ASSERT_THROW( undirected_string.set_edge_weight("", "New York", true),
+                          std::invalid_argument );
+    // Removing vertex that does not exist.
+    CPPUNIT_ASSERT_THROW( undirected_string.remove_vertex("New York"), std::invalid_argument );
+
+    // Adding vertices several at a time.
+
+    // Invalid call: one of the vertices already is in the graph.
+    unordered_set<UserDefinedObject> vertices =
+        { UserDefinedObject(100, 100), UserDefinedObject(1000, 1000),
+          UserDefinedObject(10000, 10000), object_vals[0] };
+    CPPUNIT_ASSERT_THROW( directed_object.add_vertices(vertices), std::invalid_argument );
+    // No vertices were added.
+    CPPUNIT_ASSERT( !directed_object.has_vertex(UserDefinedObject(100, 100)) );
+    CPPUNIT_ASSERT( !directed_object.has_vertex(UserDefinedObject(1000, 1000)) );
+    CPPUNIT_ASSERT( !directed_object.has_vertex(UserDefinedObject(10000, 10000)) );
+
+    vertices =
+        { UserDefinedObject(100, 100), UserDefinedObject(1000, 1000),
+          UserDefinedObject(10000, 10000) };
+    CPPUNIT_ASSERT_NO_THROW( directed_object.add_vertices(vertices) );
+    // All vertices were added.
+    CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(100, 100)) );
+    CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(1000, 1000)) );
+    CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(10000, 10000)) );
+
+    // Removing vertices several at a time.
+
+    // Invalid call: one of the vertices doesn't exist.
+    vertices = { object_vals[0], object_vals[1], UserDefinedObject(200, 200) };
+    CPPUNIT_ASSERT_THROW( directed_object.remove_vertices(vertices), std::invalid_argument );
+    // No vertices were removed.
+    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[0]) );
+    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[1]) );
+
+    vertices = { object_vals[0], object_vals[1] };
+    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_vertices(vertices) );
+    // All vertices were removed.
+    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[0]) );
+    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[1]) );
 }
 
 
