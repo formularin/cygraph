@@ -5,6 +5,7 @@ Common functions and classes for unit tests.
 #ifndef CYGRAPH_TEST_UTILS_HPP
 #define CYGRAPH_TEST_UTILS_HPP
 
+#include <iostream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -14,6 +15,7 @@ using std::vector;
 
 
 class UserDefinedObject {
+    friend std::ostream& operator<<(std::ostream& target, const UserDefinedObject& source);
     private:
         int a, b;
     public:
@@ -45,5 +47,7 @@ namespace std {
         size_t operator()(const UserDefinedObject& object) const;
     };
 }
+// Override << for UserDefinedObject and std::ostream
+std::ostream& operator<<(std::ostream& target, const UserDefinedObject& source);
 
 #endif

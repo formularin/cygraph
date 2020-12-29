@@ -2,6 +2,7 @@
 Common functions and classes for unit tests.
 */
 
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
@@ -13,4 +14,11 @@ std::size_t std::hash<UserDefinedObject>::operator()(const UserDefinedObject& ob
     std::size_t a_hash = std::hash<int>()(object.get_a());
     std::size_t b_hash = std::hash<int>()(object.get_b()) << 1;
     return a_hash ^ b_hash;
+}
+
+
+// Overriding << for std::ostream and UserDefinedObject
+std::ostream& operator<<(std::ostream& target, const UserDefinedObject& source) {
+    target << source.a << " " << source.b;
+    return target;
 }
