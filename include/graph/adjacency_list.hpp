@@ -442,24 +442,6 @@ namespace cygraph {
             if ( !this->directed ) adjacency_list[v].erase(u);
         }
 
-        void remove_edges(const vector<pair<Vertex, Vertex>>& edges) override {
-            /*
-            Removes multiple edges from the graph.
-            */
-            vector<pair<Vertex, Vertex>> removed_edges;
-            try {
-                for ( const pair<Vertex, Vertex>& edge : edges ) {
-                    remove_edge(edge.first, edge.second);
-                    removed_edges.push_back(edge);
-                }
-            } catch ( std::invalid_argument e ) {
-                for ( const pair<Vertex, Vertex>& edge : removed_edges ) {
-                    add_edge(edge.first, edge.second);
-                }
-                throw e;
-            }
-        }
-
         bool has_edge(const Vertex& u, const Vertex& v) override {
             /*
             Returns whether or not a given edge is in the graph. If one or more of the vertices are
