@@ -30,18 +30,17 @@ namespace cygraph {
         /*
         A generic Graph class. Not to be instantiated.
         */
+
         protected:
 
         bool directed;
 
         public:
 
-        bool get_directed() {
-            /*
-            Returns whether or not the graph is directed.
-            */
-            return directed;
-        }
+        bool get_directed() { return directed; }
+        /*
+        Returns whether or not the graph is directed.
+        */
 
         virtual EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v) = 0;
         /*
@@ -63,19 +62,10 @@ namespace cygraph {
         Removes a vertex from the graph.
         */
 
-        virtual void remove_vertices(const unordered_set<Vertex>& vertices) {
-            /*
-            Removes a set of vertices from the graph.
-            */
-            for ( Vertex v : vertices ) {
-                if ( !has_vertex(v) ) {
-                    throw std::invalid_argument("Attempting to remove vertex that does not exist");
-                }
-            }
-            for ( Vertex v : vertices ) {
-                remove_vertex(v);
-            }
-        }
+        virtual void remove_vertices(const unordered_set<Vertex>& vertices);
+        /*
+        Removes a set of vertices from the graph.
+        */
 
         virtual void set_edge_weight(const Vertex& u, const Vertex& v,
             const EdgeWeight& weight) = 0;
@@ -83,28 +73,10 @@ namespace cygraph {
         Sets the weight of an edge.
         */
 
-        virtual void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges) {
-            /*
-            Sets the weights of a vector of edges in the graph.
-            */
-            vector<pair<Vertex, Vertex>> set_edges;
-            pair<Vertex, Vertex> edge_;
-            Vertex u, v;
-            for ( tuple<Vertex, Vertex, EdgeWeight> edge : edges ) {
-                try {
-                    u = get<0>(edge);
-                    v = get<1>(edge);
-                    set_edge_weight(u, v, get<2>(edge));
-                    edge_ = {u, v};
-                    set_edges.push_back(edge_);
-                } catch ( std::invalid_argument e ) {
-                    for ( pair<Vertex, Vertex> removal_edge : set_edges ) {
-                        remove_edge(removal_edge.first, removal_edge.second);
-                    }
-                    throw e;
-                }
-            }
-        }
+        virtual void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges);
+        /*
+        Sets the weights of a vector of edges in the graph.
+        */
 
         virtual void remove_edge(const Vertex& u, const Vertex& v) = 0;
         /*
@@ -112,30 +84,10 @@ namespace cygraph {
         attempting to remove an edge that doesn't exist.
         */
 
-        virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges) {
-            /*
-            Removes a set of edges from the graph.
-            */
-            vector<tuple<Vertex, Vertex, EdgeWeight>> removed_edges;
-            EdgeWeight weight;
-            tuple<Vertex, Vertex, EdgeWeight> edge_;
-
-            for ( pair<Vertex, Vertex> edge : edges ) {
-                try {
-                    weight = get_edge_weight(edge.first, edge.second);
-                    remove_edge(edge.first, edge.second);
-                    edge_ = {edge.first, edge.second, weight};
-                    removed_edges.push_back(edge_);
-
-                } catch ( std::invalid_argument e ) {
-                    for ( tuple<Vertex, Vertex, EdgeWeight> readdition_edge : removed_edges ) {
-                        set_edge_weight(get<0>(readdition_edge), get<1>(readdition_edge),
-                                        get<2>(readdition_edge));
-                    }
-                    throw e;
-                }
-            }
-        }
+        virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges);
+        /*
+        Removes a set of edges from the graph.
+        */
 
         virtual bool has_edge(const Vertex& u, const Vertex& v) = 0;
         /*
@@ -160,6 +112,9 @@ namespace cygraph {
         */
     };
 }
+
+
+#include "graph.tpp"
 
 
 #endif

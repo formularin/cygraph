@@ -12,7 +12,7 @@ Implementation of adjacency matrix class test fixture.
 
 #include "../include/utils.hpp"
 #include "../include/test_adjacency_matrix.hpp"
-#include "../../../include/graph/adjacency_matrix.hpp"
+#include "../../../include/cygraph.hpp"
 
 
 using std::pair;
