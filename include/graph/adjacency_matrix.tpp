@@ -51,7 +51,7 @@ namespace cygraph {
 
     template<class Vertex, class EdgeWeight>
     EdgeWeight AdjacencyMatrixGraph<Vertex, EdgeWeight>::get_edge_weight(const Vertex& u,
-            const Vertex &v) override {
+            const Vertex &v) {
 
         int u_index = get_vertex_int(u);
         int v_index = get_vertex_int(v);
@@ -64,7 +64,7 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::add_vertex(const Vertex& v) override {
+    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::add_vertex(const Vertex& v) {
         if ( std::find(vertices.begin(), vertices.end(), v) != vertices.end() ) {
             throw std::invalid_argument("Vertex is already in graph.");
         }
@@ -83,7 +83,7 @@ namespace cygraph {
 
     template<class Vertex, class EdgeWeight>
     void AdjacencyMatrixGraph<Vertex, EdgeWeight>::add_vertices(
-            const unordered_set<Vertex>& vertices) override {
+            const unordered_set<Vertex>& vertices) {
 
         int n_new_vertices = vertices.size();
 
@@ -117,7 +117,7 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::remove_vertex(const Vertex& v) override {
+    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::remove_vertex(const Vertex& v) {
         int v_index = get_vertex_int(v);
 
         // Remove weights from edge_weights.
@@ -157,8 +157,8 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::set_edge_weight(const Vertex& u, const Vertex& v, 
-            const EdgeWeight& weight) override {
+    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::set_edge_weight(const Vertex& u,
+            const Vertex& v, const EdgeWeight& weight) {
 
         int u_index = get_vertex_int(u);
         int v_index = get_vertex_int(v);
@@ -175,8 +175,7 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::remove_edge(const Vertex& u, const Vertex& v) 
-            override {
+    void AdjacencyMatrixGraph<Vertex, EdgeWeight>::remove_edge(const Vertex& u, const Vertex& v) {
 
         int u_index = get_vertex_int(u);
         int v_index = get_vertex_int(v);
@@ -195,8 +194,7 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    bool AdjacencyMatrixGraph<Vertex, EdgeWeight>::has_edge(const Vertex& u, const Vertex& v) 
-            override {
+    bool AdjacencyMatrixGraph<Vertex, EdgeWeight>::has_edge(const Vertex& u, const Vertex& v) {
 
         int u_index, v_index;
         try {
@@ -210,13 +208,13 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    bool AdjacencyMatrixGraph<Vertex, EdgeWeight>::has_vertex(const Vertex& v) override {
+    bool AdjacencyMatrixGraph<Vertex, EdgeWeight>::has_vertex(const Vertex& v) {
         return std::find(vertices.begin(), vertices.end(), v) != vertices.end();
     }
 
     template<class Vertex, class EdgeWeight>
-    unordered_set<Vertex> AdjacencyMatrixGraph<Vertex, EdgeWeight>::get_children(const Vertex& v) 
-            override {
+    unordered_set<Vertex> AdjacencyMatrixGraph<Vertex, EdgeWeight>::get_children(
+            const Vertex& v) {
 
         unordered_set<Vertex> children;
         int v_index = get_vertex_int(v);
@@ -231,9 +229,7 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    unordered_set<Vertex> AdjacencyMatrixGraph<Vertex, EdgeWeight>::get_parents(const Vertex& v)
-            override {
-
+    unordered_set<Vertex> AdjacencyMatrixGraph<Vertex, EdgeWeight>::get_parents(const Vertex& v) {
         unordered_set<Vertex> parents;
         int v_index = get_vertex_int(v);
 

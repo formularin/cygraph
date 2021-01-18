@@ -63,7 +63,8 @@ namespace cygraph {
     template<class Vertex, class EdgeWeight>
     class AdjacencyListGraph: public AdjacencyListGraphCommon<Vertex, EdgeWeight> {
         /*
-        A graph class implemented using an adjacency list. Vertex type must have std::hash overriden.
+        A graph class implemented using an adjacency list. Vertex type must have std::hash
+        overriden.
         */
 
         private:
@@ -78,7 +79,7 @@ namespace cygraph {
             */
         }
 
-        AdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices)
+        AdjacencyListGraph(bool directed, const unordered_set<Vertex>& vertices);
         /*
         Class constructor.
         */
