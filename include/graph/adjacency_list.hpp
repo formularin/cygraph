@@ -115,7 +115,14 @@ namespace cygraph {
         /*
          * Removes a vertex from the graph.
          * 
-         * Throws std::invalid_argument if the vertex doesn't exist.
+         * Throws std::invalid_argument if the vertex isn't in the graph.
+         */
+
+        void remove_vertices(const unordered_set<Vertex>& vertices);
+        /*
+         * Removes a set of vertices from the graph.
+         * 
+         * Throws std::invalid_argument if any of the vertices aren't in the graph.
          */
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight);
@@ -211,13 +218,12 @@ namespace cygraph {
         /*
          * Removes a vertex from the graph.
          * 
-         * Throws std::invalid_argument if attempting to remove a vertex that doesn't exist in the 
-         * graph.
+         * Throws std::invalid_argument if attempting to remove a vertex that isn't in the graph.
          */
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const bool& weight) override;
         /*
-         * Adds or removes an edge.
+         * Adds or removes an edge between two vertices in the graph.
          */
 
         void add_edge(const Vertex& u, const Vertex& v);
@@ -258,5 +264,11 @@ namespace cygraph {
 }
 
 #include "adjacency_list.tpp"
+
+// Create alias for AdjacencyListGraph<Vertex, bool> because of lack of partial specialization 
+// support in Cython.
+
+template<class Vertex>
+using UndirectedAdjacencyListGraph = AdjacencyListGraph<Vertex, bool>;
 
 #endif
