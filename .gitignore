@@ -3,7 +3,6 @@
 .vscode/
 .token
 venv/
-maintenance.py
 clean
 TODO.md
 
@@ -28,18 +27,15 @@ tests/cpp/core
 # MacOS
 .DS_Store
 
-# Misc.
+# Experimentation
 setup_test.py
-test
-test.c
-test.h
-test.hpp
-test.py
-test.pyx
-test.pxd
-test.cpp
-test.html
-test1.cpp
+test_lib.cpp
+test_lib.hpp
+test_main
+test_main.cpp
+test_module.cpp
+test_module.pxd
+test_module.pyx
 
 # Sphinx
 doc
