@@ -20,35 +20,33 @@ using std::vector;
 
 namespace cygraph {
 
-    // AdjacencyListGraphCommon
+    // AdjacencyListGraphCommon<Vertex, EdgeWeight>
 
     template<class Vertex, class EdgeWeight>
     void AdjacencyListGraphCommon<Vertex, EdgeWeight>::add_vertex(const Vertex& v) {
-        if ( has_vertex(v) ) {
+        if ( has_vertex(v) )
             throw std::invalid_argument("Vertex is already in graph.");
-        }
         vertices.insert(v);
     }
 
     template<class Vertex, class EdgeWeight>
     void AdjacencyListGraphCommon<Vertex, EdgeWeight>::add_vertices
             (const unordered_set<Vertex>& vertices) {
-        // Implemented using low-level API again to avoid unecessary function call to add_vertex.
+        // Implemented using low-level functions again to avoid unecessary function call to 
+        // add_vertex.
         for ( Vertex v : vertices ) {
-            if ( has_vertex(v) ) {
+            if ( has_vertex(v) )
                 throw std::invalid_argument("Vertex is already in graph.");
-            }
         }
         this->vertices.insert(vertices.begin(), vertices.end());
     }
 
     template<class Vertex, class EdgeWeight>
     void AdjacencyListGraphCommon<Vertex, EdgeWeight>::remove_vertex(const Vertex& v) {
-        if ( has_vertex(v) ) {
+        if ( has_vertex(v) )
             vertices.erase(v);
-        } else {
+        else
             throw std::invalid_argument("Vertex not in graph.");
-        }
     }
 
     template<class Vertex, class EdgeWeight>
@@ -166,9 +164,8 @@ namespace cygraph {
     void AdjacencyListGraph<Vertex, EdgeWeight>::remove_edge(const Vertex& u,
             const Vertex& v) {
 
-        if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+        if ( !this->has_vertex(u) || !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
 
         int to_remove = 0;
         for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
@@ -195,24 +192,22 @@ namespace cygraph {
     template<class Vertex, class EdgeWeight>
     bool AdjacencyListGraph<Vertex, EdgeWeight>::has_edge(const Vertex &u, const Vertex& v) {
         if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+            std::cerr << "has_edge called with one or more vertices \
+                          not in graph. false returned." << std::endl;
             return false;
         }
-        for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] ) {
+        for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] )
             if ( child.first == v ) return true;
-        }
         return false;
     }
 
     template<class Vertex, class EdgeWeight>
     unordered_set<Vertex> AdjacencyListGraph<Vertex, EdgeWeight>::get_children(const Vertex& v) {
-        if ( !this->has_vertex(v) ) {
-            throw std::invalid_argument("Vertex not in graph.");
-        }
+        if ( !this->has_vertex(v) ) throw std::invalid_argument("Vertex not in graph.");
 
         unordered_set<Vertex> children;
-        for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] ) {
+        for ( pair<Vertex, EdgeWeight> child : adjacency_list[v] )
             children.insert(child.first);
-        }
         return children;
     }
 
@@ -253,16 +248,13 @@ namespace cygraph {
         int n_vertices = vertices.size();
 
         // Initialize adjacency list.
-        for ( Vertex v : vertices ) {
-            adjacency_list[v] = unordered_set<Vertex>();
-        }
+        for ( Vertex v : vertices ) adjacency_list[v] = unordered_set<Vertex>();
     }
 
     template<class Vertex>
     bool AdjacencyListGraph<Vertex, bool>::get_edge_weight(const Vertex& u, const Vertex& v) {
-        if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+        if ( !this->has_vertex(u) || !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
         return has_edge(u, v);
     }
 
@@ -277,9 +269,7 @@ namespace cygraph {
     void AdjacencyListGraph<Vertex, bool>::add_vertices(const unordered_set<Vertex>& vertices) {
         AdjacencyListGraphCommon<Vertex, bool>::add_vertices(vertices);
         // Add new lists to adjacency list.
-        for ( Vertex v : vertices ) {
-            adjacency_list[v] = unordered_set<Vertex>();
-        }
+        for ( Vertex v : vertices ) adjacency_list[v] = unordered_set<Vertex>();
     }
 
     template<class Vertex>
@@ -291,18 +281,15 @@ namespace cygraph {
 
         // Remove from each neighbor list of other vertices.
         unordered_set<Vertex> children;
-        for ( auto& it : adjacency_list ) {
-            it.second.erase(v);
-        }
+        for ( auto& it : adjacency_list ) it.second.erase(v);
     }
 
     template<class Vertex>
     void AdjacencyListGraph<Vertex, bool>::set_edge_weight(const Vertex& u, const Vertex& v,
             const bool& weight) {
 
-        if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+        if ( !this->has_vertex(u) || !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
 
         if ( weight ) {
             adjacency_list[u].insert(v);
@@ -316,12 +303,10 @@ namespace cygraph {
 
     template<class Vertex>
     void AdjacencyListGraph<Vertex, bool>::add_edge(const Vertex& u, const Vertex& v) {
-        if ( has_edge(u, v) ) {
+        if ( has_edge(u, v) )
             throw std::invalid_argument("Edge already exists.");
-        }
-        if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+        if ( !this->has_vertex(u) || !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
         adjacency_list[u].insert(v);
         if ( !this->directed ) adjacency_list[v].insert(u);
     }
@@ -335,9 +320,8 @@ namespace cygraph {
                 added_edges.push_back(edge);
             }
         } catch ( std::invalid_argument e ) {
-            for ( const pair<Vertex, Vertex>& edge : added_edges ) {
+            for ( const pair<Vertex, Vertex>& edge : added_edges )
                 remove_edge(edge.first, edge.second);
-            }
             throw e;
         }
     }
@@ -354,23 +338,26 @@ namespace cygraph {
 
     template<class Vertex>
     bool AdjacencyListGraph<Vertex, bool>::has_edge(const Vertex& u, const Vertex& v) {
+        if ( !has_vertex(u) || !has_vertex(v) ) {
+            std::cerr << "has_edge called with one or more vertices \
+                          not in graph. false returned." << std::endl;
+            return false;
+        }
         return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)
                 != adjacency_list[u].end();
     }
 
     template<class Vertex>
     unordered_set<Vertex> AdjacencyListGraph<Vertex, bool>::get_children(const Vertex& v) {
-        if ( !this->has_vertex(v) ) {
+        if ( !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
         return adjacency_list[v];
     }
 
     template<class Vertex>
     unordered_set<Vertex> AdjacencyListGraph<Vertex, bool>::get_parents(const Vertex& v) {
-        if ( !this->has_vertex(v) ) {
+        if ( !this->has_vertex(v) )
             throw std::invalid_argument("Vertex not in graph.");
-        }
         unordered_set<Vertex> parents;
         for ( auto& it : adjacency_list ) {
             for ( Vertex child : it.second ) {

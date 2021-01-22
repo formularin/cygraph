@@ -60,73 +60,82 @@ namespace cygraph {
 
         AdjacencyMatrixGraph() {}
         /*
-        Default constructor.
-        */
+         * Default constructor.
+         */
 
         AdjacencyMatrixGraph(bool directed, const unordered_set<Vertex>& vertices);
         /*
-        Class constructor
-        */
+         * Class constructor
+         */
 
         vector<Vertex> get_vertices() { return vertices; }
         /*
-        Returns the vertices in the graph.
-        */
+         * Returns the vertices in the graph.
+         */
 
-        EdgeWeight get_edge_weight(const Vertex& u, const Vertex &v) override;
+        EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v) override;
         /*
-        Returns the weight of an edge.
-        */
+         * Returns the weight of an edge (u, v).
+         * Throws std::invalid_argument if edge does not exist.
+         */
 
         void add_vertex(const Vertex& v) override;
         /*
-        Adds a vertex to the graph.
-        */
+         * Adds a vertex to the graph.
+         * 
+         * Throws std::invalid_argument if v is already in the graph.
+         */
 
         void add_vertices(const unordered_set<Vertex>& vertices) override;
         /*
-        Adds an array of vertices to the graph.
-        */
+         * Adds a set of vertices to the graph.
+         * Throws std::invalid_argument if any of the vertices are already in the graph.
+         */
 
         void remove_vertex(const Vertex& v) override;
         /*
-        Removes a vertex from the graph.
-        */
+         * Removes a vertex from the graph.
+         * Throws std::invalid_argument if the vertex doesn't exist.
+         */
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) override;
         /*
-        Sets the weight of an edge.
-        */
+         * Sets the weight of the edge (u, v)
+         * 
+         * Throws std::invalid_argument if one or more vertices are not in the graph.
+         */
 
         void remove_edge(const Vertex& u, const Vertex& v) override;
         /*
-        Removes an edge from the graph. A warning is raised if attempting to remove an edge
-        that doesn't exist.
-        */
+         * Removes an edge from the graph.
+         * 
+         * Throws std::invalid_argument if attempting to remove an edge that doesn't exist,
+         * including if one or more of the vertices is not in the graph.
+         */
 
         bool has_edge(const Vertex& u, const Vertex& v) override;
         /*
-        Returns whether or not a given edge is in the graph. If one or more of the vertices
-        are not in the graph, false is returned.
-        */
+         * Returns whether or not a given edge is in the graph. If one or more of the vertices are
+         * not in the graph, false is returned and a warning is thrown.
+         */
 
         bool has_vertex(const Vertex& v) override;
         /*
-        Returns whether or not a certain vertex is in the graph.
-        */
+         * Returns whether or not a certain vertex is in the graph.
+         */
 
         unordered_set<Vertex> get_children(const Vertex& v) override;
         /*
-        Returns the children of a given vertex in the graph. In an undirected graph, this is
-        equivalent to finding the "neighbors" of a vertex, and is the same as the method
-        get_parents.
+         * Returns the children of a given vertex in the graph. In an undirected graph, this is
+         * equivalent to finding the "neighbors" of a vertex, and is the same as the method
+         * get_parents.
         */
 
         unordered_set<Vertex> get_parents(const Vertex& v) override;
         /*
-        Returns the parents of a given vertex in the graph. In an undirected graph, this is
-        equivalent to finding the "neighbors" of a vertex, and is the same as the method
-        get_children.
+         * Returns the parents of a given vertex in the graph. In an undirected graph, this is
+         * equivalent to finding the "neighbors" of a vertex, and is the same as the method
+         * get_children.
         */
     };
 }

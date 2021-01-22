@@ -201,6 +201,8 @@ namespace cygraph {
             u_index = get_vertex_int(u);
             v_index = get_vertex_int(v);
         } catch ( std::invalid_argument ) {
+            std::cerr << "has_edge called with one or more vertices \
+                          not in graph. false returned." << std::endl;
             return false;
         }
         EdgeWeight* weight_ptr = adjacency_matrix[u_index][v_index];
