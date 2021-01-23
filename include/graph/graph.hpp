@@ -73,7 +73,8 @@ namespace cygraph {
          * Sets the weight of an edge.
          */
 
-        virtual void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges);
+        virtual void set_edge_weights(const vector<Vertex>& us, const vector<Vertex>& vs,
+            const vector<Vertex>& weights);
         /*
          * Sets the weights of a vector of edges in the graph.
          */

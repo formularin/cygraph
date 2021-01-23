@@ -38,30 +38,40 @@ namespace cygraph {
     }
 
     template<class Vertex, class EdgeWeight>
-    void Graph<Vertex, EdgeWeight>::set_edge_weights(
-            const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges) {
+    void Graph<Vertex, EdgeWeight>::set_edge_weights(const vector<Vertex>& us,
+            const vector<Vertex>& vs, const vector<EdgeWeight>& weights) {
 
-        vector<pair<Vertex, Vertex>> set_edges;
-        pair<Vertex, Vertex> edge_;
-        Vertex u, v;
+        int n_weights = weights.size();
+        if ( us.size() != n_weights || vs.size != n_weights )
+            throw std::invalid_argument("Number of us, vs, and weights must be the same.");
 
-        for ( tuple<Vertex, Vertex, EdgeWeight> edge : edges ) {
+        vector<tuple<Vertex, Vertex, EdgeWeight*>> overridden_edges;
+        tuple<Vertex, Vertex, EdgeWeight> overridden_edge;
+        EdgeWeight* original_weight;
+        
+        for ( int i = 0; i < us.size(); i++ ) {
             try {
-                u = get<0>(edge);
-                v = get<1>(edge);
-                set_edge_weight(u, v, get<2>(edge));
-                edge_ = {u, v};
-                set_edges.push_back(edge_);
-            } catch ( std::invalid_argument e ) {
+                try {
+                    original_weight = &get_edge_weight(us[i], vs[i]);
+                } catch ( std::invalid_argument ) {
+                    // Edge doesn't exist. (New edge being added)
+                    original_weight = nullptr;
+                }
+                set_edge_weight(us[i], vs[i], weights[i]);
+                overridden_edge = {us[i], vs[i], original_weight};
+                overridden_edges.push_back(overridden_edge);
+            } catch ( std::exception e ) {
                 // One of the edges was invalid.
-                for ( pair<Vertex, Vertex> removal_edge : set_edges ) {
-                    remove_edge(removal_edge.first, removal_edge.second);
+                for ( tuple<Vertex, Vertex, EdgeWeight*> edge : overridden_edges ) {
+                    if ( get<2>(edge) == nullptr )
+                        remove_edge(get<0>(edge), get<1>(edge));
+                    else
+                        set_edge_weight(get<0>(edge), get<1>(edge), *get<2>(edge));
                 }
                 throw e;
             }
         }
     }
-
 
     template<class Vertex, class EdgeWeight>
     void Graph<Vertex, EdgeWeight>::remove_edges(
