@@ -28,8 +28,8 @@ namespace cygraph {
     template<class Vertex, class EdgeWeight>
     class Graph {
         /*
-        A generic Graph class. Not to be instantiated.
-        */
+         * A generic Graph class. Not to be instantiated.
+         */
 
         protected:
 
@@ -39,77 +39,74 @@ namespace cygraph {
 
         bool get_directed() { return directed; }
         /*
-        Returns whether or not the graph is directed.
-        */
+         * Returns whether or not the graph is directed.
+         */
 
         virtual EdgeWeight get_edge_weight(const Vertex& u, const Vertex& v) = 0;
         /*
-        Returns the weight of an edge.
-        */
+         * Returns the weight of an edge.
+         */
 
         virtual void add_vertex(const Vertex& v) = 0;
         /*
-        Adds a vertex to the graph.
-        */
+         * Adds a vertex to the graph.
+         */
 
         virtual void add_vertices(const unordered_set<Vertex>& vertices) = 0;
         /*
-        Adds an array of vertices to the graph.
-        */
+         * Adds a set of vertices to the graph.
+         */
 
         virtual void remove_vertex(const Vertex& v) = 0;
         /*
-        Removes a vertex from the graph.
-        */
+         * Removes a vertex from the graph.
+         */
 
         virtual void remove_vertices(const unordered_set<Vertex>& vertices);
         /*
-        Removes a set of vertices from the graph.
-        */
+         * Removes a set of vertices from the graph.
+         */
 
         virtual void set_edge_weight(const Vertex& u, const Vertex& v,
             const EdgeWeight& weight) = 0;
         /*
-        Sets the weight of an edge.
-        */
+         * Sets the weight of an edge.
+         */
 
         virtual void set_edge_weights(const vector<tuple<Vertex, Vertex, EdgeWeight>>& edges);
         /*
-        Sets the weights of a vector of edges in the graph.
-        */
+         * Sets the weights of a vector of edges in the graph.
+         */
 
         virtual void remove_edge(const Vertex& u, const Vertex& v) = 0;
         /*
-        Removes an edge from the graph. A warning is raised if
-        attempting to remove an edge that doesn't exist.
-        */
+         * Removes an edge from the graph.
+         */
 
         virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges);
         /*
-        Removes a set of edges from the graph.
-        */
+         * Removes a set of edges from the graph.
+         */
 
         virtual bool has_edge(const Vertex& u, const Vertex& v) = 0;
         /*
-        Returns whether or not a given edge is in the graph. If one or more of the vertices are
-        not in the graph, false is returned.
-        */
+         * Returns whether or not a given edge is in the graph.
+         */
 
         virtual bool has_vertex(const Vertex& v) = 0;
         /*
-        Returns whether or not a certain vertex is in the graph.
-        */
+         * Returns whether or not a certain vertex is in the graph.
+         */
 
         virtual std::unordered_set<Vertex> get_children(const Vertex& v) = 0;
         /*
-        Returns the children of a given vertex in the graph.
-        */
+         * Returns the children of a given vertex in the graph.
+         */
 
         virtual std::unordered_set<Vertex> get_parents(const Vertex& v) = 0;
         /*
-        Returns the parents of a given vertex in the graph. This is
-        equivalent to get_children in undirected graphs.
-        */
+         * Returns the parents of a given vertex in the graph.
+         */
     };
 }
 
