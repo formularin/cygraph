@@ -56,8 +56,6 @@ cdef extern from "../../include/graph/adjacency_list.hpp" namespace "cygraph":
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) except +
         """Sets the weight of the edge (u, v).
-
-        Raises a ValueError if one or more of the vertices are not in the graph.
         """
 
         void remove_edge(const Vertex& u, const Vertex& v) except +
@@ -245,8 +243,6 @@ cdef extern from "../../include/graph/adjacency_matrix.hpp" namespace cygraph:
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) except +
         """Sets the weight of the edge (u, v).
-
-        Raises a ValueError if one or more of the vertices are not in the graph.
         """
 
         void remove_edge(const Vertex& u, const Vertex& v) except +

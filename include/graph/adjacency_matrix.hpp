@@ -95,14 +95,12 @@ namespace cygraph {
         void remove_vertex(const Vertex& v) override;
         /*
          * Removes a vertex from the graph.
-         * Throws std::invalid_argument if the vertex doesn't exist.
+         * Throws std::invalid_argument if the vertex is not in the graph.
          */
 
         void set_edge_weight(const Vertex& u, const Vertex& v, const EdgeWeight& weight) override;
         /*
          * Sets the weight of the edge (u, v)
-         * 
-         * Throws std::invalid_argument if one or more vertices are not in the graph.
          */
 
         void remove_edge(const Vertex& u, const Vertex& v) override;
@@ -121,7 +119,7 @@ namespace cygraph {
 
         bool has_vertex(const Vertex& v) override;
         /*
-         * Returns whether or not a certain vertex is in the graph.
+         * Returns whether or not a certain vertex is in the vertices vector.
          */
 
         unordered_set<Vertex> get_children(const Vertex& v) override;

@@ -4,6 +4,7 @@ Template implementation file for adjacency list graph classes.
 
 
 #include <algorithm>
+#include <iostream>
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
@@ -192,8 +193,7 @@ namespace cygraph {
     template<class Vertex, class EdgeWeight>
     bool AdjacencyListGraph<Vertex, EdgeWeight>::has_edge(const Vertex &u, const Vertex& v) {
         if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
-            std::cerr << "has_edge called with one or more vertices \
-                          not in graph. false returned." << std::endl;
+            std::cerr << "has_edge called with one or more vertices not in graph. false returned." << std::endl;
             return false;
         }
         for ( pair<Vertex, EdgeWeight> child : adjacency_list[u] )
@@ -338,9 +338,8 @@ namespace cygraph {
 
     template<class Vertex>
     bool AdjacencyListGraph<Vertex, bool>::has_edge(const Vertex& u, const Vertex& v) {
-        if ( !has_vertex(u) || !has_vertex(v) ) {
-            std::cerr << "has_edge called with one or more vertices \
-                          not in graph. false returned." << std::endl;
+        if ( !this->has_vertex(u) || !this->has_vertex(v) ) {
+            std::cerr << "has_edge called with one or more vertices not in graph. false returned." << std::endl;
             return false;
         }
         return std::find(adjacency_list[u].begin(), adjacency_list[u].end(), v)

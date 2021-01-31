@@ -38,9 +38,7 @@ void TestAdjacencyListGraph::test_edges() {
     /*
     Tests the following methods:
         - AdjacencyListGraph::set_edge_weight
-        - AdjacencyListGraph::set_edge_weights
         - AdjacencyListGraph::remove_edge
-        - AdjacencyListGraph::remove_edges
         - AdjacencyListGraph::has_edge
         - AdjacencyListGraph::get_edge_weight
     */
@@ -92,56 +90,6 @@ void TestAdjacencyListGraph::test_edges() {
     CPPUNIT_ASSERT( directed_object.has_edge(object_vals[1], object_vals[0]) );
     CPPUNIT_ASSERT( directed_object.get_edge_weight(object_vals[1], object_vals[0]) );
 
-    // Setting edge weights several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    std::string non_vertex = "Beijing";
-    vector<tuple<std::string, std::string, float>> edges = {
-        { string_vals[0], string_vals[1], 0.0f },
-        { string_vals[0], string_vals[2], 1.0f },
-        { string_vals[1], string_vals[0], -1.0f },
-        { non_vertex, string_vals[0], 100.0f }
-    };
-    CPPUNIT_ASSERT_THROW( directed_string.set_edge_weights(edges), std::invalid_argument );
-    // No edges were added.
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[1]) );
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[2]) );
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[1], string_vals[0]) );
-
-    edges = {
-        { string_vals[0], string_vals[1], 0.0f },
-        { string_vals[0], string_vals[2], 1.0f },
-        { string_vals[1], string_vals[0], -1.0f },
-    };
-    CPPUNIT_ASSERT_NO_THROW( directed_string.set_edge_weights(edges) );
-    // All edges were added.
-    CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[1]) );
-    CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[2]) );
-    CPPUNIT_ASSERT( directed_string.get_edge_weight(string_vals[1], string_vals[0]) );
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[2], string_vals[0]) );
-    CPPUNIT_ASSERT_THROW( directed_string.get_edge_weight(string_vals[2], string_vals[0]),
-        std::invalid_argument );
-
-    // Removing edges several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    vector<pair<std::string, std::string>> removal_edges = {
-        {string_vals[0], string_vals[1]},
-        {string_vals[0], non_vertex}
-    };
-    CPPUNIT_ASSERT_THROW( directed_string.remove_edges(removal_edges), std::invalid_argument );
-    // No edges were removed.
-    CPPUNIT_ASSERT( directed_string.has_edge(string_vals[0], string_vals[1]) );
-
-    removal_edges = {
-        {string_vals[0], string_vals[1]},
-        {string_vals[0], string_vals[2]}
-    };
-    CPPUNIT_ASSERT_NO_THROW( directed_string.remove_edges(removal_edges) );
-    // All edges were removed.
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[1]) );
-    CPPUNIT_ASSERT( !directed_string.has_edge(string_vals[0], string_vals[2]) );
-
     // UNDIRECTED GRAPHS
 
     // Setting edge weights one at a time.
@@ -187,20 +135,6 @@ void TestAdjacencyListGraph::test_edges() {
     // Removing an edge that doesn't exist.
     CPPUNIT_ASSERT_THROW(
         undirected_string.remove_edge(string_vals[0], string_vals[3]), std::invalid_argument );
-
-    // Setting edge weights several at a time.
-    vector<tuple<int, int, int>> undirected_edges = {
-        { -1, 7, 100 },
-        { 1, 0, -100 },
-        { 1, 7, 0 }
-    };
-    CPPUNIT_ASSERT_NO_THROW( undirected_int.set_edge_weights(undirected_edges) );
-    CPPUNIT_ASSERT( undirected_int.has_edge(-1, 7) );
-    CPPUNIT_ASSERT( undirected_int.has_edge(7, -1) );
-    CPPUNIT_ASSERT( undirected_int.get_edge_weight(1, 0) == -100 );
-    CPPUNIT_ASSERT( undirected_int.get_edge_weight(0, 1) == -100 );
-    CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
-    CPPUNIT_ASSERT( undirected_int.has_edge(1, 7) );
 
     // Changing edge weights.
     CPPUNIT_ASSERT_NO_THROW(
@@ -265,7 +199,6 @@ void TestAdjacencyListGraph::test_vertices() {
         - AdjacencyListGraph::add_vertex
         - AdjacencyListGraph::add_vertices
         - AdjacencyListGraph::remove_vertex
-        - AdjacencyListGraph::remove_vertices
         - AdjacencyListGraph::has_vertex
         - AdjacencyListGraph::get_vertices
     */
@@ -315,21 +248,6 @@ void TestAdjacencyListGraph::test_vertices() {
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(100, 100)) );
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(1000, 1000)) );
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(10000, 10000)) );
-
-    // Removing vertices several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    vertices = { object_vals[0], object_vals[1], UserDefinedObject(200, 200) };
-    CPPUNIT_ASSERT_THROW( directed_object.remove_vertices(vertices), std::invalid_argument );
-    // No vertices were removed.
-    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[0]) );
-    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[1]) );
-
-    vertices = { object_vals[0], object_vals[1] };
-    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_vertices(vertices) );
-    // All vertices were removed.
-    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[0]) );
-    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[1]) );
 }
 
 

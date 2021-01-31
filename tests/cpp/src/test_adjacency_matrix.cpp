@@ -51,9 +51,7 @@ void TestAdjacencyMatrixGraph::test_edges() {
     /*
     Tests the following methods:
         - AdjacencyMatrixGraph::set_edge_weight
-        - AdjacencyMatrixGraph::set_edge_weights
         - AdjacencyMatrixGraph::remove_edge
-        - AdjacencyMatrixGraph::remove_edges
         - AdjacencyMatrixGraph::has_edge
         - AdjacencyMatrixGraph::get_edge_weight
     */
@@ -90,58 +88,6 @@ void TestAdjacencyMatrixGraph::test_edges() {
     CPPUNIT_ASSERT( directed_string.has_edge("", "Mumbai") );
     CPPUNIT_ASSERT( directed_string.has_edge("Mumbai", "") );
 
-    // Adding float edges several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    UserDefinedObject non_vertex = UserDefinedObject(100, 100);
-    vector<tuple<UserDefinedObject, UserDefinedObject, float>> edges = {
-        { object_vals[0], object_vals[1], 0.0f },
-        { object_vals[0], object_vals[2], 0.1f },
-        { object_vals[1], object_vals[0], -1.0f },
-        { non_vertex, object_vals[0], -1.0f }
-    };
-    CPPUNIT_ASSERT_THROW( directed_object.set_edge_weights(edges), std::invalid_argument );
-    // No edges were added.
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[1], object_vals[0]) );
-
-    edges = {
-        { object_vals[0], object_vals[1], 0.0f },
-        { object_vals[0], object_vals[2], -1.0f },
-        { object_vals[1], object_vals[0], 1.0f }
-    };
-    CPPUNIT_ASSERT_NO_THROW( directed_object.set_edge_weights(edges) );
-    // All edges were added.
-    CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[1]) );
-    CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[2]) );
-    CPPUNIT_ASSERT( directed_object.has_edge(object_vals[1], object_vals[0]) );
-    CPPUNIT_ASSERT( directed_object.get_edge_weight(object_vals[0], object_vals[1]) == 0.0f );
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[2], object_vals[0]) );
-    CPPUNIT_ASSERT_THROW( directed_object.get_edge_weight(object_vals[2], object_vals[0]),
-        std::invalid_argument );
-
-    // Removing float edges several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    vector<pair<UserDefinedObject, UserDefinedObject>> removal_edges = {
-        {object_vals[0], object_vals[1]},
-        {object_vals[0], non_vertex}
-    };
-    CPPUNIT_ASSERT_THROW( directed_object.remove_edges(removal_edges),
-                          std::invalid_argument );
-    // No edges were removed.
-    CPPUNIT_ASSERT( directed_object.has_edge(object_vals[0], object_vals[1]) );
-
-    removal_edges = {
-        {object_vals[0], object_vals[1]},
-        {object_vals[0], object_vals[2]}
-    };
-    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_edges(removal_edges) );
-    // All edges were removed.
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[1]) );
-    CPPUNIT_ASSERT( !directed_object.has_edge(object_vals[0], object_vals[2]) );
-
     // UNDIRECTED GRAPHS
 
     // Adding int edges one at a time.
@@ -163,19 +109,6 @@ void TestAdjacencyMatrixGraph::test_edges() {
     CPPUNIT_ASSERT_THROW( undirected_int.get_edge_weight(-1, 0), std::invalid_argument );
     // Removing an edge that doesn't exist.
     CPPUNIT_ASSERT_THROW( undirected_int.remove_edge(-1, 0), std::invalid_argument );
-
-    // Adding float edges several at a time.
-    edges = {
-        { object_vals[0], object_vals[1], 0.0f },
-        { object_vals[0], object_vals[2], -1.0f },
-        { object_vals[1], object_vals[2], 0.5f }
-    };
-    CPPUNIT_ASSERT_NO_THROW( undirected_object.set_edge_weights(edges) );
-    // All edges were added.
-    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[1]) );
-    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[0]) );
-    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[0], object_vals[2]) );
-    CPPUNIT_ASSERT( undirected_object.has_edge(object_vals[1], object_vals[2]) );
 
     // Changing edge weight values.
     undirected_object.set_edge_weight(object_vals[0], object_vals[1], 3.0f);
@@ -238,7 +171,6 @@ void TestAdjacencyMatrixGraph::test_vertices() {
         - AdjacencyMatrixGraph::add_vertex
         - AdjacencyMatrixGraph::add_vertices
         - AdjacencyMatrixGraph::remove_vertex
-        - AdjacencyMatrixGraph::remove_vertices
         - AdjacencyMatrixGraph::has_vertex
         - AdjacencyMatrixGraph::get_vertices
     */
@@ -286,21 +218,6 @@ void TestAdjacencyMatrixGraph::test_vertices() {
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(100, 100)) );
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(1000, 1000)) );
     CPPUNIT_ASSERT( directed_object.has_vertex(UserDefinedObject(10000, 10000)) );
-
-    // Removing vertices several at a time.
-
-    // Invalid call: one of the vertices doesn't exist.
-    vertices = { object_vals[0], object_vals[1], UserDefinedObject(200, 200) };
-    CPPUNIT_ASSERT_THROW( directed_object.remove_vertices(vertices), std::invalid_argument );
-    // No vertices were removed.
-    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[0]) );
-    CPPUNIT_ASSERT( directed_object.has_vertex(object_vals[1]) );
-
-    vertices = { object_vals[0], object_vals[1] };
-    CPPUNIT_ASSERT_NO_THROW( directed_object.remove_vertices(vertices) );
-    // All vertices were removed.
-    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[0]) );
-    CPPUNIT_ASSERT( !directed_object.has_vertex(object_vals[1]) );
 }
 
 

@@ -62,31 +62,15 @@ namespace cygraph {
          * Removes a vertex from the graph.
          */
 
-        virtual void remove_vertices(const unordered_set<Vertex>& vertices);
-        /*
-         * Removes a set of vertices from the graph.
-         */
-
         virtual void set_edge_weight(const Vertex& u, const Vertex& v,
             const EdgeWeight& weight) = 0;
         /*
          * Sets the weight of an edge.
          */
 
-        virtual void set_edge_weights(const vector<Vertex>& us, const vector<Vertex>& vs,
-            const vector<Vertex>& weights);
-        /*
-         * Sets the weights of a vector of edges in the graph.
-         */
-
         virtual void remove_edge(const Vertex& u, const Vertex& v) = 0;
         /*
          * Removes an edge from the graph.
-         */
-
-        virtual void remove_edges(const vector<pair<Vertex, Vertex>>& edges);
-        /*
-         * Removes a set of edges from the graph.
          */
 
         virtual bool has_edge(const Vertex& u, const Vertex& v) = 0;
@@ -110,9 +94,6 @@ namespace cygraph {
          */
     };
 }
-
-
-#include "graph.tpp"
 
 
 #endif
