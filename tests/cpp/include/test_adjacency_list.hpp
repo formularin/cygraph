@@ -1,6 +1,9 @@
-/*
-Tests suites for testing WeightedAdajcencyListGraph and AdjacencyListGraph.
-*/
+/* ============================================================================================== *
+ * test_adjacency_list.hpp                                                                        *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * CppUnit classes for testing adjacency-list-implemented graph classes.                          *
+ * ============================================================================================== */
 
 
 #ifndef TEST_ADJACENCY_LIST_HPP

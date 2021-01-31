@@ -1,6 +1,10 @@
-/*
-Test suite for testing AdjacencyMatrixGraph.
-*/
+/* ============================================================================================== *
+ * test_adjacency_matrix.hpp                                                                      *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * CppUnit classes for testing adjacency-matrix-implemented graph classes.                        *
+ * ============================================================================================== */
+
 
 #ifndef TEST_ADJACENCY_MATRIX_HPP
 #define TEST_ADJACENCY_MATRIX_HPP

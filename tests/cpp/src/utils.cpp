@@ -1,6 +1,10 @@
-/*
-Common functions and classes for unit tests.
-*/
+/* ============================================================================================== *
+ * utils.cpp                                                                                      *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Implementations of common functions and classes necessary for CyGraph unit testing.            *
+ * ============================================================================================== */
+
 
 #include <iostream>
 #include <string>

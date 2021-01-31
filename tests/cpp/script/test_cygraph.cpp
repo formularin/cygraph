@@ -1,6 +1,10 @@
-/*
-Runs all C++ Cygraph unit tests.
-*/
+/* ============================================================================================== *
+ * test_cygraph.cpp                                                                               *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * A program for running all CyGraph unit tests.                                                  *
+ * ============================================================================================== */
+
 
 #include <cppunit/ui/text/TestRunner.h>
 

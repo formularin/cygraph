@@ -1,6 +1,10 @@
-/*
-A fast and flexible Graph theory library.
-*/
+/* ============================================================================================== *
+ * cygraph.hpp                                                                                    *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * CyGraph: A fast and flexible graph theory library.                                             *
+ * ============================================================================================== */
+
 
 #ifndef CYGRAPH_HPP
 #define CYGRAPH_HPP

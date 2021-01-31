@@ -1,6 +1,9 @@
-/*
-Template implementation file for adjacency list graph classes.
-*/
+/* ============================================================================================== *
+ * adjacency_list.tpp                                                                             *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Template implementation file for adjacency list graph classes.                                 *
+ * ============================================================================================== */
 
 
 #include <algorithm>

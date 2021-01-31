@@ -1,6 +1,10 @@
-/*
-Test fixtures required for testing algorithm functions.
-*/
+/* ============================================================================================== *
+ * test_algorithms.hpp                                                                            *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * CppUnit classes for testing C++ wrappers of Cython graph theory algorithm implementations.     *
+ * ============================================================================================== */
+
 
 #ifndef TEST_ALGORITHMS_HPP
 #define TEST_ALGORITHMS_HPP

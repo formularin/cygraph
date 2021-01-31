@@ -1,6 +1,10 @@
-/*
-Common functions and classes for unit tests.
-*/
+/* ============================================================================================== *
+ * utils.hpp                                                                                      *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Common functions and classes for unit test implementations.                                    *
+ * ============================================================================================== */
+
 
 #ifndef CYGRAPH_TEST_UTILS_HPP
 #define CYGRAPH_TEST_UTILS_HPP

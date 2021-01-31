@@ -1,6 +1,11 @@
-/*
-Implementation of algorithm test fixtures.
-*/
+/* ============================================================================================== *
+ * test_algorithms.cpp                                                                            *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Implementations of CppUnit test fixtures for C++ wrappers of graph theory algorithms           *
+ * implemented in Cython.                                                                         *
+ * ============================================================================================== */
+
 
 #include <cppunit/TestCaller.h>
 

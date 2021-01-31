@@ -1,6 +1,9 @@
-/*
-Implementation of adjacency matrix class test fixture.
-*/
+/* ============================================================================================== *
+ * test_adjacency_matrix.cpp                                                                      *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Implementations of CppUnit test fixtures for adjacency-matrix-implemented graph classes.       *
+ * ============================================================================================== */
 
 #include <iostream>
 #include <string>

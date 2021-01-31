@@ -1,6 +1,9 @@
-/*
-Implementation of adjacency list class test fixtures.
-*/
+/* ============================================================================================== *
+ * test_adjacency_list.cpp                                                                        *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Implementations of CppUnit test fixtures for adjacency-list-implemented graph classes.         *
+ * ============================================================================================== */
 
 #include <cppunit/TestCaller.h>
 

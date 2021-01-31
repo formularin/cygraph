@@ -1,7 +1,10 @@
-/*
-A general graph class. Meant to be inherited. No real graph theory
-functionality.
-*/
+/* ============================================================================================== *
+ * graph.hpp                                                                                      *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * A generic Graph abstract class.                                                                *
+ * ============================================================================================== */
+
 
 #ifndef CYGRAPH_GRAPH_HPP
 #define CYGRAPH_GRAPH_HPP
@@ -28,7 +31,7 @@ namespace cygraph {
     template<class Vertex, class EdgeWeight>
     class Graph {
         /*
-         * A generic Graph class. Not to be instantiated.
+         * A generic Graph abstract class.
          */
 
         protected:

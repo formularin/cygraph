@@ -1,6 +1,9 @@
-/*
-Template implementation file for adjacency matrix graph class.
-*/
+/* ============================================================================================== *
+ * adjacency_matrix.tpp                                                                           *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * Template implementation file for adjacency matrix graph class.                                 *
+ * ============================================================================================== */
 
 
 #include <iostream>

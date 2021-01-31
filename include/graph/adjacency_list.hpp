@@ -1,6 +1,10 @@
-/*
-An implementation of the graph data structure using an adjacency list.
-*/
+/* ============================================================================================== *
+ * adjacency_list.hpp                                                                             *
+ * authors: lol-cubes                                                                             *
+ *                                                                                                *
+ * An implementation of the graph data structure using an adjacency list.                         *
+ * ============================================================================================== */
+
 
 #ifndef CYGRAPH_ADJACENCY_LIST_HPP
 #define CYGRAPH_ADJACENCY_LIST_HPP
